@@ -33,7 +33,7 @@ void nodePrintDesc(FILE *fp, Node *node) {
     if (node->token == IDENTIFIER) {
         fprintf(fp, "%s", node->str);
     } else if (node->token == ARR_IDENTIFIER) {
-        fprintf(fp, "%d", node->str);
+        fprintf(fp, "%s", node->str);
     } else if (node->token == CONSTANT) {
         fprintf(fp, "%d", node->num1);
     } else if (node->token == RANGE) {

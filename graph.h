@@ -2,7 +2,7 @@
 #define __GRAPH_H
 
 #include <cstdio>
-#include <ext/hash_map>
+#include <unordered_map>
 #include <ext/slist>
 #include <vector>
 using namespace __gnu_cxx;
@@ -21,7 +21,7 @@ struct Signature{
 };
 
 struct signatureHash {
-    size_t operator()(Signature const& a) const{
+    size_t operator()(Signature const& a) const {
         int temp = a.constraintID;
         int size = a.sigValues.size();
         for (int i = 0; i < size; i++) {
@@ -34,7 +34,7 @@ struct signatureHash {
 };
 
 struct signatureEq {
-    bool operator()(Signature const& a, Signature const& b) {
+    constexpr bool operator()(Signature const& a, Signature const& b) const {
         bool temp = a.constraintID == b.constraintID;
         return temp && (a.sigValues == b.sigValues);
     }
@@ -42,7 +42,7 @@ struct signatureEq {
 
 struct Edge;
 
-typedef hash_map<int, slist<Edge *> *> EdgeMap;
+typedef unordered_map<int, slist<Edge *> *> EdgeMap;
 
 struct Vertex {
     int id; // ID for a vertex.
@@ -61,7 +61,7 @@ struct Edge {
     int *values;
 };
 
-typedef hash_map<Signature, Vertex *, signatureHash, signatureEq> VertexTable;
+typedef unordered_map<Signature, Vertex *, signatureHash, signatureEq> VertexTable;
 
 struct Graph {
     int nextVertexId;

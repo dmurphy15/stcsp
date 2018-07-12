@@ -3,8 +3,8 @@
 
 #include "token.h"
 #include "node.h"
-#include "variable.h"
-#include "constraint.h"
+#include "variable_old.h"
+#include "Constraint.h"
 #include "graph.h"
 #include <vector>
 #include <deque>

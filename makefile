@@ -71,27 +71,44 @@ y.tab.h: stcsp.y
 	$(YACC) -d stcsp.y
 y.tab.o: y.tab.cpp y.tab.h
 	$(CPP) $(YFLAGS) y.tab.cpp -c
-util.o: util.cpp util.h
-	$(CPP) $(CFLAGS) util.cpp -c
-node.o: node.cpp node.h
-	$(CPP) $(CFLAGS) node.cpp -c
-solver.o: solver.cpp solver.h
-	$(CPP) $(CFLAGS) solver.cpp -c
-variable.o: variable.cpp variable.h
-	$(CPP) $(CFLAGS) variable.cpp -c
-graph.o: graph.cpp graph.h
-	$(CPP) $(CFLAGS) graph.cpp -c
-token.o: token.cpp token.h
-	$(CPP) $(CFLAGS) token.cpp -c
-constraint.o: constraint.cpp constraint.h
-	$(CPP) $(CFLAGS) constraint.cpp -c
-solveralgorithm.o: solveralgorithm.cpp solveralgorithm.h
-	$(CPP) $(CFLAGS) solveralgorithm.cpp -c
-#automaton.o: automaton.c automaton.h
-#	$(CPP) $(CFLAGS) automaton.c -c
-stcsp: lex.yy.o y.tab.o util.o node.o solver.o variable.o graph.o token.o constraint.o solveralgorithm.o
-	$(CPP) $(CFLAGS) $(LDFLAGS) lex.yy.o y.tab.o node.o util.o solver.o variable.o graph.o token.o constraint.o solveralgorithm.o -o stcsp
 
-# solverup.o ac.o automaton.o
+Variable.o: Variable.cpp Variable.h
+	$(CPP) $(CFLAGS) Variable.cpp -c
 
-# solverup.o ac.o automaton.o -o stcsp
+VariableExpression.o: expressions/VariableExpression.cpp expressions/VariableExpression.h Expression.h
+	$(CPP) $(CFLAGS) expressions/VariableExpression.cpp -c
+ConstantExpression.o: expressions/ConstantExpression.cpp expressions/ConstantExpression.h Expression.h
+	$(CPP) $(CFLAGS) expressions/ConstantExpression.cpp -c
+AddExpression.o: expressions/AddExpression.cpp expressions/AddExpression.h Expression.h
+	$(CPP) $(CFLAGS) expressions/AddExpression.cpp -c
+
+EqualConstraint.o: constraints/EqualConstraint.cpp constraints/EqualConstraint.h Constraint.h
+	$(CPP) $(CFLAGS) constraints/EqualConstraint.cpp -c
+
+stcsp: lex.yy.o y.tab.o Variable.o VariableExpression.o ConstantExpression.o AddExpression.o EqualConstraint.o
+	$(CPP) $(CFLAGS) $(LDFLAGS) lex.yy.o y.tab.o Variable.o VariableExpression.o ConstantExpression.o AddExpression.o EqualConstraint.o -o stcsp
+
+#util.o: util.cpp util.h
+#	$(CPP) $(CFLAGS) util.cpp -c
+#node.o: node.cpp node.h
+#	$(CPP) $(CFLAGS) node.cpp -c
+#solver.o: solver.cpp solver.h
+#	$(CPP) $(CFLAGS) solver.cpp -c
+#variable.o: variable.cpp variable.h
+#	$(CPP) $(CFLAGS) variable.cpp -c
+#graph.o: graph.cpp graph.h
+#	$(CPP) $(CFLAGS) graph.cpp -c
+#token.o: token.cpp token.h
+#	$(CPP) $(CFLAGS) token.cpp -c
+#constraint.o: constraint.cpp constraint.h
+#	$(CPP) $(CFLAGS) constraint.cpp -c
+#solveralgorithm.o: solveralgorithm.cpp solveralgorithm.h
+#	$(CPP) $(CFLAGS) solveralgorithm.cpp -c
+##automaton.o: automaton.c automaton.h
+##	$(CPP) $(CFLAGS) automaton.c -c
+#stcsp: lex.yy.o y.tab.o util.o node.o solver.o variable.o graph.o token.o constraint.o solveralgorithm.o
+#	$(CPP) $(CFLAGS) $(LDFLAGS) lex.yy.o y.tab.o node.o util.o solver.o variable.o graph.o token.o constraint.o solveralgorithm.o -o stcsp
+#
+## solverup.o ac.o automaton.o
+#
+## solverup.o ac.o automaton.o -o stcsp

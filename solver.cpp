@@ -1,3 +1,43 @@
+solver:
+
+add variable
+    set prefixk for variable
+add constraint
+has variable-chooser protocol that it gives to each statenode
+also gives a value-chooser protocol to each statenode, but user can give each variable its own value-chooser as well
+also give constraint-chooser? maybe
+
+
+solve
+    create StateNode
+    iterate calling getnextassignment or something which will invoke its coroutine
+    if getnextassignment returns something, check for dominance, and place it further down the tree if not dominated
+
+
+StateNode:
+    has timeStep
+    has ordered set of constraints 
+    has ordered set of variables
+    is give variable and value choosers
+    calls propagate on each variable iterating over values
+        and co_yield each total assignment when it finds one
+        can implement as a generator coroutine as described here kind of https://kirit.com/How%20C%2B%2B%20coroutines%20work/Generating%20Iterators
+
+
+prefix k is just how many steps previously we should look to make sure we're consistent with those previous steps
+normalization kind of makes this pointless since it reduces everything to just one 'next' at a time
+
+ASK JASPER IF THE PREFIX K SHOULD BE USED FOR NORMALIZATION, OR WHAT
+
+
+
+
+
+
+
+
+
+
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -9,8 +49,8 @@
 #include "util.h"
 #include "token.h"
 #include "node.h"
-#include "variable.h"
-#include "constraint.h"
+#include "variable_old.h"
+#include "Constraint.h"
 #include "solver.h"
 #include "graph.h"
 #include "solveralgorithm.h"

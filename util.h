@@ -45,7 +45,7 @@ double cpuTime();
 
 extern int logLevel;
 
-void myLog(int level, char *format, ...);
+void myLog(int level, const char *format, ...);
 
 /*#ifdef DEBUG
 #define myLog(level, ...) _myLog((level), ##__VA_ARGS__)

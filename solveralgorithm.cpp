@@ -5,8 +5,8 @@
 #include "util.h"
 #include "token.h"
 #include "node.h"
-#include "variable.h"
-#include "constraint.h"
+#include "variable_old.h"
+#include "Constraint.h"
 #include "solver.h"
 #include "solveralgorithm.h"
 #include "y.tab.h"
@@ -621,7 +621,7 @@ bool generalisedArcConsistent(Solver *solver) {
     int numConstr = solver->constrQueue->size();
     for (int c = 0; c < numConstr; c++) {
         Constraint *constr = (*(solver->constrQueue))[c];
-        int numVar = constr->numVar;
+        // int numVar = constr->numVar;
         
         ArcQueue *arcs = constr->arcs;
         int numArc = arcs->size();

@@ -6,7 +6,7 @@
 #include "token.h"
 #include "y.tab.h"
 
-Token *tokenNew(int id, char *str, int level) {
+Token *tokenNew(int id, const char *str, int level) {
     Token *token = (Token *)myMalloc(sizeof(Token));
     token->id = id;
     token->str = strdup(str);
@@ -20,7 +20,7 @@ void tokenFree(Token *token) {
     myFree(token);
 }
 
-void tokenTableAddToken(TokenTable *table, int id, char *str, int level) {
+void tokenTableAddToken(TokenTable *table, int id, const char *str, int level) {
     Token *token = tokenNew(id, str, level);
     if (table->size == 0) {
         table->head = token;

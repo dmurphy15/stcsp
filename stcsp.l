@@ -5,8 +5,6 @@ L       [a-zA-Z]
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "util.h"
-#include "node.h"
 #include "y.tab.h"
 
 extern int line_num;
@@ -79,6 +77,7 @@ extern "C"{
 [ \t\v\f]       { }
 \n              { line_num++; }
 .               { return yytext[0]; }
+
 
 %%
 

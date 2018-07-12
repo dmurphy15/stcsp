@@ -158,7 +158,7 @@ double cpuTime() {
 int logLevel = LOG_ERROR;
 int color[] = { 0, 31, 33, 37, 35, 32, 36 };
 
-void myLog(int level, char *format, ...) {
+void myLog(int level, const char *format, ...) {
     va_list args;
     FILE *stream;
     if (level <= logLevel) {
