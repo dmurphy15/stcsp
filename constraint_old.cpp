@@ -6,7 +6,7 @@
 #include "token.h"
 #include "node.h"
 #include "Constraint.h"
-#include "solver.h"
+#include "solver-old.h"
 #include "y.tab.h"
 #include "variable_old.h"
 

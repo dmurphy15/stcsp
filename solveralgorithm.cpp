@@ -7,7 +7,7 @@
 #include "node.h"
 #include "variable_old.h"
 #include "Constraint.h"
-#include "solver.h"
+#include "solver-old.h"
 #include "solveralgorithm.h"
 #include "y.tab.h"
 #include "graph.h"

@@ -1,0 +1,13 @@
+TODO
+make the propagate functions into a class that can be passed
+make constraint chooser class
+make variable chooser class
+make value chooser class
+
+
+LAYOUT:
+solver gets the constraints
+from the constraints, it gets variables
+variables just have their domains - no evaluation or anything
+solver creates instantaneous csps, each with their own set of constraints and all variables
+each instantaneous csp makes its own map of variable to assignment

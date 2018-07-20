@@ -2,7 +2,7 @@
 #define __SOLVERALGORITHM_H
 
 #include "variable_old.h"
-#include "solver.h"
+#include "solver-old.h"
 
 ConstraintNode *constraintNormalise(Solver *solver, ConstraintNode *node, int &lb, int &ub);
 

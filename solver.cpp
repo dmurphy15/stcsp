@@ -30,6 +30,8 @@ normalization kind of makes this pointless since it reduces everything to just o
 ASK JASPER IF THE PREFIX K SHOULD BE USED FOR NORMALIZATION, OR WHAT
 
 
+TAKE OUT UNORDERED SET AND REPLACE WITH AN ORDERED SET SINCE WE'LL BE ITERATING
+
 
 
 
@@ -51,7 +53,7 @@ ASK JASPER IF THE PREFIX K SHOULD BE USED FOR NORMALIZATION, OR WHAT
 #include "node.h"
 #include "variable_old.h"
 #include "Constraint.h"
-#include "solver.h"
+#include "solver-old.h"
 #include "graph.h"
 #include "solveralgorithm.h"
 #include "y.tab.h"

@@ -39,8 +39,9 @@ bool EqualConstraint::overrideDefaultPropagation() const
 
 std::unordered_set<Constraint *> EqualConstraint::propagate(int time, Variable *v) const
 {
-    throw std::logic_error((std::string)__PRETTY_FUNCTION__ + " should have been overridden");
-    return {};
+    return mOwnerSolver->defaultPropagate(time, v);
+//    throw std::logic_error((std::string)__PRETTY_FUNCTION__ + " should have been overridden");
+//    return {};
 //        std::set<Variable *> vars = getVariables();
     /*
      * check that v is in vars

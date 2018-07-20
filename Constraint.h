@@ -4,6 +4,8 @@
 
 #include "Variable.h"
 
+class Solver;
+
 /*
  * Interface that all constraints should satisfy.
  *
@@ -38,6 +40,10 @@ public:
                            std::unordered_set<Variable *> *const variableList) const = 0;
     virtual int isSatisfied(int time) const = 0;
     virtual std::unordered_set<Variable *> getVariables() const = 0;
-    virtual bool overrideDefaultPropagation() const = 0;
+
     virtual std::unordered_set<Constraint *> propagate(int time, Variable *v) const = 0;
+
+    void addSolver(Solver *solver);
+private:
+    Solver *mOwnerSolver;
 };

@@ -3,6 +3,7 @@
 #include <unordered_set>
 #include <experimental/optional>
 
+
 class Constraint;
 
 class Variable

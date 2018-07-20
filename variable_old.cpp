@@ -4,7 +4,7 @@
 #include "util.h"
 #include "node.h"
 #include "variable_old.h"
-#include "solver.h"
+#include "solver-old.h"
 #include "y.tab.h"
 
 Variable *variableNew(Solver *solver, char *name, int lb, int ub) {
