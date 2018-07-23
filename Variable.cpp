@@ -1,37 +1,41 @@
 #include "Variable.h"
+#include "InstantaneousCSP.h"
 
-Variable::Variable(std::unordered_set<int> domain)
+Variable::Variable(std::vector<int> domain)
 {
-    for (int i=0;i<prefixK;i++)
-    {
-        mDomains.push_back(domain);
-        mAssignments.push_back(std::experimental::nullopt);
-    }
+    mInitialDomain = domain;
 }
 
-int Variable::evaluate(int time) const
+int Variable::evaluate(InstantaneousCSP &context) const
 {
-    return mAssignments[time].value();
+    return context.assignments[*this];
 }
 
-std::unordered_set<int> Variable::getDomain(int time) const
+std::vector<int> Variable::getDomain(InstantaneousCSP &context) const
 {
-    return mDomains[time];
+    return context.domains[*this];
 }
 
-std::unordered_set<Constraint *> Variable::getConstraints() const
+void Variable::setDomain(std::vector<int> domain, InstantaneousCSP &context) const
 {
-    return mConstraints;
+    context.domains.insert({*this, domain});
 }
 
-void Variable::addConstraint(Constraint *constraint)
+std::vector<std::reference_wrapper<Constraint>> Variable::getConstraints(InstantaneousCSP &context) const
 {
-    mConstraints.insert(constraint);
+    return context.variableToConstraints[*this];
 }
 
-void Variable::removeConstraint(Constraint *constraint)
+std::vector<int> Variable::getInitialDomain() const
 {
-    mConstraints.erase(constraint);
+    return mInitialDomain;
 }
 
-int Variable::prefixK = -1;
+bool operator< (const Variable &lhs, const Variable &rhs)
+{
+    return &lhs < &rhs;
+}
+bool operator== (const Variable &lhs, const Variable &rhs)
+{
+    return &lhs == &rhs;
+}

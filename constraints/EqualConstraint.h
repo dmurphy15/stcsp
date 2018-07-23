@@ -1,32 +1,22 @@
 #pragma once
 
-#include <unordered_set>
-
 #include "../Constraint.h"
-
-class Expression;
-class Variable;
-
-
-
 
 class EqualConstraint : Constraint
 {
 public:
-    EqualConstraint(Expression *a, Expression *b);
+    EqualConstraint(Expression &a, Expression &b);
     ~EqualConstraint();
 
-    void normalize(std::unordered_set<Constraint *> *const constraintList,
-                   std::unordered_set<Variable *> *const variableList) const override;
+    void normalize(std::set<std::reference_wrapper<Constraint>> &constraintList,
+                   std::set<std::reference_wrapper<Variable>> &variableList) const override;
 
-    int isSatisfied(int time) const override;
+    int isSatisfied(InstantaneousCSP &context) const override;
 
-    std::unordered_set<Variable *> getVariables() const override;
+    std::set<std::reference_wrapper<Variable>> getVariables() const override;
 
-    bool overrideDefaultPropagation() const override;
-
-    std::unordered_set<Constraint *> propagate(int time, Variable *v) const override;
+    bool propagate(Variable &v, InstantaneousCSP &context) const override;
 private:
-    Expression *mExpr1;
-    Expression *mExpr2;
+    Expression &mExpr1;
+    Expression &mExpr2;
 };

@@ -1,10 +1,11 @@
 #pragma once
-#include <vector>
-#include <unordered_set>
 
-#include "Variable.h"
+#include <set>
+#include <functional>
 
-class Solver;
+class Variable;
+class Expression;
+class InstantaneousCSP;
 
 /*
  * Interface that all constraints should satisfy.
@@ -20,30 +21,31 @@ class Solver;
 class Constraint
 {
 public:
-    /* for now I'm having all implemented constraints call this in their constructors; in the future, should
-     * just have the solver do it when you do solver.addConstraint or something*/
-    void init() {
-        for (Variable *v: getVariables())
-        {
-            v->addConstraint(this);
-        }
-    }
-    /* same here */
-    void deinit() {
-        for (Variable *v: getVariables()) {
-            v->removeConstraint(this);
-        }
-    }
+    Constraint(std::set<std::reference_wrapper<Expression>> expressions);
+
     /* the consts here mean that the pointer cannot be made to point somewhere else;
      * it essentially forces you to allocate space for the set ahead of time */
-    virtual void normalize(std::unordered_set<Constraint *> *const constraintList,
-                           std::unordered_set<Variable *> *const variableList) const = 0;
-    virtual int isSatisfied(int time) const = 0;
-    virtual std::unordered_set<Variable *> getVariables() const = 0;
+    virtual void normalize(std::set<std::reference_wrapper<Constraint>> &constraintList,
+                           std::set<std::reference_wrapper<Variable>> &variableList) const = 0;
 
-    virtual std::unordered_set<Constraint *> propagate(int time, Variable *v) const = 0;
+    // used for solving an instantaneous csp
+    virtual int isSatisfied(InstantaneousCSP &context) const = 0;
 
-    void addSolver(Solver *solver);
+    // used by instantaneous csp to set up mappings from vars to constraints and vice versa,
+    // which it can later use for GAC, etc
+    virtual std::set<std::reference_wrapper<Variable>> getVariables() const = 0;
+
+    // change the domain of the specified variable in the given context to comply with this constraint
+    // and the domains of the other variables involved
+    // could just call the context's default propagator
+    // return a boolean indicating whether the variable's domain changed
+    virtual bool propagate(Variable &v, InstantaneousCSP &context) const = 0;
+
+    // for dominance detection
+    friend bool operator< (const Constraint &lhs, const Constraint &rhs);
+    friend bool operator== (const Constraint &lhs, const Constraint &rhs);
+
 private:
-    Solver *mOwnerSolver;
+    // this is just used for dominance detection; should not be used by derived classes
+    std::set<std::reference_wrapper<Expression>> mExpressions;
 };

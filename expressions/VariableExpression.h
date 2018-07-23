@@ -1,9 +1,6 @@
 #pragma once
-#include <unordered_set>
 
 #include "../Expression.h"
-
-class Variable;
 
 /*
  * Class for a an Expression that holds a single Variable. Used to separate
@@ -13,12 +10,14 @@ class Variable;
 class VariableExpression : Expression
 {
 public:
-    VariableExpression(Variable *v);
+    VariableExpression(Variable &v);
 
-    int evaluate(int time) const override;
+    int evaluate(InstantaneousCSP &context) const override;
 
-    std::unordered_set<Variable *> getVariables() const override;
+    std::set<std::reference_wrapper<Variable>> getVariables() const override;
 
 private:
-    Variable *mVariable;
+    bool lt(const Expression &rhs) const;
+    bool eq(const Expression &rhs) const;
+    Variable &mVariable;
 };
