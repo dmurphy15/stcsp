@@ -11,3 +11,6 @@ from the constraints, it gets variables
 variables just have their domains - no evaluation or anything
 solver creates instantaneous csps, each with their own set of constraints and all variables
 each instantaneous csp makes its own map of variable to assignment
+
+
+context handles all assignments

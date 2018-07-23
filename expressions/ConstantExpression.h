@@ -1,18 +1,17 @@
 #pragma once
-#include <vector>
 
 #include "../Expression.h"
-
-class Variable;
 
 class ConstantExpression : Expression
 {
 public:
     ConstantExpression(int constant);
 
-    int evaluate(int time) const override;
+    int evaluate(InstantaneousCSP &context) const override;
 
-    std::unordered_set<Variable *> getVariables() const override;
+    std::set<std::reference_wrapper<Variable>> getVariables() const override;
 private:
+    bool lt(const Expression &rhs) const;
+    bool eq(const Expression &rhs) const;
     const int mConstant;
 };

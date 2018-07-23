@@ -1,45 +1,39 @@
 #include "EqualConstraint.h"
 
-#include <stdexcept>
-
 #include "../Expression.h"
 
+#include "../Variable.h"
+#include "../InstantaneousCSP.h"
 
-EqualConstraint::EqualConstraint(Expression *a, Expression *b) : mExpr1(a), mExpr2(b) {
-    init();
-}
+EqualConstraint::EqualConstraint(Expression &a, Expression &b) :
+        Constraint({a, b}),
+        mExpr1(a),
+        mExpr2(b) {}
 
-EqualConstraint::~EqualConstraint() {
-    deinit();
-}
+EqualConstraint::~EqualConstraint() {}
 
-void EqualConstraint::normalize(std::unordered_set<Constraint *> *const constraintList,
-               std::unordered_set<Variable *> *const variableList) const
+void EqualConstraint::normalize(std::set<std::reference_wrapper<Constraint>> &constraintList,
+                                std::set<std::reference_wrapper<Variable>> &variableList) const
 {
-    constraintList->insert(new EqualConstraint(mExpr1, mExpr2));
+    constraintList.insert(*(new EqualConstraint(mExpr1, mExpr2)));
 }
 
-int EqualConstraint::isSatisfied(int time) const
+int EqualConstraint::isSatisfied(InstantaneousCSP &context) const
 {
-    return mExpr1->evaluate(time) == mExpr2->evaluate(time);
+    return mExpr1.evaluate(context) == mExpr2.evaluate(context);
 }
 
-std::unordered_set<Variable *> EqualConstraint::getVariables() const
+std::set<std::reference_wrapper<Variable>> EqualConstraint::getVariables() const
 {
-    std::unordered_set<Variable *> vars1 = mExpr1->getVariables();
-    std::unordered_set<Variable *> vars2 = mExpr2->getVariables();
+    std::set<std::reference_wrapper<Variable>> vars1 = mExpr1.getVariables();
+    std::set<std::reference_wrapper<Variable>> vars2 = mExpr2.getVariables();
     vars1.insert(vars2.begin(), vars2.end());
     return vars1;
 }
 
-bool EqualConstraint::overrideDefaultPropagation() const
+bool EqualConstraint::propagate(Variable &v, InstantaneousCSP &context) const
 {
-    return false;
-}
-
-std::unordered_set<Constraint *> EqualConstraint::propagate(int time, Variable *v) const
-{
-    return mOwnerSolver->defaultPropagate(time, v);
+    return context.defaultPropagate(v, *this);
 //    throw std::logic_error((std::string)__PRETTY_FUNCTION__ + " should have been overridden");
 //    return {};
 //        std::set<Variable *> vars = getVariables();
