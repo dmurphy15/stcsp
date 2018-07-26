@@ -2,28 +2,28 @@
 
 
 ConstantExpression::ConstantExpression(int constant) :
-        Expression(std::set<std::reference_wrapper<Expression>>{}),
+        Expression({}),
         mConstant(constant) {}
 
-int ConstantExpression::evaluate(InstantaneousCSP &context) const
+int ConstantExpression::evaluate(InstantaneousCSP *context) const
 {
     return mConstant;
 }
 
-std::set<std::reference_wrapper<Variable>> ConstantExpression::getVariables() const
+std::set<Variable *> ConstantExpression::getVariables() const
 {
     return {};
 }
 
-bool ConstantExpression::lt(const Expression &rhs) const
-{
-    return (typeid(*this).before(typeid(rhs))) ||
-           ((typeid(*this) == typeid(rhs)) &&
-            (mConstant < static_cast<const ConstantExpression&>(rhs).mConstant));
-}
-
-bool ConstantExpression::eq(const Expression &rhs) const
-{
-    return (typeid(*this) == typeid(rhs)) &&
-           (mConstant == static_cast<const ConstantExpression&>(rhs).mConstant);
-}
+//bool ConstantExpression::lt(const Expression &rhs) const
+//{
+//    return (typeid(*this).before(typeid(rhs))) ||
+//           ((typeid(*this) == typeid(rhs)) &&
+//            (mConstant < static_cast<const ConstantExpression&>(rhs).mConstant));
+//}
+//
+//bool ConstantExpression::eq(const Expression &rhs) const
+//{
+//    return (typeid(*this) == typeid(rhs)) &&
+//           (mConstant == static_cast<const ConstantExpression&>(rhs).mConstant);
+//}

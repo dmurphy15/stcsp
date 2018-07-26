@@ -2,21 +2,21 @@
 
 #include "../Constraint.h"
 
-class EqualConstraint : Constraint
+class EqualConstraint : public Constraint
 {
 public:
-    EqualConstraint(Expression &a, Expression &b);
+    EqualConstraint(Expression *a, Expression *b);
     ~EqualConstraint();
 
-    void normalize(std::set<std::reference_wrapper<Constraint>> &constraintList,
-                   std::set<std::reference_wrapper<Variable>> &variableList) const override;
+    void normalize(std::set<Constraint *, ConstraintLtComparator> *constraintList,
+                   std::set<Variable *> *variableList) const override;
 
-    int isSatisfied(InstantaneousCSP &context) const override;
+    int isSatisfied(InstantaneousCSP *context) const override;
 
-    std::set<std::reference_wrapper<Variable>> getVariables() const override;
+    std::set<Variable *> getVariables() const override;
 
-    bool propagate(Variable &v, InstantaneousCSP &context) const override;
+    bool propagate(Variable *v, InstantaneousCSP *context) override;
 private:
-    Expression &mExpr1;
-    Expression &mExpr2;
+    Expression *mExpr1;
+    Expression *mExpr2;
 };

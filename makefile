@@ -46,7 +46,7 @@ YFLAGS = -g2 -pg $(DFLAGS)
 CFLAGS = -g2 -pg -std=gnu99 -Wall -pedantic $(DFLAGS)
 else
 YFLAGS = -g2 $(ARCH) -O2 -funroll-loops -fomit-frame-pointer $(DFLAGS)
-CFLAGS = -std=c++0x -g2 $(ARCH) -O2 -funroll-loops -fomit-frame-pointer -Wall -pedantic -Wno-write-strings $(DFLAGS)
+CFLAGS = -std=c++11 -g2 $(ARCH) -O2 -funroll-loops -fomit-frame-pointer -Wall -pedantic -Wno-write-strings $(DFLAGS)
 # CFLAGS = -g2 $(ARCH) -O2 -funroll-loops -fomit-frame-pointer -Wall -pedantic -Wno-write-strings -stdlib=libstdc++ $(DFLAGS)
 endif
 
@@ -72,15 +72,17 @@ y.tab.h: stcsp.y
 y.tab.o: y.tab.cpp y.tab.h
 	$(CPP) $(YFLAGS) y.tab.cpp -c
 
-generator.o: generator.h
-	$(CPP) $(CFLAGS) generator.h -c
+#GeneratorTemplate.o: GeneratorTemplate.h
+#	$(CPP) $(CFLAGS) GeneratorTemplate.h -c
 
 Variable.o: Variable.cpp Variable.h
 	$(CPP) $(CFLAGS) Variable.cpp -c
-Expression.o: Expression.cpp Expression.h
-	$(CPP) $(CFLAGS) Expression.cpp -c
-Constraint.o: Constraint.cpp Constraint.h
-	$(CPP) $(CFLAGS) Constraint.cpp -c
+#Expression.o: Expression.cpp Expression.h
+#	$(CPP) $(CFLAGS) Expression.cpp -c
+#Constraint.o: Constraint.cpp Constraint.h
+#	$(CPP) $(CFLAGS) Constraint.cpp -c
+Comparators.o: Comparators.cpp Comparators.h
+	$(CPP) $(CFLAGS) Comparators.cpp -c
 
 InstantaneousCSP.o: InstantaneousCSP.cpp InstantaneousCSP.h
 	$(CPP) $(CFLAGS) InstantaneousCSP.cpp -c
@@ -94,6 +96,9 @@ AddExpression.o: expressions/AddExpression.cpp expressions/AddExpression.h Expre
 
 EqualConstraint.o: constraints/EqualConstraint.cpp constraints/EqualConstraint.h Constraint.h
 	$(CPP) $(CFLAGS) constraints/EqualConstraint.cpp -c
+
+mtest: Variable.o Comparators.o VariableExpression.o ConstantExpression.o AddExpression.o EqualConstraint.o InstantaneousCSP.o mtest.o
+	$(CPP) $(CFLAGS) Variable.o Comparators.o VariableExpression.o ConstantExpression.o AddExpression.o EqualConstraint.o InstantaneousCSP.o mtest.o -o mtest -lboost_coroutine -lboost_context
 
 stcsp: lex.yy.o y.tab.o Variable.o Expression.o Constraint.o VariableExpression.o ConstantExpression.o AddExpression.o EqualConstraint.o
 	$(CPP) $(CFLAGS) $(LDFLAGS) lex.yy.o y.tab.o Variable.o Expression.o Constraint.o VariableExpression.o ConstantExpression.o AddExpression.o EqualConstraint.o -o stcsp

@@ -7,17 +7,17 @@
  * Expression attributes/methods from Variable attributes/methods. Also makes
  * parsing easier, so we can make multiple references to the same underlying variable.
  */
-class VariableExpression : Expression
+class VariableExpression : public Expression
 {
 public:
-    VariableExpression(Variable &v);
+    VariableExpression(Variable *v);
 
-    int evaluate(InstantaneousCSP &context) const override;
+    int evaluate(InstantaneousCSP *context) const override;
 
-    std::set<std::reference_wrapper<Variable>> getVariables() const override;
+    std::set<Variable *> getVariables() const override;
 
+//    bool lt(Expression *rhs) const override;
 private:
-    bool lt(const Expression &rhs) const;
-    bool eq(const Expression &rhs) const;
-    Variable &mVariable;
+//    bool eq(const Expression &rhs) const;
+    Variable *mVariable;
 };
