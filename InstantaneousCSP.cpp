@@ -25,7 +25,6 @@ InstantaneousCSP::InstantaneousCSP(std::set<Constraint *, ConstraintLtComparator
 
 void InstantaneousCSP::generateNextStates(coro_assignment_t::push_type& yield)
 {
-    std::cout<<"coop";
     GAC();
     bool yieldAssignment = true;
     for (Variable *v : mVariables)
@@ -61,7 +60,6 @@ void InstantaneousCSP::generateNextStates(coro_assignment_t::push_type& yield)
 
 void InstantaneousCSP::GAC()
 {
-    std::cout<<"hoop";
     std::set<Constraint *, ConstraintLtComparator> constraintQueue = mConstraints;
     while (constraintQueue.size() > 0)
     {
@@ -70,14 +68,9 @@ void InstantaneousCSP::GAC()
         constraintQueue.erase(it);
         for (Variable *v : constraintToVariables[c])
         {
-            std::vector<int> f(2);
-            f.push_back((long)v);
-            std::cout<<""<<c<<" size:"<<constraintQueue.size()<<"\n";
-            std::cout<<""<<*c->getVariables().begin()<<"\n";
             // propagate has adjusted the domain of the chosen variable
             if (c->propagate(v, this))
             {
-                std::cout<<"zoop";
                 constraintQueue.insert(variableToConstraints[v].begin(), variableToConstraints[v].end());
             }
         }
@@ -86,7 +79,6 @@ void InstantaneousCSP::GAC()
 
 bool InstantaneousCSP::defaultPropagate(Variable *v, Constraint *c)
 {
-    std::cout<<"coop";
     int ret = false;
     // get all the related variables in this arc
     std::vector<Variable *> others = constraintToVariables[c];

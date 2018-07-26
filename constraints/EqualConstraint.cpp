@@ -35,7 +35,6 @@ std::set<Variable *> EqualConstraint::getVariables() const
 
 bool EqualConstraint::propagate(Variable *v, InstantaneousCSP *context)
 {
-    std::cout<<"goop";
     return context->defaultPropagate(v, this);
 //    throw std::logic_error((std::string)__PRETTY_FUNCTION__ + " should have been overridden");
 //    return {};
