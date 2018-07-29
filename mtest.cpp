@@ -19,7 +19,7 @@ void printStates(InstantaneousCSP i) {
     for (auto &state : nextStates) {
         cout<<"new state:\n";
         for (auto &pair : state) {
-            cout<<"variable at "<<pair.first<<" was assigned value "<<pair.second<<"\n";
+            cout<<"variable at "<<&(pair.first.get())<<" was assigned value "<<pair.second<<"\n";
         }
     }
     cout<<"\n";
@@ -27,12 +27,12 @@ void printStates(InstantaneousCSP i) {
 
 
 int main(int argc, char **argv) {
-    Variable *v_a = new Variable({1, 2});
-    Variable *v_b = new Variable({1, 2, 3});
+    Variable v_a({1, 2});
+    Variable v_b({1, 2, 3});
 
-    Expression *e_a = new VariableExpression(v_a);
-    Expression *e_b = new VariableExpression(v_b);
-    Expression *constant = new ConstantExpression(2);
+    Expression &e_a = *new VariableExpression(v_a);
+    Expression &e_b = *new VariableExpression(v_b);
+    Expression &constant = *new ConstantExpression(2);
 
 //    VariableExpression e_a(v_a);
 //    VariableExpression e_b(v_b);
@@ -40,21 +40,33 @@ int main(int argc, char **argv) {
 //
 //    cout<<"moop";
 //
-    Expression *add_a_b = new AddExpression(e_a, e_b);
-    Expression *add_a_constant = new AddExpression(e_a, constant);
-    Expression *add_add = new AddExpression(add_a_b, add_a_constant);
+    Expression &add_a_b = *new AddExpression(e_a, e_b);
+    Expression &add_a_constant = *new AddExpression(e_a, constant);
+    Expression &add_add = *new AddExpression(add_a_b, add_a_constant);
 
-    // a + b == 2a + b + 2
-    Constraint *c_1 = new EqualConstraint(add_a_b, add_add);
+    std::cout<<""<<&v_a<<"\n"<<&v_b<<"\n";
+//
+//    // a + b == 2a + b + 2
+    //Constraint &c_1 = *new EqualConstraint(add_a_b, add_add);
+//
+    //InstantaneousCSP i({c_1});
+    //printStates(i);
 
-    InstantaneousCSP i({c_1});
-    printStates(i);
-
-    Constraint *trivial = new EqualConstraint(e_b, e_b);
+    Constraint &trivial = *new EqualConstraint(e_b, e_b);
     InstantaneousCSP blah({trivial});
     printStates(blah);
 
-    Constraint *trivial2 = new EqualConstraint(e_a, e_b);
+    Constraint &trivial2 = *new EqualConstraint(e_a, e_b);
     InstantaneousCSP blah2({trivial2});
     printStates(blah2);
+
+    Constraint &trivial3 = *new EqualConstraint(add_a_constant, e_b);
+    InstantaneousCSP blah3({trivial3});
+    printStates(blah3);
+
+    printStates(InstantaneousCSP({*new EqualConstraint(e_b, add_a_constant)}));
+
+    printStates(InstantaneousCSP({*new EqualConstraint(add_add, *new AddExpression(add_a_b, *new ConstantExpression(3)))}));
+
 }
+

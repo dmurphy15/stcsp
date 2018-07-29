@@ -9,15 +9,16 @@
  */
 class VariableExpression : public Expression
 {
+    using Variable_r = std::reference_wrapper<Variable>;
 public:
-    VariableExpression(Variable *v);
+    VariableExpression(Variable &v);
 
-    int evaluate(InstantaneousCSP *context) const override;
+    int evaluate(InstantaneousCSP &context) const override;
 
-    std::set<Variable *> getVariables() const override;
+    std::set<Variable_r> getVariables() const override;
 
-//    bool lt(Expression *rhs) const override;
 private:
-//    bool eq(const Expression &rhs) const;
-    Variable *mVariable;
+    bool lt(const Expression &rhs) const override;
+    bool eq(const Expression &rhs) const override;
+    Variable &mVariable;
 };

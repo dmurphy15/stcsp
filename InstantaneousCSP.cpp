@@ -5,29 +5,29 @@
 
 #include <iostream>
 
-InstantaneousCSP::InstantaneousCSP(std::set<Constraint *, ConstraintLtComparator> constraints)
+InstantaneousCSP::InstantaneousCSP(std::set<Constraint_r> constraints)
 {
     mConstraints = constraints;
-    for (Constraint *c : constraints)
+    for (Constraint &c : constraints)
     {
-        std::set<Variable *> vars = c->getVariables();
+        std::set<Variable_r> vars = c.getVariables();
         mVariables.insert(vars.begin(), vars.end());
-        constraintToVariables.insert({c, std::vector<Variable *>()});
-        for (Variable *v : vars)
+        constraintToVariables.insert({c, std::vector<Variable_r>()});
+        for (Variable &v : vars)
         {
             constraintToVariables[c].push_back(v);
             if (variableToConstraints.count(v) == 0) variableToConstraints.insert({v, {}});
             variableToConstraints[v].push_back(c);
-            domains.insert({v, v->getInitialDomain()});
+            domains.insert({v, v.getInitialDomain()});
         }
     }
 }
 
 void InstantaneousCSP::generateNextStates(coro_assignment_t::push_type& yield)
 {
-    GAC();
+    std::map<Variable_r, std::vector<int>> removals = GAC();
     bool yieldAssignment = true;
-    for (Variable *v : mVariables)
+    for (Variable &v : mVariables)
     {
         if (domains[v].size() == 0)
         {
@@ -44,45 +44,54 @@ void InstantaneousCSP::generateNextStates(coro_assignment_t::push_type& yield)
             generateNextStates(yield);
             domains[v] = hi_domain;
             generateNextStates(yield);
+            break;
         }
     }
     if (yieldAssignment)
     {
-        std::map<Variable *, int> map;
-        for (Variable *v : mVariables)
+        std::map<Variable_r, int> map;
+        for (Variable &v : mVariables)
         {
             map.insert({v, domains[v][0]});
         }
         yield(map);
     }
+    // reset the changes we made to the domains
+    for (auto const &p : removals) {
+        domains[p.first].insert(domains[p.first].end(), p.second.begin(), p.second.end());
+    }
 }
 
 
-void InstantaneousCSP::GAC()
+std::map<Variable_r, std::vector<int>> InstantaneousCSP::GAC()
 {
-    std::set<Constraint *, ConstraintLtComparator> constraintQueue = mConstraints;
+    std::map<Variable_r, std::vector<int>> total_alterations;
+    std::set<Constraint_r> constraintQueue = mConstraints;
     while (constraintQueue.size() > 0)
     {
         auto it = constraintQueue.begin();
-        Constraint *c = *it;
+        Constraint &c = *it;
         constraintQueue.erase(it);
-        for (Variable *v : constraintToVariables[c])
+        for (Variable &v : constraintToVariables[c])
         {
+            std::vector<int> alterations = c.propagate(v, *this);
             // propagate has adjusted the domain of the chosen variable
-            if (c->propagate(v, this))
+            if (alterations.size() > 0)
             {
+                total_alterations[v].insert(total_alterations[v].end(), alterations.begin(), alterations.end());
                 constraintQueue.insert(variableToConstraints[v].begin(), variableToConstraints[v].end());
             }
         }
     }
+    return total_alterations;
 }
 
-bool InstantaneousCSP::defaultPropagate(Variable *v, Constraint *c)
+std::vector<int> InstantaneousCSP::defaultPropagate(Variable &v, Constraint &c)
 {
-    int ret = false;
+    std::vector<int> ret;
     // get all the related variables in this arc
-    std::vector<Variable *> others = constraintToVariables[c];
-    std::vector<Variable *>::iterator position = std::find(others.begin(), others.end(), v);
+    std::vector<Variable_r> others = constraintToVariables[c];
+    std::vector<Variable_r>::iterator position = std::find(others.begin(), others.end(), v);
     if (position != others.end()) others.erase(position);
 
     // iterate over the domain of our variable
@@ -91,10 +100,10 @@ bool InstantaneousCSP::defaultPropagate(Variable *v, Constraint *c)
         bool prune = true;
         // make sure that for each element of our domain, there exists an assignment of the
         // other variables that is consistent with this constraint
-        coro_int_t::pull_type assignments(boost::bind(&InstantaneousCSP::generateAssignments, this, boost::placeholders::_1, others));
-        for (int &_ : assignments)
+        coro_int_t::pull_type var_assignments(boost::bind(&InstantaneousCSP::generateAssignments, this, boost::placeholders::_1, others));
+        for (int &_ : var_assignments)
         {
-            if (c->isSatisfied(this))
+            if (c.isSatisfied(*this))
             {
                 prune = false;
                 break;
@@ -103,9 +112,8 @@ bool InstantaneousCSP::defaultPropagate(Variable *v, Constraint *c)
         // if no consistent assignment was found, remove this value from our domain
         if (prune)
         {
+            ret.push_back(*iter);
             iter = domains[v].erase(iter);
-            // indicate that we have changed some of the domains
-            ret = true;
         } else
         {
             iter++;
@@ -117,14 +125,14 @@ bool InstantaneousCSP::defaultPropagate(Variable *v, Constraint *c)
 }
 
 // iterates through all assignments of the given variables
-void InstantaneousCSP::generateAssignments(coro_int_t::push_type& yield, std::vector<Variable *> variables)
+void InstantaneousCSP::generateAssignments(coro_int_t::push_type& yield, std::vector<Variable_r> variables)
 {
     if (variables.size() == 0)
     {
         yield(0);
         return;
     }
-    std::vector<Variable *> rest(variables.begin() + 1, variables.end());
+    std::vector<Variable_r> rest(variables.begin() + 1, variables.end());
     for (int val : domains[variables[0]])
     {
         assignments[variables[0]] = val;
@@ -140,7 +148,7 @@ std::pair<std::vector<int>, std::vector<int>> InstantaneousCSP::splitDomain(std:
     return std::make_pair(split_lo, split_hi);
 }
 
-void InstantaneousCSP::addChildNode(std::map<Variable *, int> assignment, InstantaneousCSP child)
+void InstantaneousCSP::addChildNode(std::map<Variable_r, int> assignment, InstantaneousCSP &child)
 {
     mChildNodes.insert({assignment, child});
 }

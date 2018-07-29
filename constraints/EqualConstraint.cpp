@@ -7,35 +7,35 @@
 
 #include <iostream>
 
-EqualConstraint::EqualConstraint(Expression *a, Expression *b) :
+EqualConstraint::EqualConstraint(Expression &a, Expression &b) :
         Constraint({a, b}),
         mExpr1(a),
         mExpr2(b) {}
 
 EqualConstraint::~EqualConstraint() {}
 
-void EqualConstraint::normalize(std::set<Constraint *, ConstraintLtComparator> *constraintList,
-                                std::set<Variable *> *variableList) const
+void EqualConstraint::normalize(std::set<Constraint_r> &constraintList,
+                                std::set<Variable_r> &variableList) const
 {
-    constraintList->insert(new EqualConstraint(mExpr1, mExpr2));
+    constraintList.insert(*(new EqualConstraint(mExpr1, mExpr2)));
 }
 
-int EqualConstraint::isSatisfied(InstantaneousCSP *context) const
+int EqualConstraint::isSatisfied(InstantaneousCSP &context) const
 {
-    return mExpr1->evaluate(context) == mExpr2->evaluate(context);
+    return mExpr1.evaluate(context) == mExpr2.evaluate(context);
 }
 
-std::set<Variable *> EqualConstraint::getVariables() const
+std::set<Variable_r> EqualConstraint::getVariables() const
 {
-    std::set<Variable*> vars1 = mExpr1->getVariables();
-    std::set<Variable*> vars2 = mExpr2->getVariables();
+    std::set<Variable_r> vars1 = mExpr1.getVariables();
+    std::set<Variable_r> vars2 = mExpr2.getVariables();
     vars1.insert(vars2.begin(), vars2.end());
     return vars1;
 }
 
-bool EqualConstraint::propagate(Variable *v, InstantaneousCSP *context)
+std::vector<int> EqualConstraint::propagate(Variable &v, InstantaneousCSP &context)
 {
-    return context->defaultPropagate(v, this);
+    return context.defaultPropagate(v, *this);
 //    throw std::logic_error((std::string)__PRETTY_FUNCTION__ + " should have been overridden");
 //    return {};
 //        std::set<Variable *> vars = getVariables();
