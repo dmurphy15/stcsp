@@ -15,7 +15,7 @@ class Variable;
 class VariableExpression;
 
 
-class PrimitiveNextConstraint : public Constraint
+class PrimitiveUntilConstraint : public Constraint
 {
     using Variable_r = std::reference_wrapper<Variable>;
 public:

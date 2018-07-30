@@ -1,11 +1,12 @@
 #include "PrimitiveNextConstraint.h"
 
 #include "../expressions/VariableExpression.h"
+#include "../Variable.h"
 
 PrimitiveNextConstraint::PrimitiveNextConstraint(VariableExpression &variable, VariableExpression &nextVariable) :
-        Constraint({a, b}),
-        mVariable(a),
-        mNextVariable(b) {}
+        Constraint({variable, nextVariable}),
+        mVariable(*variable.getVariables().begin()),
+        mNextVariable(*nextVariable.getVariables().begin()) {}
 
 PrimitiveNextConstraint::~PrimitiveNextConstraint() {}
 

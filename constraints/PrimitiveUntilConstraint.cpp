@@ -1,11 +1,12 @@
 #include "PrimitiveUntilConstraint.h"
 
 #include "../expressions/VariableExpression.h"
+#include "../Variable.h"
 
 PrimitiveUntilConstraint::PrimitiveUntilConstraint(VariableExpression &variable, VariableExpression &untilVariable) :
-        Constraint({a, b}),
-        mVariable(a),
-        mUntilVariable(b) {}
+        Constraint({variable, untilVariable}),
+        mVariable(*variable.getVariables().begin()),
+        mUntilVariable(*untilVariable.getVariables().begin()) {}
 
 PrimitiveUntilConstraint::~PrimitiveUntilConstraint() {}
 
@@ -18,7 +19,7 @@ void PrimitiveUntilConstraint::normalize(std::set<Constraint_r> &constraintList,
 
 int PrimitiveUntilConstraint::isSatisfied(InstantSolver &context) const
 {
-    return (mUntilVariable != 0) || (mVariable == 0);
+    return (mUntilVariable.evaluate(context) != 0) || (mVariable.evaluate(context) == 0);
 }
 
 std::set<Variable_r> PrimitiveUntilConstraint::getVariables() const

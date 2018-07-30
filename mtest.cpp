@@ -13,6 +13,8 @@
 #include "InstantSolver.h"
 #include "instantSolvers/GACInstantSolver.h"
 
+#include "Solver.h"
+
 using namespace std;
 
 void printStates(InstantSolver &i) {
@@ -23,6 +25,12 @@ void printStates(InstantSolver &i) {
         }
     }
     cout<<"\n";
+}
+
+void printSolution(std::set<Constraint_r> constraints) {
+    Solver s(constraints, GAC_INSTANT_SOLVER);
+    s.solve();
+    s.printTree();
 }
 
 
@@ -68,5 +76,11 @@ int main(int argc, char **argv) {
 
     printStates(*new GACInstantSolver({*new EqualConstraint(add_add, *new AddExpression(add_a_b, *new ConstantExpression(3)))}));
 
+    std::cout<<"\n\n\n";
+    printSolution({trivial});
+    printSolution({trivial2});
+    printSolution({trivial3});
+    printSolution({*new EqualConstraint(e_b, add_a_constant)});
+    printSolution({*new EqualConstraint(add_add, *new AddExpression(add_a_b, *new ConstantExpression(3)))});
 }
 

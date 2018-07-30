@@ -1,8 +1,10 @@
 #include "EqualConstraint.h"
 
+#include "../Variable.h"
 #include "../Expression.h"
+#include "../Constraint.h"
 
-#include "InstantSolver.h"
+#include "../InstantSolver.h"
 
 EqualConstraint::EqualConstraint(Expression &a, Expression &b) :
         Constraint({a, b}),

@@ -1,8 +1,12 @@
 #pragma once
 
-#include <string>
 #include <vector>
+#include <set>
+#include <map>
 #include <functional>
+#include <memory>
+
+#include "InstantSolverFactory.h"
 
 
 // TODO GIVE THE SOLVER A PREFIX-K TO WORK WITH, WHICH WILL ALSO AFFECT HOW THE CONSTRAINTS NORMALIZE THEMSELVES, I BELIEVE (AT LEAST WRT NEXT EXPRESSIONS)
@@ -16,23 +20,29 @@ class Constraint;
 class Variable;
 class InstantSolver;
 
+
 class Solver
 {
     using Variable_r = std::reference_wrapper<Variable>;
     using Constraint_r = std::reference_wrapper<Constraint>;
 public:
-    Solver(std::set<Constraint_r> constraints, std::string instantSolverType);
-    void solve() const;
+    Solver(std::set<Constraint_r> constraints, InstantSolverType instantSolverType);
+    void solve();
 
-    std::string mSolverType;
-    InstantSolver &mStateTree;
+    InstantSolverType mSolverType;
+    std::shared_ptr<InstantSolver> mStateTree;
+
+    void printTree();
 private:
     // returns false if currentState is a failure node
     bool solveRe(InstantSolver &currentState);
     // creates the appropriate instantaneous assignments and constraints for the next state
-    std::pair<std::set<Constraint_r>, std::map<Variable_r, int>> carryConstraints(std::map<Variable_r, int> assignment);
+    std::pair<std::set<Constraint_r>, std::map<Variable_r, int>> carryConstraints(std::set<Constraint_r> constraints,
+                                                                                  std::map<Variable_r, int> assignment);
     // returns dominated if no nodes in dominator tree were dominating
     InstantSolver& detectDominance(InstantSolver &dominator, InstantSolver &dominated);
+
+    void printTreeRe(InstantSolver &currentState, std::set<InstantSolver *> visited);
 
 //    std::set<Constraint_r> mConstraints;
     std::set<Variable_r> mVariables;

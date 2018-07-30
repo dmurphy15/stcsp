@@ -21,7 +21,6 @@ class InstantSolver
     using Variable_r = std::reference_wrapper<Variable>;
     using Constraint_r = std::reference_wrapper<Constraint>;
 public:
-    InstantSolver() = delete;
     InstantSolver(std::set<Constraint_r> constraints, std::map<Variable_r, int> inputAssignments) {
         mConstraints = constraints;
         mInputAssignments = inputAssignments;
@@ -47,14 +46,18 @@ public:
     //then look for previous equivalent statenodes. If it finds a previous one, it will add that as the
     //child and get the next state node etc, if it does not, then it adds the new one as the child and
     //recurs on it, before getting the next state node
-    void addChildNode(std::map<Variable_r, int> assignment, InstantSolver &child) {
-        mChildNodes.insert({assignment, child});
+    void addChildNode(InstantSolver &child, std::map<Variable_r, int> assignment) {
+        mChildNodes.push_back({child, assignment});
     }
-    std::map<std::map<Variable_r, int>, InstantSolver_r> getChildNodes() {
+    std::vector<std::pair<InstantSolver_r, std::map<Variable_r, int>>> getChildNodes() {
         return mChildNodes;
     };
-protected:
+
     virtual std::vector<int> defaultPropagate(Variable &v, Constraint &c) = 0;
+
+    friend bool operator==(InstantSolver &lhs, InstantSolver &rhs);
+    friend bool operator<(InstantSolver &lhs, InstantSolver &rhs);
+protected:
     // cast this to a coroutine, and then you can iterate through the next states
     virtual void generateNextStates(coro_assignment_t::push_type &yield) = 0;
 
@@ -62,5 +65,5 @@ protected:
     std::map<Variable_r, std::vector<int>> mDomains;
     std::set<Constraint_r> mConstraints;
     std::map<Variable_r, int> mInputAssignments;
-    std::vector<InstantSolver_r> mChildNodes;
+    std::vector<std::pair<InstantSolver_r, std::map<Variable_r, int>>> mChildNodes;
 };
