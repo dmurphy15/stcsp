@@ -2,7 +2,7 @@
 #include <set>
 #include <functional>
 
-class InstantaneousCSP;
+class InstantSolver;
 class Variable;
 class Expression;
 using Expression_r = std::reference_wrapper<Expression>;
@@ -15,9 +15,10 @@ class Expression
     using Variable_r = std::reference_wrapper<Variable>;
 
 public:
+    Expression() = delete;
     Expression(std::set<Expression_r> expressions);
 
-    virtual int evaluate(InstantaneousCSP &context) const = 0;
+    virtual int evaluate(InstantSolver &context) const = 0;
     virtual std::set<Variable_r> getVariables() const = 0;
 
     // TODO give it an optional "binarize" function

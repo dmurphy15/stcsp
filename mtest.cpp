@@ -10,13 +10,13 @@
 #include "Constraint.h"
 #include "constraints/EqualConstraint.h"
 
-#include "InstantaneousCSP.h"
+#include "InstantSolver.h"
+#include "instantSolvers/GACInstantSolver.h"
 
 using namespace std;
 
-void printStates(InstantaneousCSP i) {
-    coro_assignment_t::pull_type nextStates(boost::bind(&InstantaneousCSP::generateNextStates, &i, boost::placeholders::_1));
-    for (auto &state : nextStates) {
+void printStates(InstantSolver &i) {
+    for (auto &state : i.generateNextStatesIterator()) {
         cout<<"new state:\n";
         for (auto &pair : state) {
             cout<<"variable at "<<&(pair.first.get())<<" was assigned value "<<pair.second<<"\n";
@@ -53,20 +53,20 @@ int main(int argc, char **argv) {
     //printStates(i);
 
     Constraint &trivial = *new EqualConstraint(e_b, e_b);
-    InstantaneousCSP blah({trivial});
+    GACInstantSolver blah({trivial});
     printStates(blah);
 
     Constraint &trivial2 = *new EqualConstraint(e_a, e_b);
-    InstantaneousCSP blah2({trivial2});
+    GACInstantSolver blah2({trivial2});
     printStates(blah2);
 
     Constraint &trivial3 = *new EqualConstraint(add_a_constant, e_b);
-    InstantaneousCSP blah3({trivial3});
+    GACInstantSolver blah3({trivial3});
     printStates(blah3);
 
-    printStates(InstantaneousCSP({*new EqualConstraint(e_b, add_a_constant)}));
+    printStates(*new GACInstantSolver({*new EqualConstraint(e_b, add_a_constant)}));
 
-    printStates(InstantaneousCSP({*new EqualConstraint(add_add, *new AddExpression(add_a_b, *new ConstantExpression(3)))}));
+    printStates(*new GACInstantSolver({*new EqualConstraint(add_add, *new AddExpression(add_a_b, *new ConstantExpression(3)))}));
 
 }
 

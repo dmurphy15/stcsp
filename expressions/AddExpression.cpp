@@ -7,7 +7,7 @@ AddExpression::AddExpression(Expression &a, Expression &b) :
         mExpr1(a),
         mExpr2(b) {}
 
-int AddExpression::evaluate(InstantaneousCSP &context) const
+int AddExpression::evaluate(InstantSolver &context) const
 {
     return mExpr1.evaluate(context) + mExpr2.evaluate(context);
 }

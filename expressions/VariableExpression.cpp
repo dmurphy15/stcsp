@@ -3,10 +3,10 @@
 #include "../Variable.h"
 
 VariableExpression::VariableExpression(Variable &v) :
-        Expression({}),
+        Expression(std::set<Expression_r>()),
         mVariable(v) {}
 
-int VariableExpression::evaluate(InstantaneousCSP &context) const
+int VariableExpression::evaluate(InstantSolver &context) const
 {
     return mVariable.evaluate(context);
 }

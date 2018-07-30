@@ -2,10 +2,10 @@
 
 
 ConstantExpression::ConstantExpression(int constant) :
-        Expression({}),
+        Expression(std::set<Expression_r>()),
         mConstant(constant) {}
 
-int ConstantExpression::evaluate(InstantaneousCSP &context) const
+int ConstantExpression::evaluate(InstantSolver &context) const
 {
     return mConstant;
 }

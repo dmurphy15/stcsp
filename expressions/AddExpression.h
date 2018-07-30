@@ -8,7 +8,7 @@ class AddExpression : public Expression
 public:
     AddExpression(Expression &a, Expression &b);
 
-    int evaluate(InstantaneousCSP &context) const override;
+    int evaluate(InstantSolver &context) const override;
 
     std::set<Variable_r> getVariables() const override;
 

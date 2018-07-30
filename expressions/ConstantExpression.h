@@ -8,7 +8,7 @@ class ConstantExpression : public Expression
 public:
     ConstantExpression(int constant);
 
-    int evaluate(InstantaneousCSP &context) const override;
+    int evaluate(InstantSolver &context) const override;
 
     std::set<Variable_r> getVariables() const override;
 private:

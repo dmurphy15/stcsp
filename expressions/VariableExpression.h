@@ -13,7 +13,7 @@ class VariableExpression : public Expression
 public:
     VariableExpression(Variable &v);
 
-    int evaluate(InstantaneousCSP &context) const override;
+    int evaluate(InstantSolver &context) const override;
 
     std::set<Variable_r> getVariables() const override;
 

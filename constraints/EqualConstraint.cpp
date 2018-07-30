@@ -2,10 +2,7 @@
 
 #include "../Expression.h"
 
-#include "../Variable.h"
-#include "../InstantaneousCSP.h"
-
-#include <iostream>
+#include "InstantSolver.h"
 
 EqualConstraint::EqualConstraint(Expression &a, Expression &b) :
         Constraint({a, b}),
@@ -20,7 +17,7 @@ void EqualConstraint::normalize(std::set<Constraint_r> &constraintList,
     constraintList.insert(*(new EqualConstraint(mExpr1, mExpr2)));
 }
 
-int EqualConstraint::isSatisfied(InstantaneousCSP &context) const
+int EqualConstraint::isSatisfied(InstantSolver &context) const
 {
     return mExpr1.evaluate(context) == mExpr2.evaluate(context);
 }
@@ -33,7 +30,7 @@ std::set<Variable_r> EqualConstraint::getVariables() const
     return vars1;
 }
 
-std::vector<int> EqualConstraint::propagate(Variable &v, InstantaneousCSP &context)
+std::vector<int> EqualConstraint::propagate(Variable &v, InstantSolver &context)
 {
     return context.defaultPropagate(v, *this);
 //    throw std::logic_error((std::string)__PRETTY_FUNCTION__ + " should have been overridden");

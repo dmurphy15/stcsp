@@ -82,9 +82,6 @@ Expression.o: Expression.cpp Expression.h
 Constraint.o: Constraint.cpp Constraint.h
 	$(CPP) $(CFLAGS) Constraint.cpp -c
 
-InstantaneousCSP.o: InstantaneousCSP.cpp InstantaneousCSP.h
-	$(CPP) $(CFLAGS) InstantaneousCSP.cpp -c
-
 VariableExpression.o: expressions/VariableExpression.cpp expressions/VariableExpression.h Expression.h
 	$(CPP) $(CFLAGS) expressions/VariableExpression.cpp -c
 ConstantExpression.o: expressions/ConstantExpression.cpp expressions/ConstantExpression.h Expression.h
@@ -94,9 +91,19 @@ AddExpression.o: expressions/AddExpression.cpp expressions/AddExpression.h Expre
 
 EqualConstraint.o: constraints/EqualConstraint.cpp constraints/EqualConstraint.h Constraint.h
 	$(CPP) $(CFLAGS) constraints/EqualConstraint.cpp -c
+PrimitiveNextConstraint.o: constraints/PrimitiveNextConstraint.cpp constraints/PrimitiveNextConstraint.h Constraint.h
+	$(CPP) $(CFLAGS) constraints/PrimitiveNextConstraint.cpp -c
+PrimitiveUntilConstraint.o: constraints/PrimitiveUntilConstraint.cpp constraints/PrimitiveUntilConstraint.h Constraint.h
+	$(CPP) $(CFLAGS) constraints/PrimitiveUntilConstraint.cpp -c
 
-mtest: Variable.o Expression.o Constraint.o VariableExpression.o ConstantExpression.o AddExpression.o EqualConstraint.o InstantaneousCSP.o mtest.o
-	$(CPP) $(CFLAGS) Variable.o Expression.o Constraint.o VariableExpression.o ConstantExpression.o AddExpression.o EqualConstraint.o InstantaneousCSP.o mtest.o -o mtest -lboost_coroutine -lboost_context
+GACInstantSolver.o: instantSolvers/GACInstantSolver.cpp instantSolvers/GACInstantSolver.h InstantSolver.h
+	$(CPP) $(CFLAGS) instantSolvers/GACInstantSolver.cpp -c
+
+Solver.o: Solver.cpp Solver.h
+	$(CPP) $(CFLAGS) Solver.cpp -c
+
+mtest: Variable.o Expression.o Constraint.o VariableExpression.o ConstantExpression.o AddExpression.o EqualConstraint.o PrimitiveNextConstraint.o PrimitiveUntilConstraint.o GACInstantSolver.o Solver.o mtest.o
+	$(CPP) $(CFLAGS) Variable.o Expression.o Constraint.o VariableExpression.o ConstantExpression.o AddExpression.o EqualConstraint.o PrimitiveNextConstraint.o PrimitiveUntilConstraint.o GACInstantSolver.o Solver.o mtest.o -o mtest -lboost_coroutine -lboost_context
 
 stcsp: lex.yy.o y.tab.o Variable.o Expression.o Constraint.o VariableExpression.o ConstantExpression.o AddExpression.o EqualConstraint.o
 	$(CPP) $(CFLAGS) $(LDFLAGS) lex.yy.o y.tab.o Variable.o Expression.o Constraint.o VariableExpression.o ConstantExpression.o AddExpression.o EqualConstraint.o -o stcsp

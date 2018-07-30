@@ -1,48 +1,51 @@
-#include "InstantaneousCSP.h"
+#include "GACInstantSolver.h"
 
-#include "Constraint.h"
-#include "Variable.h"
+#include "../Constraint.h"
+#include "../Variable.h"
 
 #include <iostream>
 
-InstantaneousCSP::InstantaneousCSP(std::set<Constraint_r> constraints)
+GACInstantSolver::GACInstantSolver(std::set<Constraint_r> constraints, std::map<Variable_r, int> inputAssignments)
+        : InstantSolver(constraints, inputAssignments)
 {
-    mConstraints = constraints;
     for (Constraint &c : constraints)
     {
         std::set<Variable_r> vars = c.getVariables();
-        mVariables.insert(vars.begin(), vars.end());
-        constraintToVariables.insert({c, std::vector<Variable_r>()});
+        mConstraintToVariables.insert({c, std::vector<Variable_r>()});
         for (Variable &v : vars)
         {
-            constraintToVariables[c].push_back(v);
-            if (variableToConstraints.count(v) == 0) variableToConstraints.insert({v, {}});
-            variableToConstraints[v].push_back(c);
-            domains.insert({v, v.getInitialDomain()});
+            mConstraintToVariables[c].push_back(v);
+            // if v is not in mVariableToConstraints, this will automatically create an empty entry for it
+            mVariableToConstraints[v].push_back(c);
+            mDomains.insert({v, v.getInitialDomain()});
         }
+    }
+    for (auto &assignment : inputAssignments) {
+        mDomains[assignment.first] = {assignment.second};
     }
 }
 
-void InstantaneousCSP::generateNextStates(coro_assignment_t::push_type& yield)
+void GACInstantSolver::generateNextStates(coro_assignment_t::push_type& yield)
 {
     std::map<Variable_r, std::vector<int>> removals = GAC();
     bool yieldAssignment = true;
-    for (Variable &v : mVariables)
+    for (auto &p : mDomains)
     {
-        if (domains[v].size() == 0)
+        Variable &v = p.first;
+        if (mDomains[v].size() == 0)
         {
             yieldAssignment = false;
             break;
         }
-        else if (domains[v].size() > 1)
+        else if (mDomains[v].size() > 1)
         {
             yieldAssignment = false;
             std::vector<int> lo_domain;
             std::vector<int> hi_domain;
-            std::tie(lo_domain, hi_domain) = splitDomain(domains[v]);
-            domains[v] = lo_domain;
+            std::tie(lo_domain, hi_domain) = splitDomain(mDomains[v]);
+            mDomains[v] = lo_domain;
             generateNextStates(yield);
-            domains[v] = hi_domain;
+            mDomains[v] = hi_domain;
             generateNextStates(yield);
             break;
         }
@@ -50,20 +53,21 @@ void InstantaneousCSP::generateNextStates(coro_assignment_t::push_type& yield)
     if (yieldAssignment)
     {
         std::map<Variable_r, int> map;
-        for (Variable &v : mVariables)
+        for (auto &p : mDomains)
         {
-            map.insert({v, domains[v][0]});
+            Variable &v = p.first;
+            map.insert({v, mDomains[v][0]});
         }
         yield(map);
     }
     // reset the changes we made to the domains
     for (auto const &p : removals) {
-        domains[p.first].insert(domains[p.first].end(), p.second.begin(), p.second.end());
+        mDomains[p.first].insert(mDomains[p.first].end(), p.second.begin(), p.second.end());
     }
 }
 
 
-std::map<Variable_r, std::vector<int>> InstantaneousCSP::GAC()
+std::map<Variable_r, std::vector<int>> GACInstantSolver::GAC()
 {
     std::map<Variable_r, std::vector<int>> total_alterations;
     std::set<Constraint_r> constraintQueue = mConstraints;
@@ -72,35 +76,35 @@ std::map<Variable_r, std::vector<int>> InstantaneousCSP::GAC()
         auto it = constraintQueue.begin();
         Constraint &c = *it;
         constraintQueue.erase(it);
-        for (Variable &v : constraintToVariables[c])
+        for (Variable &v : mConstraintToVariables[c])
         {
             std::vector<int> alterations = c.propagate(v, *this);
             // propagate has adjusted the domain of the chosen variable
             if (alterations.size() > 0)
             {
                 total_alterations[v].insert(total_alterations[v].end(), alterations.begin(), alterations.end());
-                constraintQueue.insert(variableToConstraints[v].begin(), variableToConstraints[v].end());
+                constraintQueue.insert(mVariableToConstraints[v].begin(), mVariableToConstraints[v].end());
             }
         }
     }
     return total_alterations;
 }
 
-std::vector<int> InstantaneousCSP::defaultPropagate(Variable &v, Constraint &c)
+std::vector<int> GACInstantSolver::defaultPropagate(Variable &v, Constraint &c)
 {
     std::vector<int> ret;
     // get all the related variables in this arc
-    std::vector<Variable_r> others = constraintToVariables[c];
+    std::vector<Variable_r> others = mConstraintToVariables[c];
     std::vector<Variable_r>::iterator position = std::find(others.begin(), others.end(), v);
     if (position != others.end()) others.erase(position);
 
     // iterate over the domain of our variable
-    for (auto iter = domains[v].begin(); iter != domains[v].end(); ) {
-        assignments[v] = *iter;
+    for (auto iter = mDomains[v].begin(); iter != mDomains[v].end(); ) {
+        mAssignments[v] = *iter;
         bool prune = true;
         // make sure that for each element of our domain, there exists an assignment of the
         // other variables that is consistent with this constraint
-        coro_int_t::pull_type var_assignments(boost::bind(&InstantaneousCSP::generateAssignments, this, boost::placeholders::_1, others));
+        coro_int_t::pull_type var_assignments(boost::bind(&GACInstantSolver::generateAssignments, this, boost::placeholders::_1, others));
         for (int &_ : var_assignments)
         {
             if (c.isSatisfied(*this))
@@ -113,19 +117,19 @@ std::vector<int> InstantaneousCSP::defaultPropagate(Variable &v, Constraint &c)
         if (prune)
         {
             ret.push_back(*iter);
-            iter = domains[v].erase(iter);
+            iter = mDomains[v].erase(iter);
         } else
         {
             iter++;
         }
     }
     // just to avoid screwing things up, let's clear all the assignments we might have made in this process
-    assignments.clear();
+    mAssignments.clear();
     return ret;
 }
 
 // iterates through all assignments of the given variables
-void InstantaneousCSP::generateAssignments(coro_int_t::push_type& yield, std::vector<Variable_r> variables)
+void GACInstantSolver::generateAssignments(coro_int_t::push_type& yield, std::vector<Variable_r> variables)
 {
     if (variables.size() == 0)
     {
@@ -133,22 +137,22 @@ void InstantaneousCSP::generateAssignments(coro_int_t::push_type& yield, std::ve
         return;
     }
     std::vector<Variable_r> rest(variables.begin() + 1, variables.end());
-    for (int val : domains[variables[0]])
+    for (int val : mDomains[variables[0]])
     {
-        assignments[variables[0]] = val;
+        mAssignments[variables[0]] = val;
         generateAssignments(yield, rest);
     }
 }
 
-std::pair<std::vector<int>, std::vector<int>> InstantaneousCSP::splitDomain(std::vector<int> domain)
+std::pair<std::vector<int>, std::vector<int>> GACInstantSolver::splitDomain(std::vector<int> domain)
 {
     std::size_t const half_size = domain.size() / 2;
     std::vector<int> split_lo(domain.begin(), domain.begin() + half_size);
     std::vector<int> split_hi(domain.begin() + half_size, domain.end());
     return std::make_pair(split_lo, split_hi);
 }
-
-void InstantaneousCSP::addChildNode(std::map<Variable_r, int> assignment, InstantaneousCSP &child)
-{
-    mChildNodes.insert({assignment, child});
-}
+//
+//coro_assignment_t::pull_type GACInstantSolver::generateNextStatesIterator()
+//{
+//return coro_assignment_t::pull_type(boost::bind(&GACInstantSolver::generateNextStates, this, boost::placeholders::_1));
+//}
