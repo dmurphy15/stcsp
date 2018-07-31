@@ -41,18 +41,17 @@ bool Solver::solveRe(InstantSolver &currentState) {
         std::set<Constraint_r> carriedConstraints;
         std::tie(carriedConstraints, carriedAssignments) = carryConstraints(currentState.getConstraints(), state);
         InstantSolver &nextState = InstantSolverFactory::MakeInstantSolver(mSolverType, carriedConstraints, carriedAssignments);
-        InstantSolver &dominator = detectDominance(*mStateTree, nextState);
+        InstantSolver &dominator = detectDominance(*mStateTree, nextState, {});
 
-        // dominating node found; add it as a child but no need to recur
-        if (&dominator != &nextState) {
-            currentState.addChildNode(dominator, state);
-            numChildNodes++;
-        // no dominating node found; recur on next state, but if next state is not successful, don't add it as a child
-        } else {
+        currentState.addChildNode(dominator, state);
+        numChildNodes++;
+        // if no dominating node was found, detectDominance will return nextState, and we will have added it as a
+        // new child. We must now test the new child node for failure and remove it if it fails
+        if (&dominator == &nextState) {
             bool nextWasSuccessful = solveRe(nextState);
-            if (nextWasSuccessful) {
-                currentState.addChildNode(dominator, state);
-                numChildNodes++;
+            if (!nextWasSuccessful) {
+                numChildNodes--;
+                currentState.removeLastChildNode();
             }
         }
     }
@@ -79,13 +78,18 @@ std::pair<std::set<Constraint_r>, std::map<Variable_r, int>> Solver::carryConstr
 }
 
 
-InstantSolver& Solver::detectDominance(InstantSolver &dominator, InstantSolver &dominated) {
-    if (dominator == dominated) {
+InstantSolver& Solver::detectDominance(InstantSolver &dominator, InstantSolver &dominated, std::set<InstantSolver *> visited) {
+    // we have visited this node before (due to a cycle) so break it
+    if (visited.find(&dominator) != visited.end()) {
+        return dominated;
+    // since dominated has not yet been added to the tree, we have found a true valid dominator
+    } else if (dominator == dominated) {
         return dominator;
     } else {
+        visited.insert(&dominator);
         for (auto &pair : dominator.getChildNodes()) {
             InstantSolver &s = pair.first;
-            InstantSolver &s2 = detectDominance(s, dominated);
+            InstantSolver &s2 = detectDominance(s, dominated, visited);
             if (&s2 != &dominated) {
                 return s2;
             }

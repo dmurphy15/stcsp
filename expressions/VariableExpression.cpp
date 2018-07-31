@@ -1,6 +1,7 @@
 #include "VariableExpression.h"
 
 #include "../Variable.h"
+#include "../Constraint.h"
 
 VariableExpression::VariableExpression(Variable &v) :
         Expression(std::set<Expression_r>()),
@@ -27,4 +28,10 @@ bool VariableExpression::eq(const Expression &rhs) const
 {
     return (typeid(*this) == typeid(rhs)) &&
            (mVariable == static_cast<const VariableExpression&>(rhs).mVariable);
+}
+
+Expression& VariableExpression::normalize(std::set<Constraint_r> &constraintList,
+                                          std::set<Variable_r> &variableList)
+{
+    return *this;
 }

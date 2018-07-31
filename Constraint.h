@@ -5,10 +5,12 @@
 #include <functional>
 
 class Variable;
+using Variable_r = std::reference_wrapper<Variable>;
 class Expression;
-class InstantSolver;
+using Expression_r = std::reference_wrapper<Expression>;
 class Constraint;
 using Constraint_r = std::reference_wrapper<Constraint>;
+class InstantSolver;
 
 
 
@@ -25,9 +27,6 @@ using Constraint_r = std::reference_wrapper<Constraint>;
 
 class Constraint
 {
-    using Variable_r = std::reference_wrapper<Variable>;
-    using Expression_r = std::reference_wrapper<Expression>;
-
 public:
     Constraint() = delete;
     Constraint(std::set<Expression_r> expressions);
@@ -35,7 +34,7 @@ public:
     /* the consts here mean that the pointer cannot be made to point somewhere else;
      * it essentially forces you to allocate space for the set ahead of time */
     virtual void normalize(std::set<Constraint_r> &constraintList,
-                           std::set<Variable_r> &variableList) const = 0;
+                           std::set<Variable_r> &variableList) = 0;
 
     // used for solving an instantaneous csp
     virtual int isSatisfied(InstantSolver &context) const = 0;

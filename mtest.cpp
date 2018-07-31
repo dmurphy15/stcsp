@@ -9,6 +9,7 @@
 
 #include "Constraint.h"
 #include "constraints/EqualConstraint.h"
+#include "constraints/PrimitiveNextConstraint.h"
 
 #include "InstantSolver.h"
 #include "instantSolvers/GACInstantSolver.h"
@@ -82,5 +83,6 @@ int main(int argc, char **argv) {
     printSolution({trivial3});
     printSolution({*new EqualConstraint(e_b, add_a_constant)});
     printSolution({*new EqualConstraint(add_add, *new AddExpression(add_a_b, *new ConstantExpression(3)))});
+    printSolution({*new PrimitiveNextConstraint(*new VariableExpression(v_a), *new VariableExpression(v_a))});
 }
 

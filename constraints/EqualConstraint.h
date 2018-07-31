@@ -4,13 +4,12 @@
 
 class EqualConstraint : public Constraint
 {
-    using Variable_r = std::reference_wrapper<Variable>;
 public:
     EqualConstraint(Expression &a, Expression &b);
     ~EqualConstraint();
 
     void normalize(std::set<Constraint_r> &constraintList,
-                   std::set<Variable_r> &variableList) const override;
+                   std::set<Variable_r> &variableList) override;
 
     int isSatisfied(InstantSolver &context) const override;
 

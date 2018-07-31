@@ -27,3 +27,9 @@ bool ConstantExpression::eq(const Expression &rhs) const
     return (typeid(*this) == typeid(rhs)) &&
            (mConstant == static_cast<const ConstantExpression&>(rhs).mConstant);
 }
+
+Expression& ConstantExpression::normalize(std::set<Constraint_r> &constraintList,
+                                   std::set<Variable_r> &variableList)
+{
+    return *this;
+}

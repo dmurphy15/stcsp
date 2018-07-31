@@ -8,7 +8,9 @@
 #include "boost/bind.hpp"
 
 class Variable;
+using Variable_r = std::reference_wrapper<Variable>;
 class Constraint;
+using Constraint_r = std::reference_wrapper<Constraint>;
 class InstantSolver;
 using InstantSolver_r = std::reference_wrapper<InstantSolver>;
 
@@ -18,8 +20,6 @@ typedef boost::coroutines2::coroutine<int> coro_int_t;
 
 class InstantSolver
 {
-    using Variable_r = std::reference_wrapper<Variable>;
-    using Constraint_r = std::reference_wrapper<Constraint>;
 public:
     InstantSolver(std::set<Constraint_r> constraints, std::map<Variable_r, int> inputAssignments) {
         mConstraints = constraints;
@@ -48,6 +48,9 @@ public:
     //recurs on it, before getting the next state node
     void addChildNode(InstantSolver &child, std::map<Variable_r, int> assignment) {
         mChildNodes.push_back({child, assignment});
+    }
+    void removeLastChildNode() {
+        mChildNodes.pop_back();
     }
     std::vector<std::pair<InstantSolver_r, std::map<Variable_r, int>>> getChildNodes() {
         return mChildNodes;

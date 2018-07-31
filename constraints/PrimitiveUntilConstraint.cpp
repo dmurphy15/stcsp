@@ -11,10 +11,10 @@ PrimitiveUntilConstraint::PrimitiveUntilConstraint(VariableExpression &variable,
 PrimitiveUntilConstraint::~PrimitiveUntilConstraint() {}
 
 void PrimitiveUntilConstraint::normalize(std::set<Constraint_r> &constraintList,
-                                        std::set<Variable_r> &variableList) const
+                                        std::set<Variable_r> &variableList)
 {
-    constraintList.insert(*new PrimitiveUntilConstraint(*new VariableExpression(mVariable),
-                                                       *new VariableExpression(mUntilVariable)));
+    // can do this bc normalizing the member variable expressions would do nothing anyway
+    constraintList.insert(*this);
 }
 
 int PrimitiveUntilConstraint::isSatisfied(InstantSolver &context) const

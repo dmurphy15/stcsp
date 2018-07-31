@@ -4,22 +4,25 @@
 
 class InstantSolver;
 class Variable;
+using Variable_r = std::reference_wrapper<Variable>;
 class Expression;
 using Expression_r = std::reference_wrapper<Expression>;
+class Constraint;
+using Constraint_r = std::reference_wrapper<Constraint>;
 
 /*
  * Interface that all variables and operations on variables must implement
  */
 class Expression
 {
-    using Variable_r = std::reference_wrapper<Variable>;
-
 public:
     Expression() = delete;
     Expression(std::set<Expression_r> expressions);
 
     virtual int evaluate(InstantSolver &context) const = 0;
     virtual std::set<Variable_r> getVariables() const = 0;
+    virtual Expression& normalize(std::set<Constraint_r> &constraintList,
+                           std::set<Variable_r> &variableList) = 0;
 
     // TODO give it an optional "binarize" function
 

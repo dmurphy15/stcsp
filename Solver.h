@@ -40,7 +40,7 @@ private:
     std::pair<std::set<Constraint_r>, std::map<Variable_r, int>> carryConstraints(std::set<Constraint_r> constraints,
                                                                                   std::map<Variable_r, int> assignment);
     // returns dominated if no nodes in dominator tree were dominating
-    InstantSolver& detectDominance(InstantSolver &dominator, InstantSolver &dominated);
+    InstantSolver& detectDominance(InstantSolver &dominator, InstantSolver &dominated, std::set<InstantSolver *> visited);
 
     void printTreeRe(InstantSolver &currentState, std::set<InstantSolver *> visited);
 

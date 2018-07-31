@@ -8,8 +8,6 @@
 
 class NullInstantSolver : public InstantSolver
 {
-    using Constraint_r = std::reference_wrapper<Constraint>;
-    using Variable_r = std::reference_wrapper<Variable>;
 public:
     NullInstantSolver(std::set<Constraint_r> constraints, std::map<Variable_r, int> inputAssignments)
             : InstantSolver(constraints, inputAssignments) {}

@@ -14,9 +14,12 @@ EqualConstraint::EqualConstraint(Expression &a, Expression &b) :
 EqualConstraint::~EqualConstraint() {}
 
 void EqualConstraint::normalize(std::set<Constraint_r> &constraintList,
-                                std::set<Variable_r> &variableList) const
+                                std::set<Variable_r> &variableList)
 {
-    constraintList.insert(*(new EqualConstraint(mExpr1, mExpr2)));
+    Expression &equivalentExpr1 = mExpr1.normalize(constraintList, variableList);
+    Expression &equivalentExpr2 = mExpr2.normalize(constraintList, variableList);
+    Constraint &equivalentConstraint = *new EqualConstraint(equivalentExpr1, equivalentExpr2);
+    constraintList.insert(equivalentConstraint);
 }
 
 int EqualConstraint::isSatisfied(InstantSolver &context) const

@@ -9,7 +9,6 @@
  */
 class VariableExpression : public Expression
 {
-    using Variable_r = std::reference_wrapper<Variable>;
 public:
     VariableExpression(Variable &v);
 
@@ -17,6 +16,8 @@ public:
 
     std::set<Variable_r> getVariables() const override;
 
+    Expression& normalize(std::set<Constraint_r> &constraintList,
+                   std::set<Variable_r> &variableList) override;
 private:
     bool lt(const Expression &rhs) const override;
     bool eq(const Expression &rhs) const override;

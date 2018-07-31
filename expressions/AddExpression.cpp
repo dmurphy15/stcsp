@@ -20,3 +20,10 @@ std::set<Variable_r> AddExpression::getVariables() const
     return vars1;
 }
 
+Expression& AddExpression::normalize(std::set<Constraint_r> &constraintList, std::set<Variable_r> &variableList)
+{
+    Expression &equivalentExpr1 = mExpr1.normalize(constraintList, variableList);
+    Expression &equivalentExpr2 = mExpr2.normalize(constraintList, variableList);
+    return *new AddExpression(equivalentExpr1, equivalentExpr1);
+}
+

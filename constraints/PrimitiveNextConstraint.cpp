@@ -11,10 +11,10 @@ PrimitiveNextConstraint::PrimitiveNextConstraint(VariableExpression &variable, V
 PrimitiveNextConstraint::~PrimitiveNextConstraint() {}
 
 void PrimitiveNextConstraint::normalize(std::set<Constraint_r> &constraintList,
-                                std::set<Variable_r> &variableList) const
+                                std::set<Variable_r> &variableList)
 {
-    constraintList.insert(*new PrimitiveNextConstraint(*new VariableExpression(mVariable),
-                                                       *new VariableExpression(mNextVariable)));
+    // can do this since normalizing the member variableExpressions would do nothing anyway
+    constraintList.insert(*this);
 }
 
 int PrimitiveNextConstraint::isSatisfied(InstantSolver &context) const

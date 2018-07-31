@@ -17,13 +17,12 @@ class VariableExpression;
 
 class PrimitiveUntilConstraint : public Constraint
 {
-    using Variable_r = std::reference_wrapper<Variable>;
 public:
     PrimitiveUntilConstraint(VariableExpression &variable, VariableExpression &untilVariable);
     ~PrimitiveUntilConstraint();
 
     void normalize(std::set<Constraint_r> &constraintList,
-                   std::set<Variable_r> &variableList) const override;
+                   std::set<Variable_r> &variableList) override;
 
     int isSatisfied(InstantSolver &context) const override;
 
