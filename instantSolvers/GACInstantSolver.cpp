@@ -1,5 +1,7 @@
 #include "GACInstantSolver.h"
 
+#include <iterator>
+
 #include "../Constraint.h"
 #include "../Variable.h"
 
@@ -27,7 +29,7 @@ GACInstantSolver::GACInstantSolver(std::set<Constraint_r> constraints, std::map<
 
 void GACInstantSolver::generateNextStates(coro_assignment_t::push_type& yield)
 {
-    std::map<Variable_r, std::vector<int>> removals = GAC();
+    std::map<Variable_r, std::set<int>> removals = GAC();
     bool yieldAssignment = true;
     for (auto &p : mDomains)
     {
@@ -40,13 +42,16 @@ void GACInstantSolver::generateNextStates(coro_assignment_t::push_type& yield)
         else if (mDomains[v].size() > 1)
         {
             yieldAssignment = false;
-            std::vector<int> lo_domain;
-            std::vector<int> hi_domain;
-            std::tie(lo_domain, hi_domain) = splitDomain(mDomains[v]);
+            std::set<int> full_domain = mDomains[v];
+            std::set<int> lo_domain;
+            std::set<int> hi_domain;
+            std::tie(lo_domain, hi_domain) = splitDomain(full_domain);
             mDomains[v] = lo_domain;
             generateNextStates(yield);
             mDomains[v] = hi_domain;
             generateNextStates(yield);
+            // reset the domain
+            mDomains[v] = full_domain;
             break;
         }
     }
@@ -56,20 +61,20 @@ void GACInstantSolver::generateNextStates(coro_assignment_t::push_type& yield)
         for (auto &p : mDomains)
         {
             Variable &v = p.first;
-            map.insert({v, mDomains[v][0]});
+            map.insert({v, *mDomains[v].begin()});
         }
         yield(map);
     }
     // reset the changes we made to the domains
     for (auto const &p : removals) {
-        mDomains[p.first].insert(mDomains[p.first].end(), p.second.begin(), p.second.end());
+        mDomains[p.first].insert(p.second.begin(), p.second.end());
     }
 }
 
 
-std::map<Variable_r, std::vector<int>> GACInstantSolver::GAC()
+std::map<Variable_r, std::set<int>> GACInstantSolver::GAC()
 {
-    std::map<Variable_r, std::vector<int>> total_alterations;
+    std::map<Variable_r, std::set<int>> total_alterations;
     std::set<Constraint_r> constraintQueue = mConstraints;
     while (constraintQueue.size() > 0)
     {
@@ -78,11 +83,11 @@ std::map<Variable_r, std::vector<int>> GACInstantSolver::GAC()
         constraintQueue.erase(it);
         for (Variable &v : mConstraintToVariables[c])
         {
-            std::vector<int> alterations = c.propagate(v, *this);
+            std::set<int> alterations = c.propagate(v, *this);
             // propagate has adjusted the domain of the chosen variable
             if (alterations.size() > 0)
             {
-                total_alterations[v].insert(total_alterations[v].end(), alterations.begin(), alterations.end());
+                total_alterations[v].insert(alterations.begin(), alterations.end());
                 constraintQueue.insert(mVariableToConstraints[v].begin(), mVariableToConstraints[v].end());
             }
         }
@@ -90,9 +95,9 @@ std::map<Variable_r, std::vector<int>> GACInstantSolver::GAC()
     return total_alterations;
 }
 
-std::vector<int> GACInstantSolver::defaultPropagate(Variable &v, Constraint &c)
+std::set<int> GACInstantSolver::defaultPropagate(Variable &v, Constraint &c)
 {
-    std::vector<int> ret;
+    std::set<int> ret;
     // get all the related variables in this arc
     std::vector<Variable_r> others = mConstraintToVariables[c];
     std::vector<Variable_r>::iterator position = std::find(others.begin(), others.end(), v);
@@ -116,7 +121,7 @@ std::vector<int> GACInstantSolver::defaultPropagate(Variable &v, Constraint &c)
         // if no consistent assignment was found, remove this value from our domain
         if (prune)
         {
-            ret.push_back(*iter);
+            ret.insert(*iter);
             iter = mDomains[v].erase(iter);
         } else
         {
@@ -144,11 +149,18 @@ void GACInstantSolver::generateAssignments(coro_int_t::push_type& yield, std::ve
     }
 }
 
-std::pair<std::vector<int>, std::vector<int>> GACInstantSolver::splitDomain(std::vector<int> domain)
+std::pair<std::set<int>, std::set<int>> GACInstantSolver::splitDomain(std::set<int> domain)
 {
-    std::size_t const half_size = domain.size() / 2;
-    std::vector<int> split_lo(domain.begin(), domain.begin() + half_size);
-    std::vector<int> split_hi(domain.begin() + half_size, domain.end());
+    std::set<int> split_lo;
+    std::set<int> split_hi;
+    std::size_t i=0;
+    for (auto it = domain.begin(); it != domain.end(); it++, i++) {
+        if (i < domain.size() / 2) {
+            split_lo.insert(*it);
+        } else {
+            split_hi.insert(*it);
+        }
+    }
     return std::make_pair(split_lo, split_hi);
 }
 //

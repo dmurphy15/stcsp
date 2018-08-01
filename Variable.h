@@ -1,6 +1,5 @@
 #pragma once
-#include <vector>
-#include <map>
+#include <set>
 #include <functional>
 
 class InstantSolver;
@@ -13,12 +12,17 @@ using Variable_r = std::reference_wrapper<Variable>;
 class Variable
 {
 public:
-    Variable(std::vector<int> domain);
+    Variable(std::set<int> domain);
     int evaluate(InstantSolver &context);
-    std::vector<int> getInitialDomain() const;
+    std::set<int> getInitialDomain() const;
+    std::set<int> getDomain(InstantSolver &context);
 
-    friend bool operator< (const Variable &lhs, const Variable &rhs);
-    friend bool operator== (const Variable &lhs, const Variable &rhs);
+    friend bool operator <(const Variable &a, const Variable &b) {
+        return &a < &b;
+    }
+    friend bool operator ==(const Variable &a, const Variable &b) {
+        return &a == &b;
+    }
 private:
-    std::vector<int> mInitialDomain;
+    std::set<int> mInitialDomain;
 };

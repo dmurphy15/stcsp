@@ -11,7 +11,7 @@ class GACInstantSolver : public InstantSolver
 {
 public:
     GACInstantSolver(std::set<Constraint_r> constraints, std::map<Variable_r, int> inputAssignments={});
-    std::vector<int> defaultPropagate(Variable &v, Constraint &c) override;
+    std::set<int> defaultPropagate(Variable &v, Constraint &c) override;
     coro_assignment_t::pull_type generateNextStatesIterator() override {
         return coro_assignment_t::pull_type(boost::bind(&GACInstantSolver::generateNextStates, this, boost::placeholders::_1));
     }
@@ -20,8 +20,8 @@ private:
     std::map<Variable_r, std::vector<Constraint_r>> mVariableToConstraints;
     std::map<Constraint_r, std::vector<Variable_r>> mConstraintToVariables;
 
-    std::map<Variable_r, std::vector<int>> GAC();
-    std::pair<std::vector<int>, std::vector<int>> splitDomain(std::vector<int> domain);
+    std::map<Variable_r, std::set<int>> GAC();
+    std::pair<std::set<int>, std::set<int>> splitDomain(std::set<int> domain);
     void generateNextStates(coro_assignment_t::push_type &yield) override;
     void generateAssignments(coro_int_t::push_type &yield, std::vector<Variable_r> variables);
 };

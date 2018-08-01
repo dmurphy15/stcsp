@@ -21,24 +21,13 @@ typedef boost::coroutines2::coroutine<int> coro_int_t;
 class InstantSolver
 {
 public:
-    InstantSolver(std::set<Constraint_r> constraints, std::map<Variable_r, int> inputAssignments) {
-        mConstraints = constraints;
-        mInputAssignments = inputAssignments;
-    }
+    InstantSolver(std::set<Constraint_r> constraints, std::map<Variable_r, int> inputAssignments);
 
-    int getAssignment(Variable &v) {
-        return mAssignments.at(v);
-    }
-    std::vector<int> getDomain(Variable &v) {
-        return mDomains.at(v);
-    }
-    void setDomain(Variable &v, std::vector<int> domain) {
-        mDomains.at(v) = domain;
-    }
+    int getAssignment(Variable &v);
+    std::set<int> getDomain(Variable &v);
+    void setDomain(Variable &v, std::set<int> domain);
 
-    std::set<Constraint_r> getConstraints() {
-        return mConstraints;
-    }
+    std::set<Constraint_r> getConstraints();
 
     virtual coro_assignment_t::pull_type generateNextStatesIterator() = 0;
 
@@ -46,26 +35,19 @@ public:
     //then look for previous equivalent statenodes. If it finds a previous one, it will add that as the
     //child and get the next state node etc, if it does not, then it adds the new one as the child and
     //recurs on it, before getting the next state node
-    void addChildNode(InstantSolver &child, std::map<Variable_r, int> assignment) {
-        mChildNodes.push_back({child, assignment});
-    }
-    void removeLastChildNode() {
-        mChildNodes.pop_back();
-    }
-    std::vector<std::pair<InstantSolver_r, std::map<Variable_r, int>>> getChildNodes() {
-        return mChildNodes;
-    };
+    void addChildNode(InstantSolver &child, std::map<Variable_r, int> assignment);
+    void removeLastChildNode();
+    std::vector<std::pair<InstantSolver_r, std::map<Variable_r, int>>> getChildNodes();
 
-    virtual std::vector<int> defaultPropagate(Variable &v, Constraint &c) = 0;
+    virtual std::set<int> defaultPropagate(Variable &v, Constraint &c) = 0;
 
     friend bool operator==(InstantSolver &lhs, InstantSolver &rhs);
-    friend bool operator<(InstantSolver &lhs, InstantSolver &rhs);
 protected:
     // cast this to a coroutine, and then you can iterate through the next states
     virtual void generateNextStates(coro_assignment_t::push_type &yield) = 0;
 
     std::map<Variable_r, int> mAssignments;
-    std::map<Variable_r, std::vector<int>> mDomains;
+    std::map<Variable_r, std::set<int>> mDomains;
     std::set<Constraint_r> mConstraints;
     std::map<Variable_r, int> mInputAssignments;
     std::vector<std::pair<InstantSolver_r, std::map<Variable_r, int>>> mChildNodes;

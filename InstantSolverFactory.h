@@ -5,11 +5,9 @@
 #include <stdexcept>
 
 #include "InstantSolver.h"
-#include "instantSolvers/NullInstantSolver.h"
 #include "instantSolvers/GACInstantSolver.h"
 
 enum InstantSolverType : int {
-    NULL_INSTANT_SOLVER,
     GAC_INSTANT_SOLVER
 };
 
@@ -23,8 +21,6 @@ public:
                                            std::set<Constraint_r> constraints,
                                             std::map<Variable_r, int> inputAssignments) {
         switch (instantSolverType) {
-            case NULL_INSTANT_SOLVER :
-                return *new NullInstantSolver({}, {});
             case GAC_INSTANT_SOLVER :
                 return *new GACInstantSolver(constraints, inputAssignments);
             default :

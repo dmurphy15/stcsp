@@ -15,8 +15,13 @@ public:
 
     std::set<Variable_r> getVariables() const override;
 
-    std::vector<int> propagate(Variable &v, InstantSolver &context) override;
+    std::set<int> propagate(Variable &v, InstantSolver &context) override;
 private:
+    bool lt(const Constraint &rhs) const override;
+    bool eq(const Constraint &rhs) const override;
+
     Expression &mExpr1;
     Expression &mExpr2;
+    // used to speed up comparison, since this expression is symmetric
+    std::set<Expression_r> mExpressions;
 };

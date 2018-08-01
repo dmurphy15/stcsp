@@ -1,7 +1,6 @@
 #pragma once
 
 #include <set>
-#include <vector>
 #include <functional>
 
 class Variable;
@@ -28,9 +27,6 @@ class InstantSolver;
 class Constraint
 {
 public:
-    Constraint() = delete;
-    Constraint(std::set<Expression_r> expressions);
-
     /* the consts here mean that the pointer cannot be made to point somewhere else;
      * it essentially forces you to allocate space for the set ahead of time */
     virtual void normalize(std::set<Constraint_r> &constraintList,
@@ -47,12 +43,16 @@ public:
     // and the domains of the other variables involved
     // could just call the context's default propagator
     // return whatever values it has removed from the variable's domain
-    virtual std::vector<int> propagate(Variable &v, InstantSolver &context) = 0;
+    virtual std::set<int> propagate(Variable &v, InstantSolver &context) = 0;
 
-    friend bool operator< (const Constraint &lhs, const Constraint &rhs);
-    friend bool operator== (const Constraint &lhs, const Constraint &rhs);
+    friend bool operator< (const Constraint &lhs, const Constraint &rhs) {
+        return lhs.lt(rhs);
+    }
+    friend bool operator== (const Constraint &lhs, const Constraint &rhs) {
+        return lhs.eq(rhs);
+    }
 
 private:
-    // this is just used for dominance detection; should not be used by derived classes
-    std::set<Expression_r> mExpressions;
+    virtual bool lt(const Constraint &b) const = 0;
+    virtual bool eq(const Constraint &b) const = 0;
 };

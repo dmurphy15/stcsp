@@ -28,8 +28,11 @@ public:
 
     std::set<Variable_r> getVariables() const override;
 
-    std::vector<int> propagate(Variable &v, InstantSolver &context) override;
+    std::set<int> propagate(Variable &v, InstantSolver &context) override;
 
     Variable &mVariable;
     Variable &mUntilVariable;
+private:
+    bool lt(const Constraint &rhs) const override;
+    bool eq(const Constraint &rhs) const override;
 };

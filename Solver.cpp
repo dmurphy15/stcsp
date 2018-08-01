@@ -5,7 +5,6 @@
 #include "constraints/PrimitiveNextConstraint.h"
 #include "constraints/PrimitiveUntilConstraint.h"
 
-#include "instantSolvers/NullInstantSolver.h"
 #include "InstantSolverFactory.h"
 
 #include "Variable.h"
@@ -98,14 +97,14 @@ InstantSolver& Solver::detectDominance(InstantSolver &dominator, InstantSolver &
     }
 }
 
-void Solver::printTree() {
-    printTreeRe(*mStateTree, {});
+void Solver::printTree(bool includeAuxiliaryVariables) {
+    printTreeRe(*mStateTree, {}, includeAuxiliaryVariables);
     std::cout<<"\n";
 }
 
-void Solver::printTreeRe(InstantSolver &currentState, std::set<InstantSolver *> visited) {
+std::set<InstantSolver *> Solver::printTreeRe(InstantSolver &currentState, std::set<InstantSolver *> visited, bool includeAuxiliaryVariables) {
     if (visited.find(&currentState) != visited.end()) {
-        return;
+        return visited;
     }
     std::cout<<"state at "<<&currentState<<":\n";
     for (auto &pair : currentState.getChildNodes()) {
@@ -113,14 +112,17 @@ void Solver::printTreeRe(InstantSolver &currentState, std::set<InstantSolver *> 
         std::cout<<"\tchild at "<<&child<<" with assignments:\n";
         for (auto &assignment : pair.second) {
             Variable &v = assignment.first;
-            std::cout<<"\t\tvariable at "<<&v<<" with value "<<assignment.second<<"\n";
+            if (mOriginalVariables.find(v) != mOriginalVariables.end() || includeAuxiliaryVariables) {
+                std::cout<<"\t\tvariable at "<<&v<<" with value "<<assignment.second<<"\n";
+            }
         }
     }
     visited.insert(&currentState);
     for (auto &pair : currentState.getChildNodes()) {
         InstantSolver &child = pair.first;
-        printTreeRe(child, visited);
+        visited = printTreeRe(child, visited, includeAuxiliaryVariables);
     }
+    return visited;
 }
 //
 //add variable

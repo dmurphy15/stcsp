@@ -7,9 +7,9 @@
 #include "../InstantSolver.h"
 
 EqualConstraint::EqualConstraint(Expression &a, Expression &b) :
-        Constraint({a, b}),
         mExpr1(a),
-        mExpr2(b) {}
+        mExpr2(b),
+        mExpressions({a, b}) {}
 
 EqualConstraint::~EqualConstraint() {}
 
@@ -35,7 +35,7 @@ std::set<Variable_r> EqualConstraint::getVariables() const
     return vars1;
 }
 
-std::vector<int> EqualConstraint::propagate(Variable &v, InstantSolver &context)
+std::set<int> EqualConstraint::propagate(Variable &v, InstantSolver &context)
 {
     return context.defaultPropagate(v, *this);
 //    throw std::logic_error((std::string)__PRETTY_FUNCTION__ + " should have been overridden");
@@ -50,4 +50,14 @@ std::vector<int> EqualConstraint::propagate(Variable &v, InstantSolver &context)
      * if for a value of v it is never satisfied, prune that value
      * at the end, if any values were pruned, return getConstraints()
      */
+}
+
+bool EqualConstraint::lt(const Constraint &rhs) const {
+    return (typeid(*this).before(typeid(rhs))) ||
+           ((typeid(*this) == typeid(rhs)) &&
+            (mExpressions < static_cast<const EqualConstraint&>(rhs).mExpressions));
+}
+bool EqualConstraint::eq(const Constraint &rhs) const {
+    return (typeid(*this) == typeid(rhs)) &&
+           (mExpressions == static_cast<const EqualConstraint&>(rhs).mExpressions);
 }

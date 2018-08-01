@@ -1,7 +1,7 @@
 #include "Variable.h"
 #include "InstantSolver.h"
 
-Variable::Variable(std::vector<int> domain)
+Variable::Variable(std::set<int> domain)
 {
     mInitialDomain = domain;
 }
@@ -11,17 +11,12 @@ int Variable::evaluate(InstantSolver &context)
     return context.getAssignment(*this);
 }
 
-std::vector<int> Variable::getInitialDomain() const
+std::set<int> Variable::getInitialDomain() const
 {
     return mInitialDomain;
 }
 
-bool operator< (const Variable &lhs, const Variable &rhs)
+std::set<int> Variable::getDomain(InstantSolver &context)
 {
-    return &lhs < &rhs;
-}
-
-bool operator== (const Variable &lhs, const Variable &rhs)
-{
-    return &lhs == &rhs;
+    return context.getDomain(*this);
 }

@@ -1,25 +1,12 @@
-//
-//
-//
-// this is a special constraint used by Solver class; there's really no need to use it elsewhere.
-// produced when you normalize a next expression
-//
-//
-//
-
 #pragma once
 
 #include "../Constraint.h"
 
-class Variable;
-class VariableExpression;
-
-
-class PrimitiveNextConstraint : public Constraint
+class UntilConstraint : public Constraint
 {
 public:
-    PrimitiveNextConstraint(VariableExpression &variable, VariableExpression &nextVariable);
-    ~PrimitiveNextConstraint();
+    UntilConstraint(Expression &a, Expression &b);
+    ~UntilConstraint();
 
     void normalize(std::set<Constraint_r> &constraintList,
                    std::set<Variable_r> &variableList) override;
@@ -29,10 +16,11 @@ public:
     std::set<Variable_r> getVariables() const override;
 
     std::set<int> propagate(Variable &v, InstantSolver &context) override;
-
-    Variable &mVariable;
-    Variable &mNextVariable;
+private:
 private:
     bool lt(const Constraint &rhs) const override;
     bool eq(const Constraint &rhs) const override;
+
+    Expression &mExpr1;
+    Expression &mExpr2;
 };

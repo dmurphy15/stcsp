@@ -21,6 +21,44 @@ class Variable;
 class InstantSolver;
 
 
+
+
+
+
+
+
+
+
+//WHY DO WE NEED THIS NORMALIZATION TO PRIMITIVE UNTIL CONSTRAINTS ACTUALLY??????????????????????????????????
+//
+//I SEE THAT WE NEED TO NORMALIZE NEXT EXPRESSIONS SO THAT WE CAN CREATE AN UNCONSTRAINED VARIABLE AT THE
+//CURRENT TIME POINT AND USE ITS VALUE TO CONSTRAIN THE NEXT TIME POINT SINCE WE CANNOT EVALUATE A NEXT
+//EXPRESSION DIRECTLY WITHIN ONE TIMEPOINT
+//
+//BUT AS LONG AS THE UNTIL CONSTRAINT DOES NOT CONTAIN NEXT EXPRESSIONS (AND IT WONT SINCE WE NORMALIZE THEM)
+//WE CAN EVALUATE IT WITHIN A SINGLE TIMEPOINT RIGHT? IS CAN BE EVALUATED WITHIN A SINGLE TIMEPOINT, EVEN IF IT OPERATES ON
+//EXPRESSIONS RATHER THAN SINGLE VARIABLES. WE REMOVE IT ALL THE SAME IF THE "UNTIL" VARIABLE (OR EXPRESSION)
+//IS EVER 1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 class Solver
 {
     using Variable_r = std::reference_wrapper<Variable>;
@@ -32,7 +70,7 @@ public:
     InstantSolverType mSolverType;
     std::shared_ptr<InstantSolver> mStateTree;
 
-    void printTree();
+    void printTree(bool includeAuxiliaryVariables=false);
 private:
     // returns false if currentState is a failure node
     bool solveRe(InstantSolver &currentState);
@@ -42,7 +80,7 @@ private:
     // returns dominated if no nodes in dominator tree were dominating
     InstantSolver& detectDominance(InstantSolver &dominator, InstantSolver &dominated, std::set<InstantSolver *> visited);
 
-    void printTreeRe(InstantSolver &currentState, std::set<InstantSolver *> visited);
+    std::set<InstantSolver *> printTreeRe(InstantSolver &currentState, std::set<InstantSolver *> visited, bool includeAuxiliaryVariables);
 
 //    std::set<Constraint_r> mConstraints;
     std::set<Variable_r> mVariables;

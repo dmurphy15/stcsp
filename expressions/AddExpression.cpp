@@ -3,9 +3,9 @@
 #include "../Variable.h"
 
 AddExpression::AddExpression(Expression &a, Expression &b) :
-        Expression({a, b}),
         mExpr1(a),
-        mExpr2(b) {}
+        mExpr2(b),
+        mExpressions({a, b}) {}
 
 int AddExpression::evaluate(InstantSolver &context) const
 {
@@ -24,6 +24,31 @@ Expression& AddExpression::normalize(std::set<Constraint_r> &constraintList, std
 {
     Expression &equivalentExpr1 = mExpr1.normalize(constraintList, variableList);
     Expression &equivalentExpr2 = mExpr2.normalize(constraintList, variableList);
-    return *new AddExpression(equivalentExpr1, equivalentExpr1);
+    return *new AddExpression(equivalentExpr1, equivalentExpr2);
 }
 
+std::set<int> AddExpression::getDomain(InstantSolver &context) const
+{
+    std::set<int> domain1 = mExpr1.getDomain(context);
+    std::set<int> domain2 = mExpr2.getDomain(context);
+    std::set<int> ret;
+    for (int i : domain1) {
+        for (int j : domain2) {
+            ret.insert(i+j);
+        }
+    }
+    return ret;
+}
+
+std::set<int> AddExpression::getInitialDomain() const
+{
+    std::set<int> domain1 = mExpr1.getInitialDomain();
+    std::set<int> domain2 = mExpr2.getInitialDomain();
+    std::set<int> ret;
+    for (int i : domain1) {
+        for (int j : domain2) {
+            ret.insert(i+j);
+        }
+    }
+    return ret;
+}

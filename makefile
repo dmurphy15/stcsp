@@ -77,10 +77,10 @@ y.tab.o: y.tab.cpp y.tab.h
 
 Variable.o: Variable.cpp Variable.h
 	$(CPP) $(CFLAGS) Variable.cpp -c
-Expression.o: Expression.cpp Expression.h
-	$(CPP) $(CFLAGS) Expression.cpp -c
-Constraint.o: Constraint.cpp Constraint.h
-	$(CPP) $(CFLAGS) Constraint.cpp -c
+#Expression.o: Expression.cpp Expression.h
+#	$(CPP) $(CFLAGS) Expression.cpp -c
+#Constraint.o: Constraint.cpp Constraint.h
+#	$(CPP) $(CFLAGS) Constraint.cpp -c
 InstantSolver.o: InstantSolver.cpp InstantSolver.h
 	$(CPP) $(CFLAGS) InstantSolver.cpp -c
 
@@ -97,6 +97,8 @@ PrimitiveNextConstraint.o: constraints/PrimitiveNextConstraint.cpp constraints/P
 	$(CPP) $(CFLAGS) constraints/PrimitiveNextConstraint.cpp -c
 PrimitiveUntilConstraint.o: constraints/PrimitiveUntilConstraint.cpp constraints/PrimitiveUntilConstraint.h Constraint.h
 	$(CPP) $(CFLAGS) constraints/PrimitiveUntilConstraint.cpp -c
+UntilConstraint.o: constraints/UntilConstraint.cpp constraints/UntilConstraint.h Constraint.h
+	$(CPP) $(CFLAGS) constraints/UntilConstraint.cpp -c
 
 GACInstantSolver.o: instantSolvers/GACInstantSolver.cpp instantSolvers/GACInstantSolver.h InstantSolver.h
 	$(CPP) $(CFLAGS) instantSolvers/GACInstantSolver.cpp -c
@@ -104,8 +106,8 @@ GACInstantSolver.o: instantSolvers/GACInstantSolver.cpp instantSolvers/GACInstan
 Solver.o: Solver.cpp Solver.h
 	$(CPP) $(CFLAGS) Solver.cpp -c
 
-mtest: Variable.o Expression.o Constraint.o InstantSolver.o VariableExpression.o ConstantExpression.o AddExpression.o EqualConstraint.o PrimitiveNextConstraint.o PrimitiveUntilConstraint.o GACInstantSolver.o Solver.o mtest.o
-	$(CPP) $(CFLAGS) Variable.o Expression.o Constraint.o InstantSolver.o VariableExpression.o ConstantExpression.o AddExpression.o EqualConstraint.o PrimitiveNextConstraint.o PrimitiveUntilConstraint.o GACInstantSolver.o Solver.o mtest.o -o mtest -lboost_coroutine -lboost_context
+mtest: Variable.o InstantSolver.o VariableExpression.o ConstantExpression.o AddExpression.o EqualConstraint.o PrimitiveNextConstraint.o PrimitiveUntilConstraint.o UntilConstraint.o GACInstantSolver.o Solver.o
+	$(CPP) $(CFLAGS) $^ mtest.cpp -o $@ -lboost_coroutine -lboost_context
 
 stcsp: lex.yy.o y.tab.o Variable.o Expression.o Constraint.o VariableExpression.o ConstantExpression.o AddExpression.o EqualConstraint.o
 	$(CPP) $(CFLAGS) $(LDFLAGS) lex.yy.o y.tab.o Variable.o Expression.o Constraint.o VariableExpression.o ConstantExpression.o AddExpression.o EqualConstraint.o -o stcsp
