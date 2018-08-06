@@ -1,12 +1,26 @@
 #pragma once
+//
+//
+//
+// special constraint for First constraints
+//
+//
+//
+//
+
+
 
 #include "../Constraint.h"
 
-class UntilConstraint : public Constraint
+class Variable;
+class VariableExpression;
+
+
+class PrimitiveFirstConstraint : public Constraint
 {
 public:
-    UntilConstraint(Expression &a, Expression &b);
-    ~UntilConstraint();
+    PrimitiveFirstConstraint(VariableExpression &variableExpr, Expression &firstExpr);
+    ~PrimitiveFirstConstraint();
 
     void normalize(std::set<Constraint_r> &constraintList,
                    std::set<Variable_r> &variableList) override;
@@ -16,11 +30,14 @@ public:
     std::set<Variable_r> getVariables() const override;
 
     std::vector<std::set<int>> propagate(Variable &v, SearchNode &context) override;
-private:
+
+    VariableExpression &mVariableExpr;
+    Expression &mFirstExpr;
+    Variable &mVariable;
 private:
     bool lt(const Constraint &rhs) const override;
     bool eq(const Constraint &rhs) const override;
 
-    Expression &mExpr;
-    Expression &mUntilExpr;
+    bool shouldPrune(SearchNode& context, std::vector<Variable_r>& vars, int index);
+
 };

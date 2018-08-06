@@ -7,9 +7,9 @@ AddExpression::AddExpression(Expression &a, Expression &b) :
         mExpr2(b),
         mExpressions({a, b}) {}
 
-int AddExpression::evaluate(InstantSolver &context) const
+int AddExpression::evaluate(SearchNode &context, int time) const
 {
-    return mExpr1.evaluate(context) + mExpr2.evaluate(context);
+    return mExpr1.evaluate(context, time) + mExpr2.evaluate(context, time);
 }
 
 std::set<Variable_r> AddExpression::getVariables() const
@@ -27,10 +27,10 @@ Expression& AddExpression::normalize(std::set<Constraint_r> &constraintList, std
     return *new AddExpression(equivalentExpr1, equivalentExpr2);
 }
 
-std::set<int> AddExpression::getDomain(InstantSolver &context) const
+std::set<int> AddExpression::getDomain(SearchNode &context, int time) const
 {
-    std::set<int> domain1 = mExpr1.getDomain(context);
-    std::set<int> domain2 = mExpr2.getDomain(context);
+    std::set<int> domain1 = mExpr1.getDomain(context, time);
+    std::set<int> domain2 = mExpr2.getDomain(context, time);
     std::set<int> ret;
     for (int i : domain1) {
         for (int j : domain2) {

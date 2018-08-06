@@ -2,34 +2,37 @@
 //
 //
 // this is a special constraint used by Solver class; there's really no need to use it elsewhere.
+// ACTUALLY YOU SHOULD NEVER USE IT ELSEWHERE, (SINCE IT MAKES ASSUMPTIONS ABOUT MVARIABLEEXPRESSION NEVER APPEARING INSIDE MNEXTEXPRESSION)
 // produced when you normalize a next expression
 //
 //
 //
 
+//// just reminding you again, the current implementation of propagate would need some kind of while loop if we were to
+//// allow for the case where mVarExpr is also mNextVarExpr
+
 #pragma once
 
 #include "../Constraint.h"
-
-class Variable;
-class VariableExpression;
-
+#include "../expressions/VariableExpression.h"
 
 class PrimitiveNextConstraint : public Constraint
 {
 public:
-    PrimitiveNextConstraint(VariableExpression &variable, VariableExpression &nextVariable);
+    PrimitiveNextConstraint(VariableExpression &varExpr, VariableExpression &nextVarExpr);
     ~PrimitiveNextConstraint();
 
     void normalize(std::set<Constraint_r> &constraintList,
                    std::set<Variable_r> &variableList) override;
 
-    int isSatisfied(InstantSolver &context) const override;
+    int isSatisfied(SearchNode &context, int time) const override;
 
     std::set<Variable_r> getVariables() const override;
 
-    std::set<int> propagate(Variable &v, InstantSolver &context) override;
+    std::vector<std::set<int>> propagate(Variable &v, SearchNode &context) override;
 
+    VariableExpression &mVarExpr;
+    VariableExpression &mNextVarExpr;
     Variable &mVariable;
     Variable &mNextVariable;
 private:

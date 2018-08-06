@@ -11,11 +11,11 @@ public:
     void normalize(std::set<Constraint_r> &constraintList,
                    std::set<Variable_r> &variableList) override;
 
-    int isSatisfied(InstantSolver &context) const override;
+    int isSatisfied(SearchNode &context, int time) const override;
 
     std::set<Variable_r> getVariables() const override;
 
-    std::set<int> propagate(Variable &v, InstantSolver &context) override;
+    std::vector<std::set<int>> propagate(Variable &v, SearchNode &context) override;
 private:
     bool lt(const Constraint &rhs) const override;
     bool eq(const Constraint &rhs) const override;

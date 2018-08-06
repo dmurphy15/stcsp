@@ -6,9 +6,9 @@
 VariableExpression::VariableExpression(Variable &v) :
         mVariable(v) {}
 
-int VariableExpression::evaluate(InstantSolver &context) const
+int VariableExpression::evaluate(SearchNode &context, int time) const
 {
-    return mVariable.evaluate(context);
+    return mVariable.evaluate(context, time);
 }
 
 std::set<Variable_r> VariableExpression::getVariables() const
@@ -22,8 +22,8 @@ Expression& VariableExpression::normalize(std::set<Constraint_r> &constraintList
     return *this;
 }
 
-std::set<int> VariableExpression::getDomain(InstantSolver &context) const {
-    return mVariable.getDomain(context);
+std::set<int> VariableExpression::getDomain(SearchNode &context, int time) const {
+    return mVariable.getDomain(context, time);
 }
 
 std::set<int> VariableExpression::getInitialDomain() const {

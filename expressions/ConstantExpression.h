@@ -7,13 +7,13 @@ class ConstantExpression : public Expression
 public:
     ConstantExpression(int constant);
 
-    int evaluate(InstantSolver &context) const override;
+    int evaluate(SearchNode &context, int time) const override;
 
     std::set<Variable_r> getVariables() const override;
 
     Expression& normalize(std::set<Constraint_r> &constraintList,
                    std::set<Variable_r> &variableList) override;
-    std::set<int> getDomain(InstantSolver &context) const override;
+    std::set<int> getDomain(SearchNode &context, int time) const override;
     std::set<int> getInitialDomain() const override;
 private:
     bool lt(const Expression &rhs) const override {

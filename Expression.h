@@ -2,13 +2,7 @@
 #include <set>
 #include <functional>
 
-class InstantSolver;
-class Variable;
-using Variable_r = std::reference_wrapper<Variable>;
-class Expression;
-using Expression_r = std::reference_wrapper<Expression>;
-class Constraint;
-using Constraint_r = std::reference_wrapper<Constraint>;
+#include "types.h"
 
 /*
  * Interface that all variables and operations on variables must implement
@@ -16,11 +10,11 @@ using Constraint_r = std::reference_wrapper<Constraint>;
 class Expression
 {
 public:
-    virtual int evaluate(InstantSolver &context) const = 0;
+    virtual int evaluate(SearchNode &context, int time) const = 0;
     virtual std::set<Variable_r> getVariables() const = 0;
     virtual Expression& normalize(std::set<Constraint_r> &constraintList,
                            std::set<Variable_r> &variableList) = 0;
-    virtual std::set<int> getDomain(InstantSolver &context) const = 0;
+    virtual std::set<int> getDomain(SearchNode &context, int time) const = 0;
     virtual std::set<int> getInitialDomain() const = 0;
 
     // TODO give it an optional "binarize" function

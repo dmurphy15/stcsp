@@ -1,10 +1,9 @@
 #include "EqualConstraint.h"
 
-#include "../Variable.h"
+#include "../SearchNode.h"
 #include "../Expression.h"
 #include "../Constraint.h"
-
-#include "../InstantSolver.h"
+#include "../Variable.h"
 
 EqualConstraint::EqualConstraint(Expression &a, Expression &b) :
         mExpr1(a),
@@ -22,9 +21,9 @@ void EqualConstraint::normalize(std::set<Constraint_r> &constraintList,
     constraintList.insert(equivalentConstraint);
 }
 
-int EqualConstraint::isSatisfied(InstantSolver &context) const
+int EqualConstraint::isSatisfied(SearchNode &context, int time) const
 {
-    return mExpr1.evaluate(context) == mExpr2.evaluate(context);
+    return mExpr1.evaluate(context, time) == mExpr2.evaluate(context, time);
 }
 
 std::set<Variable_r> EqualConstraint::getVariables() const
@@ -35,8 +34,10 @@ std::set<Variable_r> EqualConstraint::getVariables() const
     return vars1;
 }
 
-std::set<int> EqualConstraint::propagate(Variable &v, InstantSolver &context)
+std::vector<std::set<int>> EqualConstraint::propagate(Variable &v, SearchNode &context)
 {
+    //TODO in the future, could instead call some kind of set_intersection technique, like I did in primitiveNextConstraint
+    //TODO then again, perhaps not, since there I already had to sacrifice the time to iterate through all assignments, so maybe this is faster
     return context.defaultPropagate(v, *this);
 //    throw std::logic_error((std::string)__PRETTY_FUNCTION__ + " should have been overridden");
 //    return {};

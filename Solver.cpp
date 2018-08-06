@@ -1,16 +1,25 @@
 #include "Solver.h"
 
 #include <iostream>
+#include <algorithm>
 
 #include "constraints/PrimitiveNextConstraint.h"
 #include "constraints/PrimitiveUntilConstraint.h"
+#include "constraints/PrimitiveFirstConstraint.h"
+#include "constraints/EqualConstraint.h"
 
-#include "InstantSolverFactory.h"
+#include "expressions/ConstantExpression.h"
+
+#include "SearchNode.h"
+#include "SearchNodeFactory.h"
 
 #include "Variable.h"
 #include "Constraint.h"
 
-Solver::Solver(std::set<Constraint_r> constraints, InstantSolverType instantSolverType) {
+
+Solver::Solver(std::set<Constraint_r> constraints, SearchNodeType searchNodeType, int prefixK) {
+    mNodeType = searchNodeType;
+    mPrefixK = prefixK;
     std::set<Constraint_r> initialConstraints;
     for (Constraint &c : constraints) {
         std::set<Variable_r> vars = c.getVariables();
@@ -20,37 +29,53 @@ Solver::Solver(std::set<Constraint_r> constraints, InstantSolverType instantSolv
         // will add any new variables that go with them to mVariables
         c.normalize(initialConstraints, mVariables);
     }
-    mSolverType = instantSolverType;
+    for (Variable& v: mVariables) {
+        mDomainsInitializer.insert({v, v.getInitialDomain()});
+    };
+    std::vector<std::map<Variable_r, domain_t>> initialDomains; initialDomains.reserve(mPrefixK);
+    for (int i=0; i < mPrefixK; i++) {
+        initialDomains.push_back(mDomainsInitializer);
+    }
     // allocates the new solver
-    mStateTree.reset(&InstantSolverFactory::MakeInstantSolver(mSolverType, initialConstraints, {}));
+    mTree.reset(&SearchNodeFactory::MakeSearchNode(mNodeType, initialConstraints, {}, initialDomains));
 }
 
 void Solver::solve() {
-    solveRe(*mStateTree);
+    solveRe(*mTree);
 }
 
-bool Solver::solveRe(InstantSolver &currentState) {
+bool Solver::solveRe(SearchNode &currentNode) {
+    mSeenSearchNodes.insert(currentNode);
     int numChildNodes = 0;
     // after normalizing everything, the nice thing is that we'll have created pretty much
     // unconstrained variables for "next" expressions (unconstrained during the current timepoint)
 
     // depending on the prefix-k we choose this might have to change to respect that
-    for (auto &state : currentState.generateNextStatesIterator()) {
-        std::map<Variable_r, int> carriedAssignments;
+    for (assignment_t& assignment : currentNode.generateNextAssignmentIterator()) {
+        assignment_t carriedAssignments;
         std::set<Constraint_r> carriedConstraints;
-        std::tie(carriedConstraints, carriedAssignments) = carryConstraints(currentState.getConstraints(), state);
-        InstantSolver &nextState = InstantSolverFactory::MakeInstantSolver(mSolverType, carriedConstraints, carriedAssignments);
-        InstantSolver &dominator = detectDominance(*mStateTree, nextState, {});
+        std::tie(carriedConstraints, carriedAssignments) = carryConstraints(currentNode.getConstraints(), assignment);
+        std::vector<std::map<Variable_r, domain_t>> nextInitialDomains;
+        nextInitialDomains.reserve(mPrefixK);
+        for (int i=1; i < mPrefixK; i++) {
+            nextInitialDomains.push_back(currentNode.getDomains(i));
+        }
+        nextInitialDomains.push_back(mDomainsInitializer);
+        SearchNode &nextNode = SearchNodeFactory::MakeSearchNode(mNodeType, carriedConstraints, carriedAssignments, nextInitialDomains);
+        // detect dominance
+        auto dominator = mSeenSearchNodes.find(nextNode);
+        SearchNode &child = (dominator == mSeenSearchNodes.end()) ? nextNode : (*dominator).get();
 
-        currentState.addChildNode(dominator, state);
+        currentNode.addChildNode(child, assignment);
         numChildNodes++;
         // if no dominating node was found, detectDominance will return nextState, and we will have added it as a
         // new child. We must now test the new child node for failure and remove it if it fails
-        if (&dominator == &nextState) {
-            bool nextWasSuccessful = solveRe(nextState);
+        if (&child == &nextNode) {
+            bool nextWasSuccessful = solveRe(nextNode);
             if (!nextWasSuccessful) {
                 numChildNodes--;
-                currentState.removeLastChildNode();
+                currentNode.removeLastChildNode();
+                mSeenSearchNodes.erase(nextNode);
             }
         }
     }
@@ -63,7 +88,20 @@ std::pair<std::set<Constraint_r>, std::map<Variable_r, int>> Solver::carryConstr
     std::map<Variable_r, int> carriedAssignments;
     std::set<Constraint_r> carriedConstraints = constraints;
     for (Constraint &c : carriedConstraints) {
-        if (typeid(c) == typeid(PrimitiveNextConstraint)) {
+        // primitive first constraints force an auxiliary variable to equal another variable, but we only want this
+        // enforced for the first timepoint, so remove them immediately, and then enforce that the auxiliary variable
+        // remains constant by saying x = next x
+        // note that I could have also just done x = constant, but using next(x) is faster since it
+        // will fix the domain to a single value upon constructing each new search node, as opposed to requiring more propagation
+        // ACTUALLY, I'm switching to setting it to a constant since PrimitiveNextConstraint assumes that you are not seeing
+        // x = next x (otherwise propagating it would be more complicated)
+        //TODO whenever I erase a constraint below, I erase references to expressions and probably cause memory leaks
+        if (typeid(c) == typeid(PrimitiveFirstConstraint)) {
+            carriedConstraints.erase(c);
+            PrimitiveFirstConstraint &pc = static_cast<PrimitiveFirstConstraint &>(c);
+            VariableExpression &ve = *new VariableExpression(pc.mVariable);
+            carriedConstraints.insert(*new EqualConstraint(ve, *new ConstantExpression(assignment[pc.mVariable])));
+        } else if (typeid(c) == typeid(PrimitiveNextConstraint)) {
            PrimitiveNextConstraint &pc = static_cast<PrimitiveNextConstraint &>(c);
            carriedAssignments[pc.mNextVariable] = assignment[pc.mVariable];
         } else if (typeid(c) == typeid(PrimitiveUntilConstraint)) {
@@ -76,39 +114,19 @@ std::pair<std::set<Constraint_r>, std::map<Variable_r, int>> Solver::carryConstr
     return std::make_pair(carriedConstraints, carriedAssignments);
 }
 
-
-InstantSolver& Solver::detectDominance(InstantSolver &dominator, InstantSolver &dominated, std::set<InstantSolver *> visited) {
-    // we have visited this node before (due to a cycle) so break it
-    if (visited.find(&dominator) != visited.end()) {
-        return dominated;
-    // since dominated has not yet been added to the tree, we have found a true valid dominator
-    } else if (dominator == dominated) {
-        return dominator;
-    } else {
-        visited.insert(&dominator);
-        for (auto &pair : dominator.getChildNodes()) {
-            InstantSolver &s = pair.first;
-            InstantSolver &s2 = detectDominance(s, dominated, visited);
-            if (&s2 != &dominated) {
-                return s2;
-            }
-        }
-        return dominated;
-    }
-}
-
 void Solver::printTree(bool includeAuxiliaryVariables) {
-    printTreeRe(*mStateTree, {}, includeAuxiliaryVariables);
+    std::set<SearchNode *> visited;
+    printTreeRe(*mTree, visited, includeAuxiliaryVariables);
     std::cout<<"\n";
 }
 
-std::set<InstantSolver *> Solver::printTreeRe(InstantSolver &currentState, std::set<InstantSolver *> visited, bool includeAuxiliaryVariables) {
+std::set<SearchNode *> Solver::printTreeRe(SearchNode &currentState, std::set<SearchNode *> &visited, bool includeAuxiliaryVariables) {
     if (visited.find(&currentState) != visited.end()) {
         return visited;
     }
     std::cout<<"state at "<<&currentState<<":\n";
     for (auto &pair : currentState.getChildNodes()) {
-        InstantSolver &child = pair.first;
+        SearchNode &child = pair.first;
         std::cout<<"\tchild at "<<&child<<" with assignments:\n";
         for (auto &assignment : pair.second) {
             Variable &v = assignment.first;
@@ -119,7 +137,7 @@ std::set<InstantSolver *> Solver::printTreeRe(InstantSolver &currentState, std::
     }
     visited.insert(&currentState);
     for (auto &pair : currentState.getChildNodes()) {
-        InstantSolver &child = pair.first;
+        SearchNode &child = pair.first;
         visited = printTreeRe(child, visited, includeAuxiliaryVariables);
     }
     return visited;

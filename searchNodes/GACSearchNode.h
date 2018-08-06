@@ -5,25 +5,25 @@
 #include <functional>
 #include <vector>
 
-#include "../InstantSolver.h"
+#include "../SearchNode.h"
 
-class GACInstantSolver : public InstantSolver
+class GACSearchNode : public SearchNode
 {
 public:
-    GACInstantSolver(std::set<Constraint_r> constraints, std::map<Variable_r, int> inputAssignments={});
-    std::set<int> defaultPropagate(Variable &v, Constraint &c) override;
-    coro_assignment_t::pull_type generateNextStatesIterator() override {
-        return coro_assignment_t::pull_type(boost::bind(&GACInstantSolver::generateNextStates, this, boost::placeholders::_1));
+    GACSearchNode(std::set<Constraint_r> constraints, assignment_t historicalValues, std::vector<std::map<Variable_r, domain_t>> domains);
+    std::vector<std::set<int>> defaultPropagate(Variable &v, Constraint &c) override;
+    coro_assignment_t::pull_type generateNextAssignmentIterator() override {
+        return coro_assignment_t::pull_type(boost::bind(&GACSearchNode::generateNextAssignment, this, boost::placeholders::_1));
     }
 
 private:
     std::map<Variable_r, std::vector<Constraint_r>> mVariableToConstraints;
     std::map<Constraint_r, std::vector<Variable_r>> mConstraintToVariables;
 
-    std::map<Variable_r, std::set<int>> GAC();
-    std::pair<std::set<int>, std::set<int>> splitDomain(std::set<int> domain);
-    void generateNextStates(coro_assignment_t::push_type &yield) override;
-    void generateAssignments(coro_int_t::push_type &yield, std::vector<Variable_r> variables);
+    std::vector<std::map<Variable_r, std::set<int>>> GAC();
+    std::pair<domain_t, domain_t> splitDomain(domain_t domain);
+    void generateNextAssignment(coro_assignment_t::push_type &yield) override;
+    void generateAssignments(coro_int_t::push_type &yield, std::vector<Variable_r>& variables, int index, int time);
 };
 
 //REPLACE ALL UNORDERED_SETS with regular, ordered, sets, or at least think about it.

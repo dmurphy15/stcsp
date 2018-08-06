@@ -4,7 +4,7 @@
 ConstantExpression::ConstantExpression(int constant) :
         mConstant(constant) {}
 
-int ConstantExpression::evaluate(InstantSolver &context) const
+int ConstantExpression::evaluate(SearchNode &context, int time) const
 {
     return mConstant;
 }
@@ -20,7 +20,7 @@ Expression& ConstantExpression::normalize(std::set<Constraint_r> &constraintList
     return *this;
 }
 
-std::set<int> ConstantExpression::getDomain(InstantSolver &context) const
+std::set<int> ConstantExpression::getDomain(SearchNode &context, int time) const
 {
     return {mConstant};
 }

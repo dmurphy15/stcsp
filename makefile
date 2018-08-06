@@ -81,8 +81,8 @@ Variable.o: Variable.cpp Variable.h
 #	$(CPP) $(CFLAGS) Expression.cpp -c
 #Constraint.o: Constraint.cpp Constraint.h
 #	$(CPP) $(CFLAGS) Constraint.cpp -c
-InstantSolver.o: InstantSolver.cpp InstantSolver.h
-	$(CPP) $(CFLAGS) InstantSolver.cpp -c
+SearchNode.o: SearchNode.cpp SearchNode.h
+	$(CPP) $(CFLAGS) SearchNode.cpp -c
 
 VariableExpression.o: expressions/VariableExpression.cpp expressions/VariableExpression.h Expression.h
 	$(CPP) $(CFLAGS) expressions/VariableExpression.cpp -c
@@ -90,6 +90,10 @@ ConstantExpression.o: expressions/ConstantExpression.cpp expressions/ConstantExp
 	$(CPP) $(CFLAGS) expressions/ConstantExpression.cpp -c
 AddExpression.o: expressions/AddExpression.cpp expressions/AddExpression.h Expression.h
 	$(CPP) $(CFLAGS) expressions/AddExpression.cpp -c
+NextExpression.o: expressions/NextExpression.cpp expressions/NextExpression.h Expression.h
+	$(CPP) $(CFLAGS) expressions/NextExpression.cpp -c
+FirstExpression.o: expressions/FirstExpression.cpp expressions/FirstExpression.h Expression.h
+	$(CPP) $(CFLAGS) expressions/FirstExpression.cpp -c
 
 EqualConstraint.o: constraints/EqualConstraint.cpp constraints/EqualConstraint.h Constraint.h
 	$(CPP) $(CFLAGS) constraints/EqualConstraint.cpp -c
@@ -97,17 +101,22 @@ PrimitiveNextConstraint.o: constraints/PrimitiveNextConstraint.cpp constraints/P
 	$(CPP) $(CFLAGS) constraints/PrimitiveNextConstraint.cpp -c
 PrimitiveUntilConstraint.o: constraints/PrimitiveUntilConstraint.cpp constraints/PrimitiveUntilConstraint.h Constraint.h
 	$(CPP) $(CFLAGS) constraints/PrimitiveUntilConstraint.cpp -c
+PrimitiveFirstConstraint.o: constraints/PrimitiveFirstConstraint.cpp constraints/PrimitiveFirstConstraint.h Constraint.h
+	$(CPP) $(CFLAGS) constraints/PrimitiveFirstConstraint.cpp -c
 UntilConstraint.o: constraints/UntilConstraint.cpp constraints/UntilConstraint.h Constraint.h
 	$(CPP) $(CFLAGS) constraints/UntilConstraint.cpp -c
 
-GACInstantSolver.o: instantSolvers/GACInstantSolver.cpp instantSolvers/GACInstantSolver.h InstantSolver.h
-	$(CPP) $(CFLAGS) instantSolvers/GACInstantSolver.cpp -c
+GACSearchNode.o: searchNodes/GACSearchNode.cpp searchNodes/GACSearchNode.h SearchNode.h
+	$(CPP) $(CFLAGS) searchNodes/GACSearchNode.cpp -c
 
 Solver.o: Solver.cpp Solver.h
 	$(CPP) $(CFLAGS) Solver.cpp -c
 
-mtest: Variable.o InstantSolver.o VariableExpression.o ConstantExpression.o AddExpression.o EqualConstraint.o PrimitiveNextConstraint.o PrimitiveUntilConstraint.o UntilConstraint.o GACInstantSolver.o Solver.o
-	$(CPP) $(CFLAGS) $^ mtest.cpp -o $@ -lboost_coroutine -lboost_context
+mtest: Variable.o SearchNode.o VariableExpression.o ConstantExpression.o AddExpression.o NextExpression.o FirstExpression.o EqualConstraint.o PrimitiveNextConstraint.o PrimitiveUntilConstraint.o PrimitiveFirstConstraint.o UntilConstraint.o GACSearchNode.o Solver.o mtest.cpp
+	$(CPP) $(CFLAGS) $^ -o $@ -lboost_coroutine -lboost_context
+
+clean:
+	rm -rf *.o
 
 stcsp: lex.yy.o y.tab.o Variable.o Expression.o Constraint.o VariableExpression.o ConstantExpression.o AddExpression.o EqualConstraint.o
 	$(CPP) $(CFLAGS) $(LDFLAGS) lex.yy.o y.tab.o Variable.o Expression.o Constraint.o VariableExpression.o ConstantExpression.o AddExpression.o EqualConstraint.o -o stcsp
