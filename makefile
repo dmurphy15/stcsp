@@ -90,6 +90,10 @@ ConstantExpression.o: expressions/ConstantExpression.cpp expressions/ConstantExp
 	$(CPP) $(CFLAGS) expressions/ConstantExpression.cpp -c
 AddExpression.o: expressions/AddExpression.cpp expressions/AddExpression.h Expression.h
 	$(CPP) $(CFLAGS) expressions/AddExpression.cpp -c
+MultiplyExpression.o: expressions/MultiplyExpression.cpp expressions/MultiplyExpression.h Expression.h
+	$(CPP) $(CFLAGS) expressions/MultiplyExpression.cpp -c
+EqualExpression.o: expressions/EqualExpression.cpp expressions/EqualExpression.h Expression.h
+	$(CPP) $(CFLAGS) expressions/EqualExpression.cpp -c
 NextExpression.o: expressions/NextExpression.cpp expressions/NextExpression.h Expression.h
 	$(CPP) $(CFLAGS) expressions/NextExpression.cpp -c
 FirstExpression.o: expressions/FirstExpression.cpp expressions/FirstExpression.h Expression.h
@@ -112,7 +116,7 @@ GACSearchNode.o: searchNodes/GACSearchNode.cpp searchNodes/GACSearchNode.h Searc
 Solver.o: Solver.cpp Solver.h
 	$(CPP) $(CFLAGS) Solver.cpp -c
 
-mtest: Variable.o SearchNode.o VariableExpression.o ConstantExpression.o AddExpression.o NextExpression.o FirstExpression.o EqualConstraint.o PrimitiveNextConstraint.o PrimitiveUntilConstraint.o PrimitiveFirstConstraint.o UntilConstraint.o GACSearchNode.o Solver.o mtest.cpp
+mtest: Variable.o SearchNode.o VariableExpression.o ConstantExpression.o AddExpression.o MultiplyExpression.o EqualExpression.o NextExpression.o FirstExpression.o EqualConstraint.o PrimitiveNextConstraint.o PrimitiveUntilConstraint.o PrimitiveFirstConstraint.o UntilConstraint.o GACSearchNode.o Solver.o mtest.cpp
 	$(CPP) $(CFLAGS) $^ -o $@ -lboost_coroutine -lboost_context
 
 clean:

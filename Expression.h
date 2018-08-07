@@ -14,8 +14,10 @@ public:
     virtual std::set<Variable_r> getVariables() const = 0;
     virtual Expression& normalize(std::set<Constraint_r> &constraintList,
                            std::set<Variable_r> &variableList) = 0;
-    virtual std::set<int> getDomain(SearchNode &context, int time) const = 0;
-    virtual std::set<int> getInitialDomain() const = 0;
+
+    // TODO could use coroutines to turn this into an iterator so we don't have to generate the entire domain at once
+    virtual domain_t getDomain(SearchNode &context, int time) const = 0;
+    virtual domain_t getInitialDomain() const = 0;
 
     // TODO give it an optional "binarize" function
 

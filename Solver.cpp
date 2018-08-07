@@ -119,7 +119,7 @@ void Solver::printTree(bool includeAuxiliaryVariables) {
     std::cout<<"\n";
 }
 
-std::set<SearchNode *> Solver::printTreeRe(SearchNode &currentState, std::set<SearchNode *> &visited, bool includeAuxiliaryVariables) {
+std::set<SearchNode *>& Solver::printTreeRe(SearchNode &currentState, std::set<SearchNode *> &visited, bool includeAuxiliaryVariables) {
     if (visited.find(&currentState) != visited.end()) {
         return visited;
     }

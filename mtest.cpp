@@ -1,4 +1,5 @@
 #include <iostream>
+#include <chrono>
 
 #include "Variable.h"
 
@@ -8,6 +9,8 @@
 #include "expressions/AddExpression.h"
 #include "expressions/NextExpression.h"
 #include "expressions/FirstExpression.h"
+#include "expressions/MultiplyExpression.h"
+#include "expressions/EqualExpression.h"
 
 #include "Constraint.h"
 #include "constraints/EqualConstraint.h"
@@ -32,10 +35,13 @@ using namespace std;
 //}
 
 void printSolution(std::set<Constraint_r> constraints) {
+    auto start = chrono::system_clock::now();
     Solver s(constraints, GAC_NODE, 1);
     s.solve();
+    auto ending = chrono::system_clock::now();
+    std::chrono::duration<double> elapsed = ending - start;
     s.printTree();
-    cout<<"ploop\n";
+    cout<<"ploop "<< elapsed.count() <<"\n";
 }
 
 
@@ -99,5 +105,36 @@ int main(int argc, char **argv) {
     printSolution({*new UntilConstraint(e_c, e_d)});
 
     printSolution({*new EqualConstraint(*new FirstExpression(e_a), e_b)});
+
+    VariableExpression *time = new VariableExpression(*new Variable({-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5}));
+    VariableExpression *position = new VariableExpression(*new Variable({0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25}));
+    VariableExpression *velocity = new VariableExpression(*new Variable({-10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}));
+    VariableExpression *acceleration = new VariableExpression(*new Variable({-25, -24, -23, -22, -21, -20, -19, -18, -17, -16, -15, -14, -13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2}));
+
+    // lol it says that this is unsatisfiable, and ITS CORRECT since I say that time must always increase, but it has a
+            // finite domain so eventually it will always be unable to increase further
+    printSolution({*new EqualConstraint(*position, *new MultiplyExpression(*time, *time)),
+                  *new EqualConstraint(*velocity,
+                                       *new AddExpression(*new NextExpression(*position),
+                                                          *new MultiplyExpression(*position, *new ConstantExpression(-1)))),
+                  *new EqualConstraint(*acceleration,
+                                      *new AddExpression(*new NextExpression(*velocity),
+                                                         *new MultiplyExpression(*velocity, *new ConstantExpression(-1)))),
+                  *new EqualConstraint(*new NextExpression(*time), *new AddExpression(*time, *new ConstantExpression(1))),
+                  *new EqualConstraint(*new FirstExpression(*time), *new ConstantExpression(-5))});
+
+    // fixing that naively with an until constraint
+    VariableExpression *switchExp = new VariableExpression(*new Variable({0, 1}));
+    printSolution({*new EqualConstraint(*position, *new MultiplyExpression(*time, *time)),
+                   *new EqualConstraint(*velocity,
+                                        *new AddExpression(*new NextExpression(*position),
+                                                           *new MultiplyExpression(*position, *new ConstantExpression(-1)))),
+                   *new EqualConstraint(*acceleration,
+                                        *new AddExpression(*new NextExpression(*velocity),
+                                                           *new MultiplyExpression(*velocity, *new ConstantExpression(-1)))),
+                   *new EqualConstraint(*new NextExpression(*time),
+                                        *new AddExpression(*time, *switchExp)),
+                   *new EqualConstraint(*new FirstExpression(*time), *new ConstantExpression(-5)),
+                   *new UntilConstraint(*switchExp, *new EqualExpression(*time, *new ConstantExpression(5)))});
 }
 

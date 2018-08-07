@@ -41,6 +41,8 @@ std::set<Variable_r> PrimitiveNextConstraint::getVariables() const
 
 // defaultPropagate is only intended for looking at 1 timepoint at a time, so it would not have worked
 //// NOTE: DUE TO OUR NORMALIZATION TECHNIQUE, V WILL ONLY EVER APPEAR IN ONE OF MVARIABLEEXPRESSION OR MNEXTEXPRESSION
+
+//// nevermind, this will work even if it appears in both
 std::vector<std::set<int>> PrimitiveNextConstraint::propagate(Variable &v, SearchNode &context) {
     //TODO was able to use set_intersection here bc I new I was iterating over variableExpressions, so there would be no
     //TODO exponential explosion for iterating through their domains. (On the other hand, I already had to sacrifice that
@@ -49,10 +51,11 @@ std::vector<std::set<int>> PrimitiveNextConstraint::propagate(Variable &v, Searc
     std::vector<std::set<int>> differences(context.getPrefixK());
     if (context.getPrefixK() < 2) {
         return differences;
-    } else if (v == mVariable){
+    }
+    if (v == mVariable){
         for (int i=0; i<context.getPrefixK() - 1; i++) {
             domain_t currDomain = mVarExpr.getDomain(context, i);
-            domain_t nextDomain = mNextVarExpr.getDomain(context, i);
+            domain_t nextDomain = mNextVarExpr.getDomain(context, i+1);
             domain_t intersection;
             std::set<int> difference;
             std::set_intersection(currDomain.begin(), currDomain.end(),
@@ -65,10 +68,10 @@ std::vector<std::set<int>> PrimitiveNextConstraint::propagate(Variable &v, Searc
             context.setDomain(v, intersection, i);
             differences[i] = difference;
         }
-        return differences;
-    } else {
+    }
+    if (v == mNextVariable){
         for (int i=1; i<context.getPrefixK(); i++) {
-            domain_t currDomain = mVarExpr.getDomain(context, i);
+            domain_t currDomain = mVarExpr.getDomain(context, i-1);
             domain_t nextDomain = mNextVarExpr.getDomain(context, i);
             domain_t intersection;
             std::set<int> difference;
@@ -80,10 +83,10 @@ std::vector<std::set<int>> PrimitiveNextConstraint::propagate(Variable &v, Searc
                                 std::inserter(difference,difference.begin()));
 
             context.setDomain(v, intersection, i);
-            differences[i] = difference;
+            differences[i].insert(difference.begin(), difference.end());
         }
-        return differences;
     }
+    return differences;
 }
 //    } else if (v == *mVariableExpr.getVariables().begin()){
 //        std::vector<std::set<int>> differences;

@@ -5,7 +5,7 @@
 // ACTUALLY YOU SHOULD NEVER USE IT ELSEWHERE, (SINCE IT MAKES ASSUMPTIONS ABOUT MVARIABLEEXPRESSION NEVER APPEARING INSIDE MNEXTEXPRESSION)
 // produced when you normalize a next expression
 //
-//
+// actually nevermind now
 //
 
 //// just reminding you again, the current implementation of propagate would need some kind of while loop if we were to

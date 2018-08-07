@@ -64,7 +64,7 @@ private:
     // returns dominated if no nodes in dominator tree were dominating
     SearchNode& detectDominance(SearchNode &newNode);
 
-    std::set<SearchNode *> printTreeRe(SearchNode &currentState, std::set<SearchNode *> &visited, bool includeAuxiliaryVariables);
+    std::set<SearchNode *>& printTreeRe(SearchNode &currentState, std::set<SearchNode *> &visited, bool includeAuxiliaryVariables);
 
     std::set<Variable_r> mVariables;
     std::set<Variable_r> mOriginalVariables;
