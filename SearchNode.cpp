@@ -14,7 +14,7 @@ int SearchNode::getAssignment(Variable &v, int time) {
     return mAssignments[time].at(v);
 }
 void SearchNode::setAssignment(Variable &v, int time, int value) {
-    mAssignments[time].at(v) = value;
+    mAssignments[time][v] = value;
 }
 const domain_t& SearchNode::getDomain(Variable &v, int time) const {
     return mDomains[time].at(v);

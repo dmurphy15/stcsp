@@ -7,6 +7,7 @@
 #include "expressions/ConstantExpression.h"
 #include "expressions/AddExpression.h"
 #include "expressions/NextExpression.h"
+#include "expressions/FirstExpression.h"
 
 #include "Constraint.h"
 #include "constraints/EqualConstraint.h"
@@ -31,7 +32,7 @@ using namespace std;
 //}
 
 void printSolution(std::set<Constraint_r> constraints) {
-    Solver s(constraints, GAC_NODE, 3);
+    Solver s(constraints, GAC_NODE, 1);
     s.solve();
     s.printTree();
     cout<<"ploop\n";
@@ -96,5 +97,7 @@ int main(int argc, char **argv) {
     Expression &e_c = *new VariableExpression(*new Variable({0, 1, 2}));
     Expression &e_d = *new VariableExpression(*new Variable({0, 1, 2, 3}));
     printSolution({*new UntilConstraint(e_c, e_d)});
+
+    printSolution({*new EqualConstraint(*new FirstExpression(e_a), e_b)});
 }
 

@@ -41,7 +41,7 @@ std::vector<std::set<int>> PrimitiveFirstConstraint::propagate(Variable &v, Sear
         std::set<Variable_r> othersTmp = mFirstExpr.getVariables();
         std::vector<Variable_r> others(othersTmp.begin(), othersTmp.end());
         for (auto iter = context.getDomain(v, 0).begin(); iter != context.getDomain(v, 0).end(); ) {
-            context.setAssignment(v, *iter, 0);
+            context.setAssignment(v, 0, *iter);
             if (shouldPrune(context, others, 0)) {
                 firstDifference.insert(*iter);
                 iter = context.pruneDomain(v, iter, 0);
@@ -66,7 +66,7 @@ std::vector<std::set<int>> PrimitiveFirstConstraint::propagate(Variable &v, Sear
         others.push_back(mVariable);
 
         for (auto iter = context.getDomain(v, 0).begin(); iter != context.getDomain(v, 0).end(); ) {
-            context.setAssignment(v, *iter, 0);
+            context.setAssignment(v, 0, *iter);
             if (shouldPrune(context, others, 0)) {
                 firstDifference.insert(*iter);
                 iter = context.pruneDomain(v, iter, 0);

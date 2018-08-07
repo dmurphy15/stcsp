@@ -55,12 +55,11 @@ bool Solver::solveRe(SearchNode &currentNode) {
         assignment_t carriedAssignments;
         std::set<Constraint_r> carriedConstraints;
         std::tie(carriedConstraints, carriedAssignments) = carryConstraints(currentNode.getConstraints(), assignment);
-        std::vector<std::map<Variable_r, domain_t>> nextInitialDomains;
-        nextInitialDomains.reserve(mPrefixK);
-        for (int i=1; i < mPrefixK; i++) {
-            nextInitialDomains.push_back(currentNode.getDomains(i));
+        std::vector<std::map<Variable_r, domain_t>> nextInitialDomains(mPrefixK);
+        for (int i=0; i < mPrefixK - 1; i++) {
+            nextInitialDomains[i] = currentNode.getDomains(i+1);
         }
-        nextInitialDomains.push_back(mDomainsInitializer);
+        nextInitialDomains[mPrefixK-1] = mDomainsInitializer;
         SearchNode &nextNode = SearchNodeFactory::MakeSearchNode(mNodeType, carriedConstraints, carriedAssignments, nextInitialDomains);
         // detect dominance
         auto dominator = mSeenSearchNodes.find(nextNode);
@@ -87,7 +86,7 @@ std::pair<std::set<Constraint_r>, std::map<Variable_r, int>> Solver::carryConstr
                                                                                       std::map<Variable_r, int> assignment) {
     std::map<Variable_r, int> carriedAssignments;
     std::set<Constraint_r> carriedConstraints = constraints;
-    for (Constraint &c : carriedConstraints) {
+    for (Constraint &c : constraints) {
         // primitive first constraints force an auxiliary variable to equal another variable, but we only want this
         // enforced for the first timepoint, so remove them immediately, and then enforce that the auxiliary variable
         // remains constant by saying x = next x
