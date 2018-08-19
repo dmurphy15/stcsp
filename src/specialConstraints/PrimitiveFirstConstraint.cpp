@@ -1,10 +1,10 @@
-#include "PrimitiveFirstConstraint.h"
+#include "../../include/specialConstraints/PrimitiveFirstConstraint.h"
 
 #include <algorithm>
 
-#include "../expressions/VariableExpression.h"
-#include "../Variable.h"
-#include "../SearchNode.h"
+#include "../../include/specialExpressions/VariableExpression.h"
+#include "../../include/Variable.h"
+#include "../../include/SearchNode.h"
 
 PrimitiveFirstConstraint::PrimitiveFirstConstraint(VariableExpression &variableExpr, Expression &firstExpr) :
         mVariableExpr(variableExpr),

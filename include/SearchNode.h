@@ -112,7 +112,7 @@ public:
     friend bool operator==(SearchNode &lhs, SearchNode &rhs);
     friend bool operator<(SearchNode &lhs, SearchNode &rhs);
 
-    int getPrefixK();
+    int getPrefixK() const;
 protected:
     /**
      * helper function from which one could create a coroutine to iterate through all valid output assignments

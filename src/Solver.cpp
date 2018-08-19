@@ -1,27 +1,47 @@
-#include "Solver.h"
+#include "../include/Solver.h"
 
 #include <iostream>
 #include <algorithm>
 
-#include "constraints/PrimitiveNextConstraint.h"
-#include "constraints/PrimitiveUntilConstraint.h"
-#include "constraints/PrimitiveFirstConstraint.h"
-#include "constraints/EqualConstraint.h"
+#include "../include/specialConstraints/PrimitiveNextConstraint.h"
+#include "../include/specialConstraints/PrimitiveUntilConstraint.h"
+#include "../include/specialConstraints/PrimitiveFirstConstraint.h"
+#include "../include/specialConstraints/EqualConstraint.h"
 
-#include "expressions/ConstantExpression.h"
+#include "../include/specialExpressions/ConstantExpression.h"
 
-#include "SearchNode.h"
-#include "SearchNodeFactory.h"
+#include "../include/SearchNode.h"
+#include "../include/SearchNodeFactory.h"
 
-#include "Variable.h"
-#include "Constraint.h"
+#include "../include/Variable.h"
+#include "../include/Constraint.h"
 
-
-Solver::Solver(std::set<Constraint_r> constraints, SearchNodeType searchNodeType, int prefixK) {
+Solver::Solver(SearchNodeType searchNodeType, int prefixK) {
     mNodeType = searchNodeType;
     mPrefixK = prefixK;
+}
+
+Solver::Solver(SearchNodeType searchNodeType, int prefixK, std::set<Constraint_r> constraints) {
+    mNodeType = searchNodeType;
+    mPrefixK = prefixK;
+    mOriginalConstraints = constraints;
+    for (Constraint &c: constraints) {
+        std::set<Variable_r> vars = c.getVariables();
+        mOriginalVariables.insert(vars.begin(), vars.end());
+    }
+}
+
+void Solver::addConstraint(Constraint &c) {
+    mOriginalConstraints.insert(c);
+}
+
+void Solver::solve() {
+    mDomainsInitializer.clear();
+    mSeenSearchNodes.clear();
+    mVariables.clear();
+
     std::set<Constraint_r> initialConstraints;
-    for (Constraint &c : constraints) {
+    for (Constraint &c : mOriginalConstraints) {
         std::set<Variable_r> vars = c.getVariables();
         mVariables.insert(vars.begin(), vars.end());
         mOriginalVariables.insert(vars.begin(), vars.end());
@@ -38,9 +58,6 @@ Solver::Solver(std::set<Constraint_r> constraints, SearchNodeType searchNodeType
     }
     // allocates the new solver
     mTree.reset(&SearchNodeFactory::MakeSearchNode(mNodeType, initialConstraints, {}, initialDomains));
-}
-
-void Solver::solve() {
     solveRe(*mTree);
 }
 
@@ -94,6 +111,7 @@ std::pair<std::set<Constraint_r>, std::map<Variable_r, int>> Solver::carryConstr
         // will fix the domain to a single value upon constructing each new search node, as opposed to requiring more propagation
         // ACTUALLY, I'm switching to setting it to a constant since PrimitiveNextConstraint assumes that you are not seeing
         // x = next x (otherwise propagating it would be more complicated)
+        // ACTUALLY I think I could switch back to the original way if I wanted, since I fixed that issue I believe, and I think that would be faster, but for now I'm just leaving it to be safe...
         //TODO whenever I erase a constraint below, I erase references to expressions and probably cause memory leaks
         if (typeid(c) == typeid(PrimitiveFirstConstraint)) {
             carriedConstraints.erase(c);

@@ -1,33 +1,35 @@
-#include "SearchNode.h"
+#include "../include/SearchNode.h"
 
-#include "Variable.h"
-#include "Constraint.h"
+#include "../include/Variable.h"
+#include "../include/Constraint.h"
 
 
-SearchNode::SearchNode(std::set<Constraint_r> constraints, assignment_t historicalValues, std::vector<std::map<Variable_r, domain_t>> domains) {
+SearchNode::SearchNode(std::set<Constraint_r> constraints,
+                       assignment_t historicalValues,
+                       std::vector<std::map<Variable_r, domain_t>> domains) {
     mConstraints = constraints;
     mHistoricalValues = historicalValues;
     mDomains = domains;
 }
 
 int SearchNode::getAssignment(Variable &v, int time) {
-    return mAssignments[time].at(v);
+    return mAssignments.at(time).at(v);
 }
 void SearchNode::setAssignment(Variable &v, int time, int value) {
-    mAssignments[time][v] = value;
+    mAssignments.at(time).insert({v, value});
 }
 const domain_t& SearchNode::getDomain(Variable &v, int time) const {
-    return mDomains[time].at(v);
+    return mDomains.at(time).at(v);
 }
 void SearchNode::setDomain(Variable &v, domain_t domain, int time) {
-    mDomains[time].at(v) = domain;
+    mDomains.at(time).at(v) = domain;
 }
 domain_t::iterator SearchNode::pruneDomain(Variable &v, domain_t::iterator &toPrune, int time) {
-    return mDomains[time].at(v).erase(toPrune);
+    return mDomains.at(time).at(v).erase(toPrune);
 }
 
 const std::map<Variable_r, domain_t>& SearchNode::getDomains(int time) const {
-    return mDomains[time];
+    return mDomains.at(time);
 }
 
 std::set<Constraint_r> SearchNode::getConstraints() {
@@ -49,8 +51,8 @@ std::vector<std::pair<SearchNode_r, assignment_t>> SearchNode::getChildNodes() {
     return mChildNodes;
 }
 
-int SearchNode::getPrefixK() {
-    return mDomains.size();
+int SearchNode::getPrefixK() const {
+    return (int)mDomains.size();
 }
 
 bool operator==(SearchNode &lhs, SearchNode &rhs) {

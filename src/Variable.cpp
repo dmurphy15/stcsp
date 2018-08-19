@@ -1,5 +1,5 @@
-#include "Variable.h"
-#include "SearchNode.h"
+#include "../include/Variable.h"
+#include "../include/SearchNode.h"
 
 Variable::Variable(std::set<int> domain)
 {

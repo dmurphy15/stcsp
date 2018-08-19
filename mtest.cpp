@@ -1,26 +1,26 @@
 #include <iostream>
 #include <chrono>
 
-#include "Variable.h"
+#include "include/Variable.h"
 
-#include "Expression.h"
-#include "expressions/VariableExpression.h"
-#include "expressions/ConstantExpression.h"
-#include "expressions/AddExpression.h"
-#include "expressions/NextExpression.h"
-#include "expressions/FirstExpression.h"
-#include "expressions/MultiplyExpression.h"
-#include "expressions/EqualExpression.h"
+#include "include/Expression.h"
+#include "include/specialExpressions/VariableExpression.h"
+#include "include/specialExpressions/ConstantExpression.h"
+#include "include/expressions/AddExpression.h"
+#include "include/expressions/NextExpression.h"
+#include "include/expressions/FirstExpression.h"
+#include "include/expressions/MultiplyExpression.h"
+#include "include/expressions/EqualExpression.h"
 
-#include "Constraint.h"
-#include "constraints/EqualConstraint.h"
-#include "constraints/PrimitiveNextConstraint.h"
-#include "constraints/UntilConstraint.h"
+#include "include/Constraint.h"
+#include "include/specialConstraints/EqualConstraint.h"
+#include "include/specialConstraints/PrimitiveNextConstraint.h"
+#include "include/constraints/UntilConstraint.h"
 
-#include "SearchNode.h"
-#include "searchNodes/GACSearchNode.h"
+#include "include/SearchNode.h"
+#include "include/searchNodes/GACSearchNode.h"
 
-#include "Solver.h"
+#include "include/Solver.h"
 
 using namespace std;
 
@@ -36,7 +36,7 @@ using namespace std;
 
 void printSolution(std::set<Constraint_r> constraints) {
     auto start = chrono::system_clock::now();
-    Solver s(constraints, GAC_NODE, 1);
+    Solver s(GAC_NODE, 4, constraints);
     s.solve();
     auto ending = chrono::system_clock::now();
     std::chrono::duration<double> elapsed = ending - start;

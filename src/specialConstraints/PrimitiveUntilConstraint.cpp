@@ -1,8 +1,8 @@
-#include "PrimitiveUntilConstraint.h"
+#include "../../include/specialConstraints/PrimitiveUntilConstraint.h"
 
-#include "../expressions/VariableExpression.h"
-#include "../Variable.h"
-#include "../SearchNode.h"
+#include "../../include/specialExpressions/VariableExpression.h"
+#include "../../include/Variable.h"
+#include "../../include/SearchNode.h"
 
 PrimitiveUntilConstraint::PrimitiveUntilConstraint(VariableExpression &variable, VariableExpression &untilVariable) :
         mVariable(*variable.getVariables().begin()),

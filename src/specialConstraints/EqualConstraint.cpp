@@ -1,9 +1,9 @@
-#include "EqualConstraint.h"
+#include "../../include/specialConstraints/EqualConstraint.h"
 
-#include "../SearchNode.h"
-#include "../Expression.h"
-#include "../Constraint.h"
-#include "../Variable.h"
+#include "../../include/SearchNode.h"
+#include "../../include/Expression.h"
+#include "../../include/Constraint.h"
+#include "../../include/Variable.h"
 
 EqualConstraint::EqualConstraint(Expression &a, Expression &b) :
         mExpr1(a),

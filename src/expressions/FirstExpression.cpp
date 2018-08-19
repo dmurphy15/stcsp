@@ -1,10 +1,10 @@
-#include "FirstExpression.h"
+#include "../../include/expressions/FirstExpression.h"
 
 #include <stdexcept>
 
-#include "../Variable.h"
-#include "../constraints/PrimitiveFirstConstraint.h"
-#include "VariableExpression.h"
+#include "../../include/Variable.h"
+#include "../../include/specialConstraints/PrimitiveFirstConstraint.h"
+#include "../../include/specialExpressions/VariableExpression.h"
 
 FirstExpression::FirstExpression(Expression &a) : mExpr(a) {}
 

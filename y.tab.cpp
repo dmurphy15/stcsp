@@ -1637,7 +1637,6 @@ int main(int argc, char *argv[]) {
     }
 
     yyparse();
-	printf("done\n");
 
     if (filename != NULL) {
         fclose(yyin);

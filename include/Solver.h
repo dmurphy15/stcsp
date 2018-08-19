@@ -48,14 +48,15 @@
 class Solver
 {
 public:
-    Solver(std::set<Constraint_r> constraints, SearchNodeType searchNodeType, int prefixK);
+    Solver(SearchNodeType searchNodeType, int prefixK);
+    Solver(SearchNodeType searchNodeType, int prefixK, std::set<Constraint_r> constraints);
+    void addConstraint(Constraint &c);
     void solve();
-
+    void printTree(bool includeAuxiliaryVariables=false);
+private:
     SearchNodeType mNodeType;
     std::shared_ptr<SearchNode> mTree;
 
-    void printTree(bool includeAuxiliaryVariables=false);
-private:
     // returns false if currentState is a failure node
     bool solveRe(SearchNode &currentNode);
     // creates the appropriate instantaneous assignments and constraints for the next state
@@ -66,8 +67,11 @@ private:
 
     std::set<SearchNode *>& printTreeRe(SearchNode &currentState, std::set<SearchNode *> &visited, bool includeAuxiliaryVariables);
 
-    std::set<Variable_r> mVariables;
     std::set<Variable_r> mOriginalVariables;
+    std::set<Constraint_r> mOriginalConstraints;
+    // just for documentation; unneeded
+    std::set<Variable_r> mVariables;
+
 
     //TODO in the future it would be pretty easy to also keep a set of seen failure nodes, so we can cut short any nodes
     // that we know will fail

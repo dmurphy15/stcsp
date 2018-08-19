@@ -14,7 +14,7 @@
 #pragma once
 
 #include "../Constraint.h"
-#include "../expressions/VariableExpression.h"
+#include "../specialExpressions/VariableExpression.h"
 
 class PrimitiveNextConstraint : public Constraint
 {

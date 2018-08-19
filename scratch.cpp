@@ -2,6 +2,7 @@
 #include <set>
 #include <iostream>
 #include <functional>
+#include <array>
 
 //#include "Variable.h"
 //int radish() {
@@ -18,7 +19,21 @@ public:
     ~Food() {std::cout<<"goodbye, food\n";}
 };
 
+template <int fun>
+class Fun {
+public:
+    Fun(std::array<int, fun> dooop) {
+        myDooop = dooop;
+    }
+    const int FunInt = fun;
+    std::array<int, fun> myDooop;
+};
+
 int main(int argc, char **argv) {
+    std::array<int, 3> blah = {1, 2, 3};
+    Fun<2> a(blah);
+    std::cout<<""<<a.myDooop.at(2)<<"\n";
+
 //    for (int i=0; i<5; i++) {
 //        std::cout<<radish();
 //    }

@@ -1,13 +1,13 @@
-#include "UntilConstraint.h"
+#include "../../include/constraints/UntilConstraint.h"
 
-#include "../Variable.h"
-#include "../Expression.h"
-#include "../expressions/VariableExpression.h"
-#include "PrimitiveUntilConstraint.h"
-#include "EqualConstraint.h"
-#include "../Constraint.h"
+#include "../../include/Variable.h"
+#include "../../include/Expression.h"
+#include "../../include/specialExpressions/VariableExpression.h"
+#include "../../include/specialConstraints/PrimitiveUntilConstraint.h"
+#include "../../include/specialConstraints/EqualConstraint.h"
+#include "../../include/Constraint.h"
 
-#include "../SearchNode.h"
+#include "../../include/SearchNode.h"
 
 UntilConstraint::UntilConstraint(Expression &a, Expression &b) :
         mExpr(a),

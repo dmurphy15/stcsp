@@ -1,6 +1,6 @@
-#include "EqualExpression.h"
+#include "../../include/expressions/EqualExpression.h"
 
-#include "../Variable.h"
+#include "../../include/Variable.h"
 
 EqualExpression::EqualExpression(Expression &a, Expression &b) :
         mExpr1(a),

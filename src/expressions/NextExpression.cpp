@@ -1,11 +1,11 @@
-#include "NextExpression.h"
+#include "../../include/expressions/NextExpression.h"
 
 #include <stdexcept>
 
-#include "../Variable.h"
-#include "../constraints/PrimitiveNextConstraint.h"
-#include "../constraints/EqualConstraint.h"
-#include "VariableExpression.h"
+#include "../../include/Variable.h"
+#include "../../include/specialConstraints/PrimitiveNextConstraint.h"
+#include "../../include/specialConstraints/EqualConstraint.h"
+#include "../../include/specialExpressions/VariableExpression.h"
 
 NextExpression::NextExpression(Expression &a) : mExpr(a) {}
 

@@ -1,10 +1,5 @@
 #pragma once
 
-#include <map>
-#include <set>
-#include <functional>
-#include <vector>
-
 #include "../SearchNode.h"
 
 class GACSearchNode : public SearchNode

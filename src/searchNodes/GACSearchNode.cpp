@@ -1,9 +1,9 @@
-#include "GACSearchNode.h"
+#include "../../include/searchNodes/GACSearchNode.h"
 
 #include <iterator>
 
-#include "../Constraint.h"
-#include "../Variable.h"
+#include "../../include/Constraint.h"
+#include "../../include/Variable.h"
 
 #include <iostream>
 

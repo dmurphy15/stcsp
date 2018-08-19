@@ -1,7 +1,7 @@
-#include "VariableExpression.h"
+#include "../../include/specialExpressions/VariableExpression.h"
 
-#include "../Variable.h"
-#include "../Constraint.h"
+#include "../../include/Variable.h"
+#include "../../include/Constraint.h"
 
 VariableExpression::VariableExpression(Variable &v) :
         mVariable(v) {}
