@@ -4,9 +4,9 @@
 #include "../include/Constraint.h"
 
 
-SearchNode::SearchNode(std::set<Constraint_r> constraints,
-                       assignment_t historicalValues,
-                       std::vector<std::map<Variable_r, domain_t>> domains) {
+SearchNode::SearchNode(const std::set<Constraint_r>& constraints,
+                       const assignment_t& historicalValues,
+                       const std::vector<std::map<Variable_r, domain_t>>& domains) {
     mConstraints = constraints;
     mHistoricalValues = historicalValues;
     mDomains = domains;
@@ -16,7 +16,7 @@ int SearchNode::getAssignment(Variable &v, int time) {
     return mAssignments.at(time).at(v);
 }
 void SearchNode::setAssignment(Variable &v, int time, int value) {
-    mAssignments.at(time).insert({v, value});
+    mAssignments.at(time)[v] = value;
 }
 const domain_t& SearchNode::getDomain(Variable &v, int time) const {
     return mDomains.at(time).at(v);
@@ -24,7 +24,7 @@ const domain_t& SearchNode::getDomain(Variable &v, int time) const {
 void SearchNode::setDomain(Variable &v, domain_t domain, int time) {
     mDomains.at(time).at(v) = domain;
 }
-domain_t::iterator SearchNode::pruneDomain(Variable &v, domain_t::iterator &toPrune, int time) {
+domain_t::const_iterator SearchNode::pruneDomain(Variable &v, domain_t::const_iterator &toPrune, int time) {
     return mDomains.at(time).at(v).erase(toPrune);
 }
 

@@ -38,4 +38,9 @@ public:
 private:
     bool lt(const Constraint &rhs) const override;
     bool eq(const Constraint &rhs) const override;
+
+    void propagateHelper(Variable &v,
+                         SearchNode &context,
+                         bool vIsNext,
+                         std::vector<std::set<int>>& ret);
 };

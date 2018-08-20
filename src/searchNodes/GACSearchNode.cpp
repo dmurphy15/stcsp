@@ -24,9 +24,7 @@ GACSearchNode::GACSearchNode(std::set<Constraint_r> constraints, std::map<Variab
     for (auto &assignment : historicalValues) {
         mDomains[0][assignment.first] = {assignment.second};
     }
-    for (int i=0; i < getPrefixK(); i++) {
-        mAssignments.push_back({});
-    }
+    mAssignments.resize(getPrefixK());
 }
 
 void GACSearchNode::generateNextAssignment(coro_assignment_t::push_type& yield)
@@ -46,16 +44,15 @@ void GACSearchNode::generateNextAssignment(coro_assignment_t::push_type& yield)
         else if (firstDomains[v].size() > 1)
         {
             yieldAssignment = false;
-            std::set<int> full_domain = firstDomains[v];
-            std::set<int> lo_domain;
-            std::set<int> hi_domain;
-            std::tie(lo_domain, hi_domain) = splitDomain(full_domain);
+            domain_t lo_domain;
+            domain_t hi_domain;
+            std::tie(lo_domain, hi_domain) = splitDomain(firstDomains[v]);
             firstDomains[v] = lo_domain;
             generateNextAssignment(yield);
             firstDomains[v] = hi_domain;
             generateNextAssignment(yield);
             // reset the domain
-            firstDomains[v] = full_domain;
+            firstDomains[v].insert(lo_domain.begin(), lo_domain.end());
             break;
         }
     }
@@ -167,10 +164,10 @@ void GACSearchNode::generateAssignments(coro_int_t::push_type& yield,
     }
 }
 
-std::pair<std::set<int>, std::set<int>> GACSearchNode::splitDomain(std::set<int> domain)
+std::pair<domain_t, domain_t> GACSearchNode::splitDomain(domain_t& domain)
 {
-    std::set<int> split_lo;
-    std::set<int> split_hi;
+    domain_t split_lo;
+    domain_t split_hi;
     std::size_t i=0;
     for (auto it = domain.begin(); it != domain.end(); it++, i++) {
         if (i < domain.size() / 2) {

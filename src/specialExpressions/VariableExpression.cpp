@@ -22,12 +22,14 @@ Expression& VariableExpression::normalize(std::set<Constraint_r> &constraintList
     return *this;
 }
 
-std::set<int> VariableExpression::getDomain(SearchNode &context, int time) const {
+domain_t VariableExpression::getDomain(SearchNode &context, int time) const {
     return mVariable.getDomain(context, time);
 }
 
-std::set<int> VariableExpression::getInitialDomain() const {
-    return mVariable.getInitialDomain();
+domain_t VariableExpression::getInitialDomain() const {
+    // doing this so that I can get a mutable copy of the const vector that the variable returns
+    domain_t a = mVariable.getInitialDomain();
+    return a;
 }
 
 bool VariableExpression::lt(const Expression &rhs) const {

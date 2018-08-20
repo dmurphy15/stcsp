@@ -16,7 +16,7 @@ private:
     std::map<Constraint_r, std::vector<Variable_r>> mConstraintToVariables;
 
     std::vector<std::map<Variable_r, std::set<int>>> GAC();
-    std::pair<domain_t, domain_t> splitDomain(domain_t domain);
+    std::pair<domain_t, domain_t> splitDomain(domain_t& domain);
     void generateNextAssignment(coro_assignment_t::push_type &yield) override;
     void generateAssignments(coro_int_t::push_type &yield, std::vector<Variable_r>& variables, int index, int time);
 };

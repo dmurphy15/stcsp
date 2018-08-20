@@ -35,12 +35,12 @@ Expression& FirstExpression::normalize(std::set<Constraint_r> &constraintList, s
     return equivalentVarExpr;
 }
 
-std::set<int> FirstExpression::getDomain(SearchNode &context, int time) const
+domain_t FirstExpression::getDomain(SearchNode &context, int time) const
 {
-    throw mExpr.getDomain(context, 0);
+    return mExpr.getDomain(context, 0);
 }
 
-std::set<int> FirstExpression::getInitialDomain() const
+domain_t FirstExpression::getInitialDomain() const
 {
     return mExpr.getInitialDomain();
 }

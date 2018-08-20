@@ -10,10 +10,10 @@
 class Variable
 {
 public:
-    Variable(std::set<int> domain);
+    Variable(const domain_t& domain);
     int evaluate(SearchNode &context, int time);
-    std::set<int> getInitialDomain() const;
-    std::set<int> getDomain(SearchNode &context, int time);
+    const domain_t& getInitialDomain() const;
+    const domain_t& getDomain(SearchNode &context, int time);
 
     friend bool operator <(const Variable &a, const Variable &b) {
         return &a < &b;
@@ -22,5 +22,5 @@ public:
         return &a == &b;
     }
 private:
-    std::set<int> mInitialDomain;
+    domain_t mInitialDomain;
 };

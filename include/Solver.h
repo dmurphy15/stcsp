@@ -49,7 +49,7 @@ class Solver
 {
 public:
     Solver(SearchNodeType searchNodeType, int prefixK);
-    Solver(SearchNodeType searchNodeType, int prefixK, std::set<Constraint_r> constraints);
+    Solver(SearchNodeType searchNodeType, int prefixK, const std::set<Constraint_r>& constraints);
     void addConstraint(Constraint &c);
     void solve();
     void printTree(bool includeAuxiliaryVariables=false);
@@ -60,8 +60,8 @@ private:
     // returns false if currentState is a failure node
     bool solveRe(SearchNode &currentNode);
     // creates the appropriate instantaneous assignments and constraints for the next state
-    std::pair<std::set<Constraint_r>, assignment_t> carryConstraints(std::set<Constraint_r> constraints,
-                                                                      assignment_t assignment);
+    std::pair<std::set<Constraint_r>, assignment_t> carryConstraints(const std::set<Constraint_r>& constraints,
+                                                                      const assignment_t& assignment);
     // returns dominated if no nodes in dominator tree were dominating
     SearchNode& detectDominance(SearchNode &newNode);
 

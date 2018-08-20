@@ -37,12 +37,12 @@ Expression& NextExpression::normalize(std::set<Constraint_r> &constraintList, st
     return equivalentVarExpr;
 }
 
-std::set<int> NextExpression::getDomain(SearchNode &context, int time) const
+domain_t NextExpression::getDomain(SearchNode &context, int time) const
 {
     throw std::logic_error("unimplemented");
 }
 
-std::set<int> NextExpression::getInitialDomain() const
+domain_t NextExpression::getInitialDomain() const
 {
     return mExpr.getInitialDomain();
 }

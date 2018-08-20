@@ -18,9 +18,9 @@ class SearchNodeFactory
 public:
     SearchNodeFactory() = delete;
     static SearchNode& MakeSearchNode(SearchNodeType SearchNodeType,
-                                      std::set<Constraint_r> constraints,
-                                      assignment_t historicalValues,
-                                      std::vector<std::map<Variable_r, domain_t>> domains) {
+                                      const std::set<Constraint_r>& constraints,
+                                      const assignment_t& historicalValues,
+                                      const std::vector<std::map<Variable_r, domain_t>>& domains) {
         switch (SearchNodeType) {
             case GAC_NODE :
                 return *new GACSearchNode(constraints, historicalValues, domains);

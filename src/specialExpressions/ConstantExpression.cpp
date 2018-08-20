@@ -20,12 +20,12 @@ Expression& ConstantExpression::normalize(std::set<Constraint_r> &constraintList
     return *this;
 }
 
-std::set<int> ConstantExpression::getDomain(SearchNode &context, int time) const
+domain_t ConstantExpression::getDomain(SearchNode &context, int time) const
 {
     return {mConstant};
 }
 
-std::set<int> ConstantExpression::getInitialDomain() const
+domain_t ConstantExpression::getInitialDomain() const
 {
     return {mConstant};
 }

@@ -15,6 +15,7 @@
 #include "include/Constraint.h"
 #include "include/specialConstraints/EqualConstraint.h"
 #include "include/specialConstraints/PrimitiveNextConstraint.h"
+#include "include/specialConstraints/PrimitiveFirstConstraint.h"
 #include "include/constraints/UntilConstraint.h"
 
 #include "include/SearchNode.h"
@@ -36,7 +37,7 @@ using namespace std;
 
 void printSolution(std::set<Constraint_r> constraints) {
     auto start = chrono::system_clock::now();
-    Solver s(GAC_NODE, 4, constraints);
+    Solver s(GAC_NODE, 3, constraints);
     s.solve();
     auto ending = chrono::system_clock::now();
     std::chrono::duration<double> elapsed = ending - start;
@@ -90,6 +91,7 @@ int main(int argc, char **argv) {
 
 
 
+    printSolution({*new EqualConstraint(*new FirstExpression(e_a), e_b)});
 
     std::cout<<"\n\n\n";
     printSolution({trivial});

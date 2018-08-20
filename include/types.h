@@ -2,6 +2,7 @@
 
 #include <map>
 #include <set>
+#include <unordered_set>
 #include <vector>
 #include <functional>
 #include "boost/coroutine2/all.hpp"
@@ -20,4 +21,5 @@ using coro_assignment_t = boost::coroutines2::coroutine<std::map<std::reference_
 using coro_int_t = boost::coroutines2::coroutine<int>;
 
 using assignment_t = std::map<Variable_r, int>;
-using domain_t = std::set<int>;
+// performance appears to be slightly better with unordered_set
+using domain_t = std::unordered_set<int>;

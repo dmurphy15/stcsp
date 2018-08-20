@@ -21,7 +21,7 @@ Solver::Solver(SearchNodeType searchNodeType, int prefixK) {
     mPrefixK = prefixK;
 }
 
-Solver::Solver(SearchNodeType searchNodeType, int prefixK, std::set<Constraint_r> constraints) {
+Solver::Solver(SearchNodeType searchNodeType, int prefixK, const std::set<Constraint_r>& constraints) {
     mNodeType = searchNodeType;
     mPrefixK = prefixK;
     mOriginalConstraints = constraints;
@@ -41,10 +41,8 @@ void Solver::solve() {
     mVariables.clear();
 
     std::set<Constraint_r> initialConstraints;
+    mVariables = mOriginalVariables;
     for (Constraint &c : mOriginalConstraints) {
-        std::set<Variable_r> vars = c.getVariables();
-        mVariables.insert(vars.begin(), vars.end());
-        mOriginalVariables.insert(vars.begin(), vars.end());
         // this will add normalized constraints that are equivalent to c to mConstraints, and it
         // will add any new variables that go with them to mVariables
         c.normalize(initialConstraints, mVariables);
@@ -52,7 +50,7 @@ void Solver::solve() {
     for (Variable& v: mVariables) {
         mDomainsInitializer.insert({v, v.getInitialDomain()});
     };
-    std::vector<std::map<Variable_r, domain_t>> initialDomains; initialDomains.reserve(mPrefixK);
+    std::vector<std::map<Variable_r, domain_t>> initialDomains;
     for (int i=0; i < mPrefixK; i++) {
         initialDomains.push_back(mDomainsInitializer);
     }
@@ -99,9 +97,9 @@ bool Solver::solveRe(SearchNode &currentNode) {
     return numChildNodes > 0;
 }
 
-std::pair<std::set<Constraint_r>, std::map<Variable_r, int>> Solver::carryConstraints(std::set<Constraint_r> constraints,
-                                                                                      std::map<Variable_r, int> assignment) {
-    std::map<Variable_r, int> carriedAssignments;
+std::pair<std::set<Constraint_r>, std::map<Variable_r, int>> Solver::carryConstraints(const std::set<Constraint_r>& constraints,
+                                                                                      const assignment_t& assignment) {
+    assignment_t carriedAssignments;
     std::set<Constraint_r> carriedConstraints = constraints;
     for (Constraint &c : constraints) {
         // primitive first constraints force an auxiliary variable to equal another variable, but we only want this
@@ -117,13 +115,13 @@ std::pair<std::set<Constraint_r>, std::map<Variable_r, int>> Solver::carryConstr
             carriedConstraints.erase(c);
             PrimitiveFirstConstraint &pc = static_cast<PrimitiveFirstConstraint &>(c);
             VariableExpression &ve = *new VariableExpression(pc.mVariable);
-            carriedConstraints.insert(*new EqualConstraint(ve, *new ConstantExpression(assignment[pc.mVariable])));
+            carriedConstraints.insert(*new EqualConstraint(ve, *new ConstantExpression(assignment.at(pc.mVariable))));
         } else if (typeid(c) == typeid(PrimitiveNextConstraint)) {
            PrimitiveNextConstraint &pc = static_cast<PrimitiveNextConstraint &>(c);
-           carriedAssignments[pc.mNextVariable] = assignment[pc.mVariable];
+           carriedAssignments[pc.mNextVariable] = assignment.at(pc.mVariable);
         } else if (typeid(c) == typeid(PrimitiveUntilConstraint)) {
             PrimitiveUntilConstraint &pc = static_cast<PrimitiveUntilConstraint &>(c);
-            if (assignment[pc.mUntilVariable] != 0) {
+            if (assignment.at(pc.mUntilVariable) != 0) {
                 carriedConstraints.erase(c);
             }
         }

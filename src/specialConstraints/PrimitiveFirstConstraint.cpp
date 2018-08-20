@@ -52,8 +52,10 @@ std::vector<std::set<int>> PrimitiveFirstConstraint::propagate(Variable &v, Sear
         ret[0] = firstDifference;
         for (int i=1;i<context.getPrefixK();i++) {
             std::set<int> difference;
-            std::set_difference(context.getDomain(v, i).begin(), context.getDomain(v, i).end(),
-                                context.getDomain(v, 0).begin(), context.getDomain(v, 0).end(),
+            std::set<int> currDomain(context.getDomain(v, i).begin(), context.getDomain(v, i).end());
+            std::set<int> firstDomain(context.getDomain(v, 0).begin(), context.getDomain(v, 0).end());
+            std::set_difference(currDomain.begin(), currDomain.end(),
+                                firstDomain.begin(), firstDomain.end(),
                                 std::inserter(difference,difference.begin()));
             ret[i] = difference;
             context.setDomain(v,context.getDomain(v,0), i);

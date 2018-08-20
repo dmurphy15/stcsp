@@ -27,11 +27,11 @@ Expression& AddExpression::normalize(std::set<Constraint_r> &constraintList, std
     return *new AddExpression(equivalentExpr1, equivalentExpr2);
 }
 
-std::set<int> AddExpression::getDomain(SearchNode &context, int time) const
+domain_t AddExpression::getDomain(SearchNode &context, int time) const
 {
-    std::set<int> domain1 = mExpr1.getDomain(context, time);
-    std::set<int> domain2 = mExpr2.getDomain(context, time);
-    std::set<int> ret;
+    domain_t domain1 = mExpr1.getDomain(context, time);
+    domain_t domain2 = mExpr2.getDomain(context, time);
+    domain_t ret;
     for (int i : domain1) {
         for (int j : domain2) {
             ret.insert(i+j);
@@ -40,11 +40,11 @@ std::set<int> AddExpression::getDomain(SearchNode &context, int time) const
     return ret;
 }
 
-std::set<int> AddExpression::getInitialDomain() const
+domain_t AddExpression::getInitialDomain() const
 {
-    std::set<int> domain1 = mExpr1.getInitialDomain();
-    std::set<int> domain2 = mExpr2.getInitialDomain();
-    std::set<int> ret;
+    domain_t domain1 = mExpr1.getInitialDomain();
+    domain_t domain2 = mExpr2.getInitialDomain();
+    domain_t ret;
     for (int i : domain1) {
         for (int j : domain2) {
             ret.insert(i+j);

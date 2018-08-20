@@ -18,9 +18,9 @@ public:
      * the previous timepoint that were involved in "primitive next constraints" and which will therefore affect
      * the domains in the current set of timepoints
      */
-    SearchNode(std::set<Constraint_r> constraints,
-               assignment_t historicalValues,
-               std::vector<std::map<Variable_r, domain_t>> domains);
+    SearchNode(const std::set<Constraint_r>& constraints,
+               const assignment_t& historicalValues,
+               const std::vector<std::map<Variable_r, domain_t>>& domains);
 
     /**
      * get whatever value is currently assigned to a variable at a certain time within this time period
@@ -60,7 +60,7 @@ public:
      * @param toPrune - value to remove
      * @param time - time of the domain to prune
      */
-    domain_t::iterator pruneDomain(Variable &v, domain_t::iterator &toPrune, int time);
+    domain_t::const_iterator pruneDomain(Variable &v, domain_t::const_iterator &toPrune, int time);
 
     /**
      * get all the domains at a certain time
