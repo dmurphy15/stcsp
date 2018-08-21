@@ -10,10 +10,12 @@ YACC = yacc
 LDFLAGS =
 else
 LEX = flex
-YACC = yacc #byacc
+YACC = yacc
 LDFLAGS = -Wl
 endif
 endif
+
+YFLAGS = -g2 $(ARCH) -O2 -funroll-loops -fomit-frame-pointer $(DFLAGS)
 
 ARCH = $(shell uname -m)
 ifeq ($(UNAME),SunOS)
@@ -43,6 +45,7 @@ BIN = mtest
 # Put all auto generated stuff to this build dir.
 BUILD_DIR = build
 SRC = src
+INCLUDE = include
 
 # List of all .cpp source files.
 CPP = $(shell find $(SRC) -name "*.cpp")
@@ -51,8 +54,7 @@ OBJ = $(CPP:%.cpp=$(BUILD_DIR)/%.o)
 # Gcc/Clang will create these .d files containing dependencies.
 DEP = $(OBJ:%.o=%.d)
 
-# Default target named after the binary.
-#$(BIN) : $(BUILD_DIR)/$(BIN)
+build : convenience $(BIN)
 
 # Actual target of the binary - depends on all .o files.
 $(BIN) : $(BIN).cpp $(OBJ)
@@ -72,7 +74,31 @@ $(BUILD_DIR)/%.o : %.cpp
     # the same name as the .o file.
 	$(CXX) $(CXX_FLAGS) -MMD -c $< -o $@
 
-.PHONY : clean
+
+lex.yy.c: stcsp.l
+	$(LEX) stcsp.l
+lex.yy.o: lex.yy.c y.tab.h
+	gcc $(YFLAGS) lex.yy.c -c
+y.tab.cpp: stcsp.y
+	$(YACC) -d stcsp.y; mv y.tab.c y.tab.cpp
+y.tab.h: stcsp.y
+	$(YACC) -d stcsp.y
+y.tab.o: y.tab.cpp y.tab.h
+	$(CXX) $(YFLAGS) y.tab.cpp -c
+
+.PHONY : clean convenience
+
+# generate convenience header
+convenience :
+	echo "#pragma once;" > all.h
+	for file in $(shell cd include; find constraints \
+		expressions \
+		specialConstraints \
+		specialExpressions -name "*.h") SearchNodeTypes.h Solver.h Variable.h; do \
+		echo "#include \"$$file\"" >> $(INCLUDE)/all.h; \
+	done
+
 clean :
     # This should remove all generated files.
 	-rm $(BIN) $(OBJ) $(DEP)
+	-rm $(INCLUDE)/all.h

@@ -19,25 +19,24 @@
 #include <vector>
 #include <unordered_set>
 
-#include "include/types.h"
-#include "include/Variable.h"
+#include "Variable.h"
 
-#include "include/Expression.h"
-#include "include/expressions/AddExpression.h"
-#include "include/specialExpressions/VariableExpression.h"
-#include "include/specialExpressions/ConstantExpression.h"
+#include "Expression.h"
+#include "expressions/AddExpression.h"
+#include "expressions/VariableExpression.h"
+#include "expressions/ConstantExpression.h"
 
-#include "include/Constraint.h"
-#include "include/specialConstraints/EqualConstraint.h"
+#include "Constraint.h"
+#include "constraints/EqualConstraint.h"
 
-domain_t constructDomain(int lower, int upper);
+std::unordered_set<int> constructDomain(int lower, int upper);
 
 // PERHAPS IN THE FUTURE MAKE A GLOBAL SOLVER, AND ADD TO IT INSTEAD OF ADDING TO THESE. SHOULD PROBABLY DO THAT
 struct cmp_str
 {
    bool operator()(char const *a, char const *b)
    {
-      return strcmp(a, b) == 0;
+      return strcmp(a, b) < 0;
    }
 };
 // maps a string identifier to its variable instance

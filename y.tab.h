@@ -116,7 +116,7 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 60 "stcsp.y" /* yacc.c:1909  */
+#line 61 "stcsp.y" /* yacc.c:1909  */
 
     char *str;
     int num;

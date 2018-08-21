@@ -7,7 +7,9 @@
 #include <memory>
 
 #include "types.h"
-#include "SearchNodeFactory.h"
+#include "SearchNode.h"
+
+enum SearchNodeType : int;
 
 // TODO GIVE THE SOLVER A PREFIX-K TO WORK WITH, WHICH WILL ALSO AFFECT HOW THE CONSTRAINTS NORMALIZE THEMSELVES, I BELIEVE (AT LEAST WRT NEXT EXPRESSIONS)
 // TODO also need to give some constraints some notion of tautology for dominance detection
@@ -75,7 +77,7 @@ private:
 
     //TODO in the future it would be pretty easy to also keep a set of seen failure nodes, so we can cut short any nodes
     // that we know will fail
-    std::set<SearchNode_r> mSeenSearchNodes;
+    std::unordered_set<SearchNode_r> mSeenSearchNodes;
 
     std::map<Variable_r, domain_t> mDomainsInitializer;
 

@@ -1,27 +1,7 @@
 #include <iostream>
 #include <chrono>
 
-#include "include/Variable.h"
-
-#include "include/Expression.h"
-#include "include/specialExpressions/VariableExpression.h"
-#include "include/specialExpressions/ConstantExpression.h"
-#include "include/expressions/AddExpression.h"
-#include "include/expressions/NextExpression.h"
-#include "include/expressions/FirstExpression.h"
-#include "include/expressions/MultiplyExpression.h"
-#include "include/expressions/EqualExpression.h"
-
-#include "include/Constraint.h"
-#include "include/specialConstraints/EqualConstraint.h"
-#include "include/specialConstraints/PrimitiveNextConstraint.h"
-#include "include/specialConstraints/PrimitiveFirstConstraint.h"
-#include "include/constraints/UntilConstraint.h"
-
-#include "include/SearchNode.h"
-#include "include/searchNodes/GACSearchNode.h"
-
-#include "include/Solver.h"
+#include "include/all.h"
 
 using namespace std;
 

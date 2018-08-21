@@ -14,3 +14,7 @@ each instantaneous csp makes its own map of variable to assignment
 
 
 context handles all assignments
+
+
+
+in makefile, generate all .o files plus the lex script that solves problems

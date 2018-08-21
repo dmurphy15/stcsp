@@ -2,11 +2,11 @@
 
 #include "../Constraint.h"
 
-class UntilConstraint : public Constraint
+class GEQConstraint : public Constraint
 {
 public:
-    UntilConstraint(Expression &a, Expression &b);
-    ~UntilConstraint();
+    GEQConstraint(Expression &a, Expression &b);
+    ~GEQConstraint();
 
     void normalize(std::set<Constraint_r> &constraintList,
                    std::set<Variable_r> &variableList) override;
@@ -20,6 +20,6 @@ private:
     bool lt(const Constraint &rhs) const override;
     bool eq(const Constraint &rhs) const override;
 
-    Expression &mExpr;
-    Expression &mUntilExpr;
+    Expression &mExpr1;
+    Expression &mExpr2;
 };

@@ -111,6 +111,7 @@ public:
 
     friend bool operator==(SearchNode &lhs, SearchNode &rhs);
     friend bool operator<(SearchNode &lhs, SearchNode &rhs);
+    friend class std::hash<SearchNode_r>;
 
     int getPrefixK() const;
 protected:
@@ -132,3 +133,26 @@ protected:
     assignment_t mHistoricalValues;
     std::vector<std::pair<SearchNode_r, assignment_t>> mChildNodes;
 };
+
+namespace std {
+    template <>
+    struct hash<SearchNode_r>
+    {
+        // hashing based solely on mAssignments, since I'm expecting mConstraints to be pretty
+        // similar between timepoints, so if there are collisions I'm guessing there won't be many
+        std::size_t operator()(const SearchNode& s) const
+        {
+            std::size_t seed = 0;
+            for (int i=0; i < s.getPrefixK(); i++) {
+                seed += s.mAssignments[i].size();
+            }
+            for (int i=0; i < s.getPrefixK(); i++) {
+                for(auto& pair : s.mAssignments[i]) {
+                    int val = pair.second;
+                    seed ^= val + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+                }
+            }
+            return seed;
+        }
+    };
+}

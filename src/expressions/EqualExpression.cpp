@@ -32,11 +32,12 @@ domain_t EqualExpression::getDomain(SearchNode &context, int time) const
     domain_t domain1 = mExpr1.getDomain(context, time);
     domain_t domain2 = mExpr2.getDomain(context, time);
 
-    if (domain1.size() == 0 && domain2.size() == 0) {
+    if (domain1.size() == 0 || domain2.size() == 0) {
         return {};
-    } else if (domain1.size() == 0 || domain2.size() == 0) {
-        return {0};
     }
+//    else if (domain1.size() == 0 || domain2.size() == 0) {
+//        return {0};
+//    }
 
     // now we know the domains are not empty
 
@@ -58,11 +59,12 @@ domain_t EqualExpression::getInitialDomain() const
     domain_t domain1 = mExpr1.getInitialDomain();
     domain_t domain2 = mExpr2.getInitialDomain();
 
-    if (domain1.size() == 0 && domain2.size() == 0) {
+    if (domain1.size() == 0 || domain2.size() == 0) {
         return {};
-    } else if (domain1.size() == 0 || domain2.size() == 0) {
-        return {0};
     }
+//    else if (domain1.size() == 0 || domain2.size() == 0) {
+//        return {0};
+//    }
 
     // now we know the domains are not empty
 

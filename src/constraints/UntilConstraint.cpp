@@ -5,7 +5,6 @@
 #include "../../include/specialExpressions/VariableExpression.h"
 #include "../../include/specialConstraints/PrimitiveUntilConstraint.h"
 #include "../../include/specialConstraints/EqualConstraint.h"
-#include "../../include/Constraint.h"
 
 #include "../../include/SearchNode.h"
 

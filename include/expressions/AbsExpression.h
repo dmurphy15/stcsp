@@ -2,28 +2,28 @@
 
 #include "../Expression.h"
 
-class ConstantExpression : public Expression
+class AbsExpression : public Expression
 {
 public:
-    ConstantExpression(int constant);
+    AbsExpression(Expression &a);
 
     int evaluate(SearchNode &context, int time) const override;
 
     std::set<Variable_r> getVariables() const override;
 
     Expression& normalize(std::set<Constraint_r> &constraintList,
-                   std::set<Variable_r> &variableList) override;
+                           std::set<Variable_r> &variableList) override;
     domain_t getDomain(SearchNode &context, int time) const override;
     domain_t getInitialDomain() const override;
-    const int mConstant;
 private:
     bool lt(const Expression &rhs) const override {
         return (typeid(*this).before(typeid(rhs))) ||
                ((typeid(*this) == typeid(rhs)) &&
-                (mConstant < static_cast<const ConstantExpression&>(rhs).mConstant));
+                (mExpr1 < static_cast<const AbsExpression&>(rhs).mExpr1));
     }
     bool eq(const Expression &rhs) const override {
         return (typeid(*this) == typeid(rhs)) &&
-               (mConstant == static_cast<const ConstantExpression&>(rhs).mConstant);
+               (mExpr1 == static_cast<const AbsExpression&>(rhs).mExpr1);
     }
+    Expression &mExpr1;
 };

@@ -2,26 +2,24 @@
 
 #include "../Expression.h"
 
-/*
- * Class for a an Expression that holds a single Variable. Used to separate
- * Expression attributes/methods from Variable attributes/methods. Also makes
- * parsing easier, so we can make multiple references to the same underlying variable.
- */
-class VariableExpression : public Expression
+class ConstantExpression;
+
+class AtExpression : public Expression
 {
 public:
-    VariableExpression(Variable &v);
+    AtExpression(Expression &a, ConstantExpression &b);
 
     int evaluate(SearchNode &context, int time) const override;
 
     std::set<Variable_r> getVariables() const override;
 
     Expression& normalize(std::set<Constraint_r> &constraintList,
-                   std::set<Variable_r> &variableList) override;
+                          std::set<Variable_r> &variableList) override;
     domain_t getDomain(SearchNode &context, int time) const override;
     domain_t getInitialDomain() const override;
-    Variable &mVariable;
 private:
     bool lt(const Expression &rhs) const override;
     bool eq(const Expression &rhs) const override;
+    Expression &mExpr1;
+    ConstantExpression &mExpr2;
 };

@@ -7,11 +7,8 @@
 #include <stdexcept>
 
 #include "types.h"
+#include "SearchNodeTypes.h"
 #include "searchNodes/GACSearchNode.h"
-
-enum SearchNodeType : int {
-    GAC_NODE
-};
 
 class SearchNodeFactory
 {

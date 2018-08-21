@@ -72,24 +72,25 @@
 #include <vector>
 #include <unordered_set>
 
-#include "Variable.h"
+#include "include/types.h"
+#include "include/Variable.h"
 
-#include "Expression.h"
-#include "expressions/AddExpression.h"
-#include "expressions/VariableExpression.h"
-#include "expressions/ConstantExpression.h"
+#include "include/Expression.h"
+#include "include/expressions/AddExpression.h"
+#include "include/specialExpressions/VariableExpression.h"
+#include "include/specialExpressions/ConstantExpression.h"
 
-#include "Constraint.h"
-#include "constraints/EqualConstraint.h"
+#include "include/Constraint.h"
+#include "include/specialConstraints/EqualConstraint.h"
 
-std::unordered_set<int> constructDomain(int lower, int upper);
+domain_t constructDomain(int lower, int upper);
 
 // PERHAPS IN THE FUTURE MAKE A GLOBAL SOLVER, AND ADD TO IT INSTEAD OF ADDING TO THESE. SHOULD PROBABLY DO THAT
 struct cmp_str
 {
    bool operator()(char const *a, char const *b)
    {
-      return strcmp(a, b) < 0;
+      return strcmp(a, b) == 0;
    }
 };
 // maps a string identifier to its variable instance
@@ -109,7 +110,7 @@ int line_num = 1;
 int my_argc = 0;
 char **my_argv = NULL;
 
-#line 113 "y.tab.c" /* yacc.c:339  */
+#line 114 "y.tab.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -215,13 +216,13 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 60 "stcsp.y" /* yacc.c:355  */
+#line 61 "stcsp.y" /* yacc.c:355  */
 
     char *str;
     int num;
     void *ptr;
 
-#line 225 "y.tab.c" /* yacc.c:355  */
+#line 226 "y.tab.c" /* yacc.c:355  */
 };
 
 typedef union YYSTYPE YYSTYPE;
@@ -238,7 +239,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 242 "y.tab.c" /* yacc.c:358  */
+#line 243 "y.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -538,8 +539,8 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    79,    79,    80,    81,    82,    87,    92,    94,    99,
-     100,   101,   105,   169,   172
+       0,    80,    80,    81,    82,    83,    88,    93,    95,   100,
+     101,   102,   106,   170,   173
 };
 #endif
 
@@ -1329,49 +1330,49 @@ yyreduce:
   switch (yyn)
     {
         case 6:
-#line 87 "stcsp.y" /* yacc.c:1646  */
+#line 88 "stcsp.y" /* yacc.c:1646  */
     { variableMap[(yyvsp[-7].str)] = new Variable(constructDomain((yyvsp[-4].num), (yyvsp[-2].num))); }
-#line 1335 "y.tab.c" /* yacc.c:1646  */
+#line 1336 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 9:
-#line 99 "stcsp.y" /* yacc.c:1646  */
+#line 100 "stcsp.y" /* yacc.c:1646  */
     { (yyval.ptr) = new VariableExpression(variableMap[(yyvsp[0].str)]); }
-#line 1341 "y.tab.c" /* yacc.c:1646  */
+#line 1342 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 10:
-#line 100 "stcsp.y" /* yacc.c:1646  */
+#line 101 "stcsp.y" /* yacc.c:1646  */
     { (yyval.ptr) = new ConstantExpression((yyvsp[0].num)); }
-#line 1347 "y.tab.c" /* yacc.c:1646  */
+#line 1348 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 11:
-#line 101 "stcsp.y" /* yacc.c:1646  */
+#line 102 "stcsp.y" /* yacc.c:1646  */
     { (yyval.ptr) = (yyvsp[-1].ptr); }
-#line 1353 "y.tab.c" /* yacc.c:1646  */
+#line 1354 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 12:
-#line 105 "stcsp.y" /* yacc.c:1646  */
+#line 106 "stcsp.y" /* yacc.c:1646  */
     { (yyval.ptr) = new AddExpression((Expression *)(yyvsp[-2].ptr), (Expression *)(yyvsp[0].ptr)); }
-#line 1359 "y.tab.c" /* yacc.c:1646  */
+#line 1360 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 13:
-#line 169 "stcsp.y" /* yacc.c:1646  */
+#line 170 "stcsp.y" /* yacc.c:1646  */
     { constraintList.push_back((Constraint *)(yyvsp[0].ptr)); }
-#line 1365 "y.tab.c" /* yacc.c:1646  */
+#line 1366 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 14:
-#line 172 "stcsp.y" /* yacc.c:1646  */
+#line 173 "stcsp.y" /* yacc.c:1646  */
     { (yyval.ptr) = new EqualConstraint((Expression *)(yyvsp[-3].ptr), (Expression *)(yyvsp[-1].ptr)); }
-#line 1371 "y.tab.c" /* yacc.c:1646  */
+#line 1372 "y.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 1375 "y.tab.c" /* yacc.c:1646  */
+#line 1376 "y.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1599,7 +1600,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 182 "stcsp.y" /* yacc.c:1906  */
+#line 183 "stcsp.y" /* yacc.c:1906  */
 
 
 extern FILE *yyin;

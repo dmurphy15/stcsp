@@ -1,0 +1,14 @@
+Some expressions could be implemented to just return combinations of other expressions when normalized, leaving
+most of the implementation details to those other expression types. This may wind up being inefficient - I just did it
+to demonstrate that one could combine existing expressions to quickly produce new ones. I'd recommend implementing
+each expression type fully, though, since it makes you think about potential shortcuts, especially when computing
+domains.
+
+I also could have constructed a larger hierarchy of expression types - unary/binary/ternary, symmetric/asymmetric, or
+pointwise/temporal.
+I intentionally did not, as sorting things into unary etc. would help with functions like "evaluate", but might cause
+one to gloss over the implementation of "getDomain" when you could have written a faster implementation. Also, each
+expression would still have to implement its own le and eq functions for comparison, since no parent classes would
+be able to cast to the appropriate subclasses. Also I would have to be careful to avoid creating too many virtual
+functions, which *could* slow things down (to what degree, idk). So despite the nice organization and potential for
+shared code that would come with a larger hierarchy, I don't think the benefits would be *that* nice.
