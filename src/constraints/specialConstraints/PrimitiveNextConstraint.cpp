@@ -1,12 +1,12 @@
-#include "../../include/specialConstraints/PrimitiveNextConstraint.h"
+#include "../../../include/constraints/specialConstraints/PrimitiveNextConstraint.h"
 
 #include <algorithm>
 #include <stdexcept>
 
-#include "../../include/SearchNode.h"
-#include "../../include/specialExpressions/VariableExpression.h"
-#include "../../include/Variable.h"
-#include "../../include/Expression.h"
+#include "../../../include/SearchNode.h"
+#include "../../../include/expressions/specialExpressions/VariableExpression.h"
+#include "../../../include/Variable.h"
+#include "../../../include/Expression.h"
 
 PrimitiveNextConstraint::PrimitiveNextConstraint(VariableExpression &varExpr, VariableExpression &nextVarExpr) :
         mVarExpr(varExpr),

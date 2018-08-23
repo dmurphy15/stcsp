@@ -33,7 +33,7 @@ endif
 endif
 
 CXX = g++
-CXX_FLAGS = -std=c++11 -g2 $(ARCH) -Wno-write-strings -Wfatal-errors -Wall -Wextra -Wpedantic -Wconversion -Wshadow
+CXX_FLAGS = -std=c++14 -g2 $(ARCH) -Wno-write-strings -Wfatal-errors -Wall -Wextra -Wpedantic -Wconversion -Wshadow
 
 OPT = yes
 ifeq ($(OPT),yes)
@@ -92,9 +92,7 @@ y.tab.o: y.tab.cpp y.tab.h
 convenience :
 	echo "#pragma once;" > all.h
 	for file in $(shell cd include; find constraints \
-		expressions \
-		specialConstraints \
-		specialExpressions -name "*.h") SearchNodeTypes.h Solver.h Variable.h; do \
+		expressions -name "*.h") SearchNodeTypes.h Solver.h Variable.h; do \
 		echo "#include \"$$file\"" >> $(INCLUDE)/all.h; \
 	done
 

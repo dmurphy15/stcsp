@@ -12,3 +12,9 @@ expression would still have to implement its own le and eq functions for compari
 be able to cast to the appropriate subclasses. Also I would have to be careful to avoid creating too many virtual
 functions, which *could* slow things down (to what degree, idk). So despite the nice organization and potential for
 shared code that would come with a larger hierarchy, I don't think the benefits would be *that* nice.
+
+
+Note that temporal expressions like Next, First, Until, and Fby are slow because they create variables whose domains
+are constructed by iterating over all possible values of subexpressions. However, this is a ONE-TIME COST - it is only
+expended during normalization. Furthermore, the GAC algorithm could take up to this much time anyway in pruning domains,
+so it might not be too bad.

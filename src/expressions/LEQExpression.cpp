@@ -3,20 +3,13 @@
 #include "../../include/Variable.h"
 
 LEQExpression::LEQExpression(Expression &a, Expression &b) :
+        Expression({a, b}, false),
         mExpr1(a),
         mExpr2(b) {}
 
 int LEQExpression::evaluate(SearchNode &context, int time) const
 {
     return mExpr1.evaluate(context, time) <= mExpr2.evaluate(context, time);
-}
-
-std::set<Variable_r> LEQExpression::getVariables() const
-{
-    std::set<Variable_r> vars1 = mExpr1.getVariables();
-    std::set<Variable_r> vars2 = mExpr2.getVariables();
-    vars1.insert(vars2.begin(), vars2.end());
-    return vars1;
 }
 
 Expression& LEQExpression::normalize(std::set<Constraint_r> &constraintList, std::set<Variable_r> &variableList)

@@ -5,8 +5,6 @@
 #include "../../include/Constraint.h"
 #include "../../include/Variable.h"
 
-#include <iostream>
-
 GACSearchNode::GACSearchNode(std::set<Constraint_r> constraints, std::map<Variable_r, int> historicalValues, std::vector<std::map<Variable_r, domain_t>> domains)
         : SearchNode(constraints, historicalValues, domains)
 {
@@ -178,8 +176,7 @@ std::pair<domain_t, domain_t> GACSearchNode::splitDomain(domain_t& domain)
     }
     return std::make_pair(split_lo, split_hi);
 }
-//
-//coro_assignment_t::pull_type GACSearchNode::generateNextStatesIterator()
-//{
-//return coro_assignment_t::pull_type(boost::bind(&GACSearchNode::generateNextStates, this, boost::placeholders::_1));
-//}
+
+coro_assignment_t::pull_type GACSearchNode::generateNextAssignmentIterator() {
+    return coro_assignment_t::pull_type(boost::bind(&GACSearchNode::generateNextAssignment, this, _1));
+}

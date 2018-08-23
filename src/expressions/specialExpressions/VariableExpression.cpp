@@ -1,9 +1,10 @@
-#include "../../include/specialExpressions/VariableExpression.h"
+#include "../../../include/expressions/specialExpressions/VariableExpression.h"
 
-#include "../../include/Variable.h"
-#include "../../include/Constraint.h"
+#include "../../../include/Variable.h"
+#include "../../../include/Constraint.h"
 
 VariableExpression::VariableExpression(Variable &v) :
+        Expression({}, false),
         mVariable(v) {}
 
 int VariableExpression::evaluate(SearchNode &context, int time) const

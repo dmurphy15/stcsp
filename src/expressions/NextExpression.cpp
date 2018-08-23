@@ -3,20 +3,15 @@
 #include <stdexcept>
 
 #include "../../include/Variable.h"
-#include "../../include/specialConstraints/PrimitiveNextConstraint.h"
-#include "../../include/specialConstraints/EqualConstraint.h"
-#include "../../include/specialExpressions/VariableExpression.h"
+#include "../../include/constraints/specialConstraints/PrimitiveNextConstraint.h"
+#include "../../include/constraints/specialConstraints/EqualConstraint.h"
+#include "../../include/expressions/specialExpressions/VariableExpression.h"
 
-NextExpression::NextExpression(Expression &a) : mExpr(a) {}
+NextExpression::NextExpression(Expression &a) : Expression({a}, false), mExpr(a) {}
 
 int NextExpression::evaluate(SearchNode &context, int time) const
 {
     throw std::logic_error("Next expression should never have to be evaluated");
-}
-
-std::set<Variable_r> NextExpression::getVariables() const
-{
-    return mExpr.getVariables();
 }
 
 Expression& NextExpression::normalize(std::set<Constraint_r> &constraintList, std::set<Variable_r> &variableList)

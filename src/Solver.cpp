@@ -3,12 +3,12 @@
 #include <iostream>
 #include <algorithm>
 
-#include "../include/specialConstraints/PrimitiveNextConstraint.h"
-#include "../include/specialConstraints/PrimitiveUntilConstraint.h"
-#include "../include/specialConstraints/PrimitiveFirstConstraint.h"
-#include "../include/specialConstraints/EqualConstraint.h"
+#include "../include/constraints/specialConstraints/PrimitiveNextConstraint.h"
+#include "../include/constraints/specialConstraints/PrimitiveUntilConstraint.h"
+#include "../include/constraints/specialConstraints/PrimitiveFirstConstraint.h"
+#include "../include/constraints/specialConstraints/EqualConstraint.h"
 
-#include "../include/specialExpressions/ConstantExpression.h"
+#include "../include/expressions/specialExpressions/ConstantExpression.h"
 
 #include "../include/SearchNode.h"
 #include "../include/SearchNodeFactory.h"

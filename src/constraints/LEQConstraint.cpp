@@ -5,8 +5,8 @@
 #include "../../include/Variable.h"
 #include "../../include/Expression.h"
 
-#include "../../include/specialConstraints/EqualConstraint.h"
-#include "../../include/specialExpressions/ConstantExpression.h"
+#include "../../include/constraints/specialConstraints/EqualConstraint.h"
+#include "../../include/expressions/specialExpressions/ConstantExpression.h"
 
 #include "../../include/expressions/LEQExpression.h"
 

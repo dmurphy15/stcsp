@@ -3,21 +3,13 @@
 #include "../../include/Variable.h"
 
 EqualExpression::EqualExpression(Expression &a, Expression &b) :
+        Expression({a, b}, true),
         mExpr1(a),
-        mExpr2(b),
-        mExpressions({a, b}) {}
+        mExpr2(b) {}
 
 int EqualExpression::evaluate(SearchNode &context, int time) const
 {
     return mExpr1.evaluate(context, time) == mExpr2.evaluate(context, time);
-}
-
-std::set<Variable_r> EqualExpression::getVariables() const
-{
-    std::set<Variable_r> vars1 = mExpr1.getVariables();
-    std::set<Variable_r> vars2 = mExpr2.getVariables();
-    vars1.insert(vars2.begin(), vars2.end());
-    return vars1;
 }
 
 Expression& EqualExpression::normalize(std::set<Constraint_r> &constraintList, std::set<Variable_r> &variableList)

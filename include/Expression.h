@@ -1,6 +1,5 @@
 #pragma once
-#include <set>
-#include <functional>
+#include <initializer_list>
 
 #include "types.h"
 
@@ -10,19 +9,26 @@
 class Expression
 {
 public:
-    virtual int evaluate(SearchNode &context, int time) const = 0;
-    virtual std::set<Variable_r> getVariables() const = 0;
-    virtual Expression& normalize(std::set<Constraint_r> &constraintList,
-                           std::set<Variable_r> &variableList) = 0;
+    Expression(std::initializer_list<Expression_r> expressions, bool symmetric);
 
-    // TODO could use coroutines to turn this into an iterator so we don't have to generate the entire domain at once
-    virtual domain_t getDomain(SearchNode &context, int time) const = 0;
-    virtual domain_t getInitialDomain() const = 0;
+    virtual int evaluate(SearchNode &context, int time) const = 0;
+
+    /**
+     * default implementations of these are provided, but should be overridden if:
+     * 1) the expression needs special normalization (default produces no new variables/constraints)
+     * 2) there is a faster way to obtain the domain of the expression (default is just brute-force) - you can almost
+     *      certainly do better if dealing with a boolean or symmetric expression
+     */
+    virtual Expression& normalize(std::set<Constraint_r> &constraintList, std::set<Variable_r> &variableList);
+    virtual domain_t getDomain(SearchNode &context, int time) const;
+    virtual domain_t getInitialDomain() const;
 
     // TODO give it an optional "binarize" function
 
-//    virtual bool lt(Expression *rhs) const;
-//    static struct
+    /**
+     * virtual so that variableExpression and constantExpression can override it
+     */
+    virtual std::set<Variable_r> getVariables() const;
     friend bool operator ==(const Expression &a, const Expression &b) {
         return a.eq(b);
     }
@@ -30,9 +36,38 @@ public:
         return a.lt(b);
     }
 private:
-    // the operators will just call these virtual functions. making them virtual so that
-    // we can have a default comparison for expressions, but things like variables and constants
-    // can override it
-    virtual bool lt(const Expression &rhs) const = 0;
-    virtual bool eq(const Expression &rhs) const = 0;
+    /**
+     * these are virtual so that variableExpression and constantExpression can override them
+     */
+    virtual bool eq(const Expression &b) const {
+        return typeid(*this) == typeid(b) && mExpressions == b.mExpressions;
+    }
+    virtual bool lt(const Expression &b) const {
+        return (typeid(*this).before(typeid(b))) || (typeid(*this) == typeid(b) && mExpressions < b.mExpressions);
+    }
+    /**
+     * build: simply call the constructor, passing in the expressions from the vector
+     * evaluateFake: evaluate the expression as if the expressions in mExpressions had been assigned the corresponding
+     *                  values
+     *
+     * these are used for the default normalize and getDomain/getInitialDomain implementations respectively. If you
+     * don't use those, then no need to override these.
+     */
+    virtual Expression& build(std::vector<Expression_r>& expressions);
+    virtual int evaluateFake(const std::vector<int>& values) const;
+    /**
+     * used only for comparison between expressions.
+     */
+    std::vector<Expression_r> mExpressions;
+
+    void getDomainHelper(const std::vector<Expression_r>& expressions,
+                         SearchNode &context,
+                         int time,
+                         std::vector<int>& values,
+                         std::size_t index,
+                         domain_t& accumulator) const;
+    void getInitialDomainHelper(const std::vector<Expression_r>& expressions,
+                                std::vector<int>& values,
+                                std::size_t index,
+                                domain_t& accumulator) const;
 };

@@ -1,7 +1,8 @@
-#include "../../include/specialExpressions/ConstantExpression.h"
+#include "../../../include/expressions/specialExpressions/ConstantExpression.h"
 
 
 ConstantExpression::ConstantExpression(int constant) :
+        Expression({}, false),
         mConstant(constant) {}
 
 int ConstantExpression::evaluate(SearchNode &context, int time) const

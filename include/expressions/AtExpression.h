@@ -2,10 +2,12 @@
 
 #include "../Expression.h"
 
-class NextExpression : public Expression
+class ConstantExpression;
+
+class AtExpression : public Expression
 {
 public:
-    NextExpression(Expression &a);
+    AtExpression(Expression &a, ConstantExpression &b);
 
     int evaluate(SearchNode &context, int time) const override;
     Expression& normalize(std::set<Constraint_r> &constraintList,
@@ -13,5 +15,6 @@ public:
     domain_t getDomain(SearchNode &context, int time) const override;
     domain_t getInitialDomain() const override;
 private:
-    Expression &mExpr;
+    Expression &mExpr1;
+    ConstantExpression &mExpr2;
 };

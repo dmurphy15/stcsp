@@ -2,9 +2,9 @@
 
 #include "../../include/Variable.h"
 #include "../../include/Expression.h"
-#include "../../include/specialExpressions/VariableExpression.h"
-#include "../../include/specialConstraints/PrimitiveUntilConstraint.h"
-#include "../../include/specialConstraints/EqualConstraint.h"
+#include "../../include/expressions/specialExpressions/VariableExpression.h"
+#include "../../include/constraints/specialConstraints/PrimitiveUntilConstraint.h"
+#include "../../include/constraints/specialConstraints/EqualConstraint.h"
 
 #include "../../include/SearchNode.h"
 

@@ -13,8 +13,8 @@
 
 #pragma once
 
-#include "../Constraint.h"
-#include "../specialExpressions/VariableExpression.h"
+#include "../../Constraint.h"
+#include "../../expressions/specialExpressions/VariableExpression.h"
 
 class PrimitiveNextConstraint : public Constraint
 {

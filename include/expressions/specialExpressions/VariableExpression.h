@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Expression.h"
+#include "../../Expression.h"
 
 /*
  * Class for a an Expression that holds a single Variable. Used to separate
@@ -14,12 +14,11 @@ public:
 
     int evaluate(SearchNode &context, int time) const override;
 
-    std::set<Variable_r> getVariables() const override;
-
     Expression& normalize(std::set<Constraint_r> &constraintList,
                    std::set<Variable_r> &variableList) override;
     domain_t getDomain(SearchNode &context, int time) const override;
     domain_t getInitialDomain() const override;
+    std::set<Variable_r> getVariables() const override;
     Variable &mVariable;
 private:
     bool lt(const Expression &rhs) const override;

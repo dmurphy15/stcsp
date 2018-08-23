@@ -3,21 +3,13 @@
 #include "../../include/Variable.h"
 
 AddExpression::AddExpression(Expression &a, Expression &b) :
+        Expression({a, b}, true),
         mExpr1(a),
-        mExpr2(b),
-        mExpressions({a, b}) {}
+        mExpr2(b) {}
 
 int AddExpression::evaluate(SearchNode &context, int time) const
 {
     return mExpr1.evaluate(context, time) + mExpr2.evaluate(context, time);
-}
-
-std::set<Variable_r> AddExpression::getVariables() const
-{
-    std::set<Variable_r> vars1 = mExpr1.getVariables();
-    std::set<Variable_r> vars2 = mExpr2.getVariables();
-    vars1.insert(vars2.begin(), vars2.end());
-    return vars1;
 }
 
 Expression& AddExpression::normalize(std::set<Constraint_r> &constraintList, std::set<Variable_r> &variableList)

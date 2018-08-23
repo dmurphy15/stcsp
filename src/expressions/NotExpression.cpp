@@ -3,16 +3,12 @@
 #include "../../include/Variable.h"
 
 NotExpression::NotExpression(Expression &a) :
+        Expression({a}, false),
         mExpr1(a) {}
 
 int NotExpression::evaluate(SearchNode &context, int time) const
 {
     return mExpr1.evaluate(context, time) != 0 ? 0 : 1;
-}
-
-std::set<Variable_r> NotExpression::getVariables() const
-{
-    return mExpr1.getVariables();
 }
 
 Expression& NotExpression::normalize(std::set<Constraint_r> &constraintList, std::set<Variable_r> &variableList)

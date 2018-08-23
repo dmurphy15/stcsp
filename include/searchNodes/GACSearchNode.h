@@ -7,9 +7,9 @@ class GACSearchNode : public SearchNode
 public:
     GACSearchNode(std::set<Constraint_r> constraints, assignment_t historicalValues, std::vector<std::map<Variable_r, domain_t>> domains);
     std::vector<std::set<int>> defaultPropagate(Variable &v, Constraint &c) override;
-    coro_assignment_t::pull_type generateNextAssignmentIterator() override {
-        return coro_assignment_t::pull_type(boost::bind(&GACSearchNode::generateNextAssignment, this, boost::placeholders::_1));
-    }
+    coro_assignment_t::pull_type generateNextAssignmentIterator() override;// {
+//        return coro_assignment_t::pull_type(boost::bind(&GACSearchNode::generateNextAssignment, this, _1));
+//    }
 
 private:
     std::map<Variable_r, std::vector<Constraint_r>> mVariableToConstraints;

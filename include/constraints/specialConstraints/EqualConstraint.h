@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Constraint.h"
+#include "../../Constraint.h"
 
 class EqualConstraint : public Constraint
 {

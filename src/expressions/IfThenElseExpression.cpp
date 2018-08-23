@@ -3,23 +3,14 @@
 #include "../../include/Variable.h"
 
 IfThenElseExpression::IfThenElseExpression(Expression &ifExpr, Expression &thenExpr, Expression &elseExpr) :
+        Expression({ifExpr, thenExpr, elseExpr}, false),
         mExpr1(ifExpr),
         mExpr2(thenExpr),
-        mExpr3(elseExpr){}
+        mExpr3(elseExpr) {}
 
 int IfThenElseExpression::evaluate(SearchNode &context, int time) const
 {
     return mExpr1.evaluate(context, time) >= mExpr2.evaluate(context, time);
-}
-
-std::set<Variable_r> IfThenElseExpression::getVariables() const
-{
-    std::set<Variable_r> vars1 = mExpr1.getVariables();
-    std::set<Variable_r> vars2 = mExpr2.getVariables();
-    std::set<Variable_r> vars3 = mExpr3.getVariables();
-    vars1.insert(vars2.begin(), vars2.end());
-    vars1.insert(vars3.begin(), vars3.end());
-    return vars1;
 }
 
 Expression& IfThenElseExpression::normalize(std::set<Constraint_r> &constraintList, std::set<Variable_r> &variableList)

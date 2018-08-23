@@ -24,11 +24,11 @@
 
 #include "include/Expression.h"
 #include "include/expressions/AddExpression.h"
-#include "include/specialExpressions/VariableExpression.h"
-#include "include/specialExpressions/ConstantExpression.h"
+#include "include/expressions/specialExpressions/VariableExpression.h"
+#include "include/expressions/specialExpressions/ConstantExpression.h"
 
 #include "include/Constraint.h"
-#include "include/specialConstraints/EqualConstraint.h"
+#include "include/constraints/specialConstraints/EqualConstraint.h"
 
 domain_t constructDomain(int lower, int upper);
 
