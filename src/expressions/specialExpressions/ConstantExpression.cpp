@@ -15,12 +15,6 @@ std::set<std::reference_wrapper<Variable>> ConstantExpression::getVariables() co
     return {};
 }
 
-Expression& ConstantExpression::normalize(std::set<Constraint_r> &constraintList,
-                                   std::set<Variable_r> &variableList)
-{
-    return *this;
-}
-
 domain_t ConstantExpression::getDomain(SearchNode &context, int time) const
 {
     return {mConstant};
@@ -30,3 +24,4 @@ domain_t ConstantExpression::getInitialDomain() const
 {
     return {mConstant};
 }
+

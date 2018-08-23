@@ -19,11 +19,11 @@ int AtExpression::evaluate(SearchNode &context, int time) const
 
 Expression& AtExpression::normalize(std::set<Constraint_r> &constraintList, std::set<Variable_r> &variableList)
 {
-    Expression &currLayer = mExpr1;
+    Expression *currLayer = &mExpr1;
     for (int i=0; i < mExpr2.mConstant; i++) {
-        currLayer = *new NextExpression(currLayer);
+        currLayer = new NextExpression(*currLayer);
     }
-    return currLayer.normalize(constraintList, variableList);
+    return currLayer->normalize(constraintList, variableList);
 }
 
 domain_t AtExpression::getDomain(SearchNode &context, int time) const

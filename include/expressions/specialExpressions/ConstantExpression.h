@@ -9,8 +9,6 @@ public:
 
     int evaluate(SearchNode &context, int time) const override;
 
-    Expression& normalize(std::set<Constraint_r> &constraintList,
-                   std::set<Variable_r> &variableList) override;
     domain_t getDomain(SearchNode &context, int time) const override;
     domain_t getInitialDomain() const override;
     std::set<Variable_r> getVariables() const override;
@@ -24,5 +22,8 @@ private:
     bool eq(const Expression &rhs) const override {
         return (typeid(*this) == typeid(rhs)) &&
                (mConstant == static_cast<const ConstantExpression&>(rhs).mConstant);
+    }
+    Expression& build(std::vector<Expression_r>& expressions) override {
+        return *new ConstantExpression(mConstant);
     }
 };

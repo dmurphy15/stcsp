@@ -11,7 +11,6 @@ FirstExpression::FirstExpression(Expression &a) : Expression({a}, false), mExpr(
 int FirstExpression::evaluate(SearchNode &context, int time) const
 {
     throw std::logic_error("these should be removed with normalization");
-//    return mExpr.evaluate(context, 0);
 }
 
 // create a new auxiliary variable, set it equal to the expression for the first timepoint (primitivefirstconstraint
@@ -37,10 +36,10 @@ Expression& FirstExpression::normalize(std::set<Constraint_r> &constraintList, s
 
 domain_t FirstExpression::getDomain(SearchNode &context, int time) const
 {
-    return mExpr.getDomain(context, 0);
+    throw std::logic_error("these should be removed with normalization");
 }
 
 domain_t FirstExpression::getInitialDomain() const
 {
-    return mExpr.getInitialDomain();
+    throw std::logic_error("these should be removed with normalization");
 }

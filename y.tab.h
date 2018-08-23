@@ -116,13 +116,15 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 61 "stcsp.y" /* yacc.c:1909  */
+#line 54 "stcsp.y" /* yacc.c:1909  */
 
     char *str;
     int num;
     void *ptr;
+    Expression *expr;
+    Constraint *constr;
 
-#line 126 "y.tab.h" /* yacc.c:1909  */
+#line 128 "y.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;

@@ -34,10 +34,10 @@ Expression& NextExpression::normalize(std::set<Constraint_r> &constraintList, st
 
 domain_t NextExpression::getDomain(SearchNode &context, int time) const
 {
-    throw std::logic_error("unimplemented");
+    throw std::logic_error("should have been removed by normalization");
 }
 
 domain_t NextExpression::getInitialDomain() const
 {
-    return mExpr.getInitialDomain();
+    throw std::logic_error("should have been removed by normalization");
 }

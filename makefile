@@ -56,6 +56,9 @@ DEP = $(OBJ:%.o=%.d)
 
 build : convenience $(BIN)
 
+stcsp: y.tab.o lex.yy.o $(OBJ)
+	$(CXX) $(CXX_FLAGS) $^ -o $@ -lboost_coroutine -lboost_context
+
 # Actual target of the binary - depends on all .o files.
 $(BIN) : $(BIN).cpp $(OBJ)
 	mkdir -p $(@D)
@@ -78,7 +81,7 @@ $(BUILD_DIR)/%.o : %.cpp
 lex.yy.c: stcsp.l
 	$(LEX) stcsp.l
 lex.yy.o: lex.yy.c y.tab.h
-	gcc $(YFLAGS) lex.yy.c -c
+	g++ $(YFLAGS) lex.yy.c -c
 y.tab.cpp: stcsp.y
 	$(YACC) -d stcsp.y; mv y.tab.c y.tab.cpp
 y.tab.h: stcsp.y

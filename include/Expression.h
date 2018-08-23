@@ -17,8 +17,11 @@ public:
      * default implementations of these are provided, but should be overridden if:
      * 1) the expression needs special normalization (default produces no new variables/constraints)
      * 2) there is a faster way to obtain the domain of the expression (default is just brute-force) - you can almost
-     *      certainly do better if dealing with a boolean or symmetric expression
+     *      certainly do better if dealing with a boolean or symmetric expression; for a symmetry example see
+     *      AddExpression, for a boolean example see EqualExpression. In fact, the default may only be suitable for
+     *      things like abs, mod, int division, etc.
      */
+     // the expression returned should not be *this
     virtual Expression& normalize(std::set<Constraint_r> &constraintList, std::set<Variable_r> &variableList);
     virtual domain_t getDomain(SearchNode &context, int time) const;
     virtual domain_t getInitialDomain() const;
@@ -46,7 +49,7 @@ private:
         return (typeid(*this).before(typeid(b))) || (typeid(*this) == typeid(b) && mExpressions < b.mExpressions);
     }
     /**
-     * build: simply call the constructor, passing in the expressions from the vector
+     * build: simply call the constructor, passing in the expressions from the vector. the returned expression should not be *this
      * evaluateFake: evaluate the expression as if the expressions in mExpressions had been assigned the corresponding
      *                  values
      *

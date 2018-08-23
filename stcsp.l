@@ -5,11 +5,12 @@ L       [a-zA-Z]
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "include/all.h"
 #include "y.tab.h"
 
 extern int line_num;
 #ifdef __cplusplus
-extern "C"{
+//extern "C"{
 #endif
 %}
 
@@ -86,5 +87,5 @@ int yywrap() {
 }
 
 #ifdef __cplusplus
-}
+//}
 #endif

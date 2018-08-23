@@ -17,12 +17,6 @@ std::set<Variable_r> VariableExpression::getVariables() const
     return {mVariable};
 }
 
-Expression& VariableExpression::normalize(std::set<Constraint_r> &constraintList,
-                                          std::set<Variable_r> &variableList)
-{
-    return *this;
-}
-
 domain_t VariableExpression::getDomain(SearchNode &context, int time) const {
     return mVariable.getDomain(context, time);
 }

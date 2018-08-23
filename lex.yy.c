@@ -516,13 +516,14 @@ char *yytext;
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "include/all.h"
 #include "y.tab.h"
 
 extern int line_num;
 #ifdef __cplusplus
-extern "C"{
+//extern "C"{
 #endif
-#line 526 "lex.yy.c"
+#line 527 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -740,10 +741,10 @@ YY_DECL
 		}
 
 	{
-#line 16 "stcsp.l"
+#line 17 "stcsp.l"
 
 
-#line 747 "lex.yy.c"
+#line 748 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -803,257 +804,257 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 /* rule 1 can match eol */
 YY_RULE_SETUP
-#line 18 "stcsp.l"
+#line 19 "stcsp.l"
 { }
 	YY_BREAK
 case 2:
 /* rule 2 can match eol */
 YY_RULE_SETUP
-#line 19 "stcsp.l"
+#line 20 "stcsp.l"
 { }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 21 "stcsp.l"
+#line 22 "stcsp.l"
 { return VAR; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 22 "stcsp.l"
+#line 23 "stcsp.l"
 { return OBJ; }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 23 "stcsp.l"
+#line 24 "stcsp.l"
 { return ARR; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 25 "stcsp.l"
+#line 26 "stcsp.l"
 { return '<'; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 26 "stcsp.l"
+#line 27 "stcsp.l"
 { return '>'; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 27 "stcsp.l"
+#line 28 "stcsp.l"
 { return LE_CON; }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 28 "stcsp.l"
+#line 29 "stcsp.l"
 { return GE_CON; }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 29 "stcsp.l"
+#line 30 "stcsp.l"
 { return EQ_CON; }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 30 "stcsp.l"
+#line 31 "stcsp.l"
 { return NE_CON; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 31 "stcsp.l"
+#line 32 "stcsp.l"
 { return IMPLY_CON; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 32 "stcsp.l"
+#line 33 "stcsp.l"
 { return UNTIL_CON; }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 34 "stcsp.l"
+#line 35 "stcsp.l"
 { return LT_OP; }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 35 "stcsp.l"
+#line 36 "stcsp.l"
 { return GT_OP; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 36 "stcsp.l"
+#line 37 "stcsp.l"
 { return LE_OP; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 37 "stcsp.l"
+#line 38 "stcsp.l"
 { return GE_OP; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 38 "stcsp.l"
+#line 39 "stcsp.l"
 { return EQ_OP; }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 39 "stcsp.l"
+#line 40 "stcsp.l"
 { return NE_OP; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 41 "stcsp.l"
+#line 42 "stcsp.l"
 { return AND_OP; }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 42 "stcsp.l"
+#line 43 "stcsp.l"
 { return OR_OP; }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 44 "stcsp.l"
+#line 45 "stcsp.l"
 { return '+'; }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 45 "stcsp.l"
+#line 46 "stcsp.l"
 { return '-'; }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 46 "stcsp.l"
+#line 47 "stcsp.l"
 { return '*'; }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 47 "stcsp.l"
+#line 48 "stcsp.l"
 { return '/'; }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 48 "stcsp.l"
+#line 49 "stcsp.l"
 { return '%'; }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 50 "stcsp.l"
+#line 51 "stcsp.l"
 { return AT; }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 52 "stcsp.l"
+#line 53 "stcsp.l"
 { return ABS; }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 54 "stcsp.l"
+#line 55 "stcsp.l"
 { return FIRST; }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 55 "stcsp.l"
+#line 56 "stcsp.l"
 { return NEXT; }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 56 "stcsp.l"
+#line 57 "stcsp.l"
 { return FBY; }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 57 "stcsp.l"
+#line 58 "stcsp.l"
 { return IF; }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 58 "stcsp.l"
+#line 59 "stcsp.l"
 { return THEN; }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 59 "stcsp.l"
+#line 60 "stcsp.l"
 { return ELSE; }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 61 "stcsp.l"
+#line 62 "stcsp.l"
 { return '('; }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 62 "stcsp.l"
+#line 63 "stcsp.l"
 { return ')'; }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 63 "stcsp.l"
+#line 64 "stcsp.l"
 { return '['; }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 64 "stcsp.l"
+#line 65 "stcsp.l"
 { return ']'; }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 65 "stcsp.l"
+#line 66 "stcsp.l"
 { return '{'; }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 66 "stcsp.l"
+#line 67 "stcsp.l"
 { return '}'; }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 69 "stcsp.l"
+#line 70 "stcsp.l"
 { return ','; }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 70 "stcsp.l"
+#line 71 "stcsp.l"
 { return ';'; }
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 71 "stcsp.l"
+#line 72 "stcsp.l"
 { return ':'; }
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 73 "stcsp.l"
+#line 74 "stcsp.l"
 { yylval.str = strdup(yytext); return IDENTIFIER; }
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 74 "stcsp.l"
+#line 75 "stcsp.l"
 { yylval.num = atoi(yytext); return CONSTANT; }
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 76 "stcsp.l"
+#line 77 "stcsp.l"
 { }
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 77 "stcsp.l"
+#line 78 "stcsp.l"
 { }
 	YY_BREAK
 case 48:
 /* rule 48 can match eol */
 YY_RULE_SETUP
-#line 78 "stcsp.l"
+#line 79 "stcsp.l"
 { line_num++; }
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 79 "stcsp.l"
+#line 80 "stcsp.l"
 { return yytext[0]; }
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 82 "stcsp.l"
+#line 83 "stcsp.l"
 ECHO;
 	YY_BREAK
-#line 1057 "lex.yy.c"
+#line 1058 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2054,7 +2055,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 82 "stcsp.l"
+#line 83 "stcsp.l"
 
 
 
@@ -2063,6 +2064,6 @@ int yywrap() {
 }
 
 #ifdef __cplusplus
-}
+//}
 #endif
 
