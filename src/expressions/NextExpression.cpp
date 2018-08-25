@@ -18,10 +18,10 @@ Expression& NextExpression::normalize(std::set<Constraint_r> &constraintList, st
 {
 
     Expression &equivalentExpr = mExpr.normalize(constraintList, variableList);
-
-    Variable &equivalentVar = *new Variable(equivalentExpr.getInitialDomain());
+    domain_t&& d = equivalentExpr.getInitialDomain();
+    Variable &equivalentVar = *new Variable(d);
     // give it the same starting domain, since before propagation all future timepoints have the same domain as previous timepoints
-    Variable &equivalentNextVar = *new Variable(equivalentExpr.getInitialDomain());
+    Variable &equivalentNextVar = *new Variable(d);
     VariableExpression &equivalentVarExpr = *new VariableExpression(equivalentVar);
     VariableExpression &equivalentNextVarExpr = *new VariableExpression(equivalentNextVar);
 

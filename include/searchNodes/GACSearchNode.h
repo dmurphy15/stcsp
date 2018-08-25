@@ -5,7 +5,9 @@
 class GACSearchNode : public SearchNode
 {
 public:
-    GACSearchNode(std::set<Constraint_r> constraints, assignment_t historicalValues, std::vector<std::map<Variable_r, domain_t>> domains);
+    GACSearchNode(const std::set<Constraint_r>& constraints,
+                  const assignment_t& historicalValues,
+                  const std::vector<std::map<Variable_r, domain_t>>& domains);
     std::vector<std::set<int>> defaultPropagate(Variable &v, Constraint &c) override;
     coro_assignment_t::pull_type generateNextAssignmentIterator() override;// {
 //        return coro_assignment_t::pull_type(boost::bind(&GACSearchNode::generateNextAssignment, this, _1));
@@ -16,9 +18,12 @@ private:
     std::map<Constraint_r, std::vector<Variable_r>> mConstraintToVariables;
 
     std::vector<std::map<Variable_r, std::set<int>>> GAC();
-    std::pair<domain_t, domain_t> splitDomain(domain_t& domain);
+    void splitDomain(domain_t& inDomain, domain_t& loDomain, domain_t& hiDomain);
     void generateNextAssignment(coro_assignment_t::push_type &yield) override;
-    void generateAssignments(coro_int_t::push_type &yield, std::vector<Variable_r>& variables, int index, int time);
+    bool shouldPrune(Constraint& c,
+                     int time,
+                     std::vector<Variable_r>::iterator index,
+                     std::vector<Variable_r>::iterator endIt);
 };
 
 //REPLACE ALL UNORDERED_SETS with regular, ordered, sets, or at least think about it.

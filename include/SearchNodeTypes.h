@@ -1,5 +1,6 @@
 #pragma once
 
 enum SearchNodeType : int {
-    GAC_NODE
+    GAC_NODE,
+    BC_NODE,
 };

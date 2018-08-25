@@ -31,7 +31,7 @@ public:
     /**
      * virtual so that variableExpression and constantExpression can override it
      */
-    virtual std::set<Variable_r> getVariables() const;
+    virtual void getVariables(std::set<Variable_r>& variables) const;
     friend bool operator ==(const Expression &a, const Expression &b) {
         return a.eq(b);
     }

@@ -12,9 +12,9 @@ int VariableExpression::evaluate(SearchNode &context, int time) const
     return mVariable.evaluate(context, time);
 }
 
-std::set<Variable_r> VariableExpression::getVariables() const
+void VariableExpression::getVariables(std::set<Variable_r>& variables) const
 {
-    return {mVariable};
+    variables.insert(mVariable);
 }
 
 domain_t VariableExpression::getDomain(SearchNode &context, int time) const {

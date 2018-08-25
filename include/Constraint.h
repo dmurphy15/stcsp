@@ -21,17 +21,20 @@
 class Constraint
 {
 public:
-    /* the consts here mean that the pointer cannot be made to point somewhere else;
-     * it essentially forces you to allocate space for the set ahead of time */
+    Constraint(std::initializer_list<Expression_r> expressions, bool symmetric);
+
+    // again a default implementation is provided; should be overridden if you're making a constraint
+    // with special normalization rules
+    // if you're not going to use this, then you don't have to implement build if you dont want to
     virtual void normalize(std::set<Constraint_r> &constraintList,
-                           std::set<Variable_r> &variableList) = 0;
+                           std::set<Variable_r> &variableList);
 
     // used for solving an instantaneous csp
-    virtual int isSatisfied(SearchNode &context, int time) const = 0;
+    virtual bool isSatisfied(SearchNode &context, int time) const = 0;
 
     // used by instantaneous csp to set up mappings from vars to constraints and vice versa,
     // which it can later use for GAC, etc
-    virtual std::set<Variable_r> getVariables() const = 0;
+    void getVariables(std::set<Variable_r>& variables) const;
 
     ////remember that whenever you return something from propagate, it MUST have length prefixK
 
@@ -42,14 +45,9 @@ public:
             // propagates over all timepoints in the context
     virtual std::vector<std::set<int>> propagate(Variable &v, SearchNode &context) = 0;
 
-    friend bool operator< (const Constraint &lhs, const Constraint &rhs) {
-        return lhs.lt(rhs);
-    }
-    friend bool operator== (const Constraint &lhs, const Constraint &rhs) {
-        return lhs.eq(rhs);
-    }
-
+    friend bool operator< (const Constraint &lhs, const Constraint &rhs);
+    friend bool operator== (const Constraint &lhs, const Constraint &rhs);
 private:
-    virtual bool lt(const Constraint &b) const = 0;
-    virtual bool eq(const Constraint &b) const = 0;
+    std::vector<Expression_r> mExpressions;
+    virtual Constraint& build(std::vector<Expression_r>& expressions);
 };

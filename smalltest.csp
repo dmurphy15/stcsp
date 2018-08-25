@@ -1,8 +1,4 @@
 var X : [0, 2];
 var Y : [0, 3];
 
-first X == first Y;
-first (X+Y) == first Y;
-first first X == 1;
-
-next X == next Y;
+X == if Y then 0 else 1;

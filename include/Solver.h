@@ -54,7 +54,8 @@ public:
     Solver(SearchNodeType searchNodeType, int prefixK, const std::set<Constraint_r>& constraints);
     void addConstraint(Constraint &c);
     void solve();
-    void printTree(bool includeAuxiliaryVariables=false);
+    void printTree();
+    void writeGraph();
 private:
     SearchNodeType mNodeType;
     std::shared_ptr<SearchNode> mTree;
@@ -62,12 +63,10 @@ private:
     // returns false if currentState is a failure node
     bool solveRe(SearchNode &currentNode);
     // creates the appropriate instantaneous assignments and constraints for the next state
-    std::pair<std::set<Constraint_r>, assignment_t> carryConstraints(const std::set<Constraint_r>& constraints,
-                                                                      const assignment_t& assignment);
-    // returns dominated if no nodes in dominator tree were dominating
-    SearchNode& detectDominance(SearchNode &newNode);
-
-    std::set<SearchNode *>& printTreeRe(SearchNode &currentState, std::set<SearchNode *> &visited, bool includeAuxiliaryVariables);
+    void carryConstraints(const std::set<Constraint_r>& constraints,
+                          const assignment_t& assignment,
+                          std::set<Constraint_r>& carriedConstraints,
+                          assignment_t& carriedAssignments);
 
     std::set<Variable_r> mOriginalVariables;
     std::set<Constraint_r> mOriginalConstraints;
@@ -82,4 +81,6 @@ private:
     std::map<Variable_r, domain_t> mDomainsInitializer;
 
     int mPrefixK;
+
+    friend class SolverPrinter;
 };

@@ -10,9 +10,9 @@ int ConstantExpression::evaluate(SearchNode &context, int time) const
     return mConstant;
 }
 
-std::set<std::reference_wrapper<Variable>> ConstantExpression::getVariables() const
+void ConstantExpression::getVariables(std::set<Variable_r>& variables) const
 {
-    return {};
+    return;
 }
 
 domain_t ConstantExpression::getDomain(SearchNode &context, int time) const

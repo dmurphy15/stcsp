@@ -25,10 +25,7 @@ public:
     void normalize(std::set<Constraint_r> &constraintList,
                    std::set<Variable_r> &variableList) override;
 
-    int isSatisfied(SearchNode &context, int time) const override;
-
-    std::set<Variable_r> getVariables() const override;
-
+    bool isSatisfied(SearchNode &context, int time) const override;
     std::vector<std::set<int>> propagate(Variable &v, SearchNode &context) override;
 
     VariableExpression &mVarExpr;
@@ -36,11 +33,7 @@ public:
     Variable &mVariable;
     Variable &mNextVariable;
 private:
-    bool lt(const Constraint &rhs) const override;
-    bool eq(const Constraint &rhs) const override;
-
-    void propagateHelper(Variable &v,
+    void propagateHelper(bool vIsNext,
                          SearchNode &context,
-                         bool vIsNext,
                          std::vector<std::set<int>>& ret);
 };

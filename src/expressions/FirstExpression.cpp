@@ -4,6 +4,7 @@
 
 #include "../../include/Variable.h"
 #include "../../include/constraints/specialConstraints/PrimitiveFirstConstraint.h"
+#include "../../include/constraints/specialConstraints/PrimitiveNextConstraint.h"
 #include "../../include/expressions/specialExpressions/VariableExpression.h"
 
 FirstExpression::FirstExpression(Expression &a) : Expression({a}, false), mExpr(a) {}
@@ -30,6 +31,7 @@ Expression& FirstExpression::normalize(std::set<Constraint_r> &constraintList, s
     VariableExpression &equivalentVarExpr = *new VariableExpression(equivalentVar);
 
     constraintList.insert(*new PrimitiveFirstConstraint(equivalentVarExpr, equivalentExpr));
+    constraintList.insert(*new PrimitiveNextConstraint(equivalentVarExpr, equivalentVarExpr));
     variableList.insert(equivalentVar);
     return equivalentVarExpr;
 }

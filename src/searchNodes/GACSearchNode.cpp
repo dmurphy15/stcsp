@@ -5,12 +5,14 @@
 #include "../../include/Constraint.h"
 #include "../../include/Variable.h"
 
-GACSearchNode::GACSearchNode(std::set<Constraint_r> constraints, std::map<Variable_r, int> historicalValues, std::vector<std::map<Variable_r, domain_t>> domains)
+GACSearchNode::GACSearchNode(const std::set<Constraint_r>& constraints,
+                             const assignment_t& historicalValues,
+                             const std::vector<std::map<Variable_r, domain_t>>& domains)
         : SearchNode(constraints, historicalValues, domains)
 {
     for (Constraint &c : constraints)
     {
-        std::set<Variable_r> vars = c.getVariables();
+        std::set<Variable_r> vars; c.getVariables(vars);
         mConstraintToVariables.insert({c, std::vector<Variable_r>()});
         for (Variable &v : vars)
         {
@@ -42,15 +44,14 @@ void GACSearchNode::generateNextAssignment(coro_assignment_t::push_type& yield)
         else if (firstDomains[v].size() > 1)
         {
             yieldAssignment = false;
-            domain_t lo_domain;
-            domain_t hi_domain;
-            std::tie(lo_domain, hi_domain) = splitDomain(firstDomains[v]);
-            firstDomains[v] = lo_domain;
+            domain_t loDomain, hiDomain;
+            splitDomain(firstDomains[v], loDomain, hiDomain);
+            firstDomains[v] = loDomain;
             generateNextAssignment(yield);
-            firstDomains[v] = hi_domain;
+            firstDomains[v] = hiDomain;
             generateNextAssignment(yield);
             // reset the domain
-            firstDomains[v].insert(lo_domain.begin(), lo_domain.end());
+            firstDomains[v].insert(loDomain.begin(), loDomain.end());
             break;
         }
     }
@@ -111,70 +112,46 @@ std::vector<std::set<int>> GACSearchNode::defaultPropagate(Variable &v, Constrai
 
     // iterate over the domain of our variable
     for (int time = 0; time < getPrefixK(); time++) {
-        std::map<Variable_r, domain_t>& domains = mDomains[time];
-        for (auto iter = domains[v].begin(); iter != domains[v].end(); ) {
+        for (auto iter = getDomain(v, time).begin(); iter != getDomain(v, time).end(); ) {
             mAssignments[time][v] = *iter;
-            bool prune = true;
-            // make sure that for each element of our domain, there exists an assignment of the
-            // other variables that is consistent with this constraint
-            coro_int_t::pull_type var_assignments(boost::bind(&GACSearchNode::generateAssignments, this, boost::placeholders::_1, others, 0, time));
-            for (int &_ : var_assignments)
-            {
-                if (c.isSatisfied(*this, time))
-                {
-                    prune = false;
-                    break;
-                }
-            }
-            // if no consistent assignment was found, remove this value from our domain
-            if (prune)
-            {
+            if (shouldPrune(c, time, others.begin(), others.end())) {
                 ret[time].insert(*iter);
-                iter = domains[v].erase(iter);
-            } else
-            {
+                iter = pruneDomain(v, iter, time);
+            } else {
                 iter++;
             }
         }
     }
-    // just to avoid screwing things up, let's clear all the assignments we might have made in this process
-    for (int i=0; i < getPrefixK(); i++) {
-        mAssignments[i].clear();
-    }
     return ret;
 }
 
-// iterates through all assignments of the given variables
-void GACSearchNode::generateAssignments(coro_int_t::push_type& yield,
-                                           std::vector<Variable_r>& variables,
-                                           int index,
-                                           int time)
+bool GACSearchNode::shouldPrune(Constraint& c,
+                                int time,
+                                std::vector<Variable_r>::iterator index,
+                                std::vector<Variable_r>::iterator endIt)
 {
-    if ((int) variables.size() == index)
-    {
-        yield(0);
-        return;
+    if (index == endIt) {
+        return !c.isSatisfied(*this, time);
     }
-    for (int val : mDomains[time][variables[index]])
-    {
-        mAssignments[time][variables[index]] = val;
-        generateAssignments(yield, variables, index+1, time);
-    }
-}
-
-std::pair<domain_t, domain_t> GACSearchNode::splitDomain(domain_t& domain)
-{
-    domain_t split_lo;
-    domain_t split_hi;
-    std::size_t i=0;
-    for (auto it = domain.begin(); it != domain.end(); it++, i++) {
-        if (i < domain.size() / 2) {
-            split_lo.insert(*it);
-        } else {
-            split_hi.insert(*it);
+    for (int val : mDomains[time][*index]) {
+        mAssignments[time][*index] = val;
+        if (!shouldPrune(c, time, std::next(index), endIt)) {
+            return false;
         }
     }
-    return std::make_pair(split_lo, split_hi);
+    return true;
+}
+
+void GACSearchNode::splitDomain(domain_t& inDomain, domain_t& loDomain, domain_t& hiDomain)
+{
+    std::size_t i=0;
+    for (auto it = inDomain.begin(); it != inDomain.end(); it++, i++) {
+        if (i < inDomain.size() / 2) {
+            loDomain.insert(*it);
+        } else {
+            hiDomain.insert(*it);
+        }
+    }
 }
 
 coro_assignment_t::pull_type GACSearchNode::generateNextAssignmentIterator() {

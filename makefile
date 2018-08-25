@@ -54,9 +54,13 @@ OBJ = $(CPP:%.cpp=$(BUILD_DIR)/%.o)
 # Gcc/Clang will create these .d files containing dependencies.
 DEP = $(OBJ:%.o=%.d)
 
+
+
+scanner: convenience $(BUILD_DIR)/stcsp
+
 build : convenience $(BIN)
 
-stcsp: y.tab.o lex.yy.o $(OBJ)
+$(BUILD_DIR)/stcsp: $(BUILD_DIR)/$(SRC)lex.yy.c $(BUILD_DIR)/$(SRC)y.tab.cpp $(OBJ)
 	$(CXX) $(CXX_FLAGS) $^ -o $@ -lboost_coroutine -lboost_context
 
 # Actual target of the binary - depends on all .o files.
@@ -78,22 +82,18 @@ $(BUILD_DIR)/%.o : %.cpp
 	$(CXX) $(CXX_FLAGS) -MMD -c $< -o $@
 
 
-lex.yy.c: stcsp.l
-	$(LEX) stcsp.l
-lex.yy.o: lex.yy.c y.tab.h
-	g++ $(YFLAGS) lex.yy.c -c
-y.tab.cpp: stcsp.y
-	$(YACC) -d stcsp.y; mv y.tab.c y.tab.cpp
-y.tab.h: stcsp.y
-	$(YACC) -d stcsp.y
-y.tab.o: y.tab.cpp y.tab.h
-	$(CXX) $(YFLAGS) y.tab.cpp -c
+$(BUILD_DIR)/$(SRC)/lex.yy.c: $(SRC)/stcsp.l
+	mkdir -p $(BUILD_DIR)/$(SRC)
+	$(LEX) -o $@ $(SRC)/stcsp.l
+$(BUILD_DIR)/$(SRC)/y.tab.cpp: $(SRC)/stcsp.y
+	mkdir -p $(BUILD_DIR)/$(SRC)
+	$(YACC) -o $@ -d $(SRC)/stcsp.y; mv $(BUILD_DIR)/$(SRC)/y.tab.c $(BUILD_DIR)/$(SRC)/y.tab.cpp
 
 .PHONY : clean convenience
 
 # generate convenience header
 convenience :
-	echo "#pragma once;" > all.h
+	echo "#pragma once" > $(INCLUDE)/all.h
 	for file in $(shell cd include; find constraints \
 		expressions -name "*.h") SearchNodeTypes.h Solver.h Variable.h; do \
 		echo "#include \"$$file\"" >> $(INCLUDE)/all.h; \
@@ -103,3 +103,5 @@ clean :
     # This should remove all generated files.
 	-rm $(BIN) $(OBJ) $(DEP)
 	-rm $(INCLUDE)/all.h
+	-rm $(BUILD)/$(SRC)/lex.yy.c
+	-rm $(BUILD)/$(SRC)/y.tab.cpp

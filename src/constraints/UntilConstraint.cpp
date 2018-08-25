@@ -9,6 +9,7 @@
 #include "../../include/SearchNode.h"
 
 UntilConstraint::UntilConstraint(Expression &a, Expression &b) :
+        Constraint({a, b}, false),
         mExpr(a),
         mUntilExpr(b) {}
 
@@ -32,42 +33,12 @@ void UntilConstraint::normalize(std::set<Constraint_r> &constraintList,
     constraintList.insert(equivalentConstraint);
 }
 
-int UntilConstraint::isSatisfied(SearchNode &context, int time) const
+bool UntilConstraint::isSatisfied(SearchNode &context, int time) const
 {
     return (mExpr.evaluate(context, time) != 0) || (mUntilExpr.evaluate(context, time) != 0);
-}
-
-std::set<Variable_r> UntilConstraint::getVariables() const
-{
-    std::set<Variable_r> vars1 = mExpr.getVariables();
-    std::set<Variable_r> vars2 = mUntilExpr.getVariables();
-    vars1.insert(vars2.begin(), vars2.end());
-    return vars1;
 }
 
 std::vector<std::set<int>> UntilConstraint::propagate(Variable &v, SearchNode &context)
 {
     return context.defaultPropagate(v, *this);
-}
-
-bool UntilConstraint::lt(const Constraint &rhs) const {
-    if (typeid(*this).before(typeid(rhs))) {
-        return true;
-    } else if (typeid(*this) == typeid(rhs)) {
-        const UntilConstraint &p = static_cast<const UntilConstraint&>(rhs);
-        if (mExpr < p.mExpr) {
-            return true;
-        } else if (mExpr == p.mExpr) {
-            return mUntilExpr < p.mUntilExpr;
-        }
-    }
-    return false;
-}
-
-bool UntilConstraint::eq(const Constraint &rhs) const {
-    if (typeid(*this) == typeid(rhs)) {
-        const UntilConstraint &p = static_cast<const UntilConstraint&>(rhs);
-        return (mExpr == p.mExpr) && (mUntilExpr == p.mUntilExpr);
-    }
-    return false;
 }

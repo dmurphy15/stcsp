@@ -11,13 +11,10 @@ Expression::Expression(std::initializer_list<Expression_r> expressions, bool sym
     }
 }
 
-std::set<Variable_r> Expression::getVariables() const {
-    std::set<Variable_r> ret;
+void Expression::getVariables(std::set<Variable_r>& variables) const {
     for (Expression& e : mExpressions) {
-        std::set<Variable_r>&& tmp = e.getVariables();
-        ret.insert(tmp.begin(), tmp.end());
+        e.getVariables(variables);
     }
-    return ret;
 }
 
 Expression& Expression::normalize(std::set<Constraint_r> &constraintList, std::set<Variable_r> &variableList) {

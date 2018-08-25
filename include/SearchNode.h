@@ -88,17 +88,21 @@ public:
      * @param fullAssignment - the assignment that takes us there
      */
     void addChildNode(SearchNode &child, assignment_t fullAssignment);
+    void addParentNode(SearchNode &parent);
 
     /**
      * removes the last childNode that was added
      */
     void removeLastChildNode();
+    void removeLastParentNode();
 
+    void removeChildNode(SearchNode& child);
     /**
      * get the vector of pairs of SearchNodes and full assignments that can come out of this SearchNode
      * @return the vector
      */
     std::vector<std::pair<SearchNode_r, assignment_t>> getChildNodes();
+    std::vector<SearchNode_r> getParentNodes();
 
     /**
      * reduces the domain of v until the only remaining values are those for which c can be satisfied
@@ -114,6 +118,7 @@ public:
     friend class std::hash<SearchNode_r>;
 
     int getPrefixK() const;
+    const int id;
 protected:
     /**
      * helper function from which one could create a coroutine to iterate through all valid output assignments
@@ -132,6 +137,9 @@ protected:
     std::set<Constraint_r> mConstraints;
     assignment_t mHistoricalValues;
     std::vector<std::pair<SearchNode_r, assignment_t>> mChildNodes;
+    std::vector<SearchNode_r> mParentNodes;
+private:
+    static int idSource;
 };
 
 namespace std {

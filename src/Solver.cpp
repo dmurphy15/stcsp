@@ -1,6 +1,5 @@
 #include "../include/Solver.h"
 
-#include <iostream>
 #include <algorithm>
 
 #include "../include/constraints/specialConstraints/PrimitiveNextConstraint.h"
@@ -16,6 +15,9 @@
 #include "../include/Variable.h"
 #include "../include/Constraint.h"
 
+#include "../include/SolverPruner.h"
+#include "../include/SolverPrinter.h"
+
 Solver::Solver(SearchNodeType searchNodeType, int prefixK) {
     mNodeType = searchNodeType;
     mPrefixK = prefixK;
@@ -26,13 +28,13 @@ Solver::Solver(SearchNodeType searchNodeType, int prefixK, const std::set<Constr
     mPrefixK = prefixK;
     mOriginalConstraints = constraints;
     for (Constraint &c: constraints) {
-        std::set<Variable_r> vars = c.getVariables();
-        mOriginalVariables.insert(vars.begin(), vars.end());
+        c.getVariables(mOriginalVariables);
     }
 }
 
 void Solver::addConstraint(Constraint &c) {
     mOriginalConstraints.insert(c);
+    c.getVariables(mOriginalVariables);
 }
 
 void Solver::solve() {
@@ -55,21 +57,18 @@ void Solver::solve() {
         initialDomains.push_back(mDomainsInitializer);
     }
     // allocates the new solver
-    mTree.reset(&SearchNodeFactory::MakeSearchNode(mNodeType, initialConstraints, {}, initialDomains));
+    assignment_t initialAssignments;
+    mTree.reset(&SearchNodeFactory::MakeSearchNode(mNodeType, initialConstraints, initialAssignments, initialDomains));
     solveRe(*mTree);
+    SolverPruner::pruneForUntilConstraint(*mTree);
 }
 
 bool Solver::solveRe(SearchNode &currentNode) {
     mSeenSearchNodes.insert(currentNode);
     int numChildNodes = 0;
-    // after normalizing everything, the nice thing is that we'll have created pretty much
-    // unconstrained variables for "next" expressions (unconstrained during the current timepoint)
-
-    // depending on the prefix-k we choose this might have to change to respect that
     for (assignment_t& assignment : currentNode.generateNextAssignmentIterator()) {
-        assignment_t carriedAssignments;
-        std::set<Constraint_r> carriedConstraints;
-        std::tie(carriedConstraints, carriedAssignments) = carryConstraints(currentNode.getConstraints(), assignment);
+        std::set<Constraint_r> carriedConstraints; assignment_t carriedAssignments;
+        carryConstraints(currentNode.getConstraints(), assignment, carriedConstraints, carriedAssignments);
         std::vector<std::map<Variable_r, domain_t>> nextInitialDomains(mPrefixK);
         for (int i=0; i < mPrefixK - 1; i++) {
             nextInitialDomains[i] = currentNode.getDomains(i+1);
@@ -81,14 +80,16 @@ bool Solver::solveRe(SearchNode &currentNode) {
         SearchNode &child = (dominator == mSeenSearchNodes.end()) ? nextNode : (*dominator).get();
 
         currentNode.addChildNode(child, assignment);
+        child.addParentNode(currentNode);
         numChildNodes++;
-        // if no dominating node was found, detectDominance will return nextState, and we will have added it as a
-        // new child. We must now test the new child node for failure and remove it if it fails
+
+        // if nextNode has never been seen before, we must go forward to make sure it doesn't fail
         if (&child == &nextNode) {
             bool nextWasSuccessful = solveRe(nextNode);
             if (!nextWasSuccessful) {
                 numChildNodes--;
                 currentNode.removeLastChildNode();
+                nextNode.removeLastParentNode();
                 mSeenSearchNodes.erase(nextNode);
             }
         }
@@ -97,25 +98,15 @@ bool Solver::solveRe(SearchNode &currentNode) {
     return numChildNodes > 0;
 }
 
-std::pair<std::set<Constraint_r>, std::map<Variable_r, int>> Solver::carryConstraints(const std::set<Constraint_r>& constraints,
-                                                                                      const assignment_t& assignment) {
-    assignment_t carriedAssignments;
-    std::set<Constraint_r> carriedConstraints = constraints;
+void Solver::carryConstraints(const std::set<Constraint_r>& constraints,
+                         const assignment_t& assignment,
+                         std::set<Constraint_r>& carriedConstraints,
+                         assignment_t& carriedAssignments) {
+    carriedConstraints = constraints;
     for (Constraint &c : constraints) {
-        // primitive first constraints force an auxiliary variable to equal another variable, but we only want this
-        // enforced for the first timepoint, so remove them immediately, and then enforce that the auxiliary variable
-        // remains constant by saying x = next x
-        // note that I could have also just done x = constant, but using next(x) is faster since it
-        // will fix the domain to a single value upon constructing each new search node, as opposed to requiring more propagation
-        // ACTUALLY, I'm switching to setting it to a constant since PrimitiveNextConstraint assumes that you are not seeing
-        // x = next x (otherwise propagating it would be more complicated)
-        // ACTUALLY I think I could switch back to the original way if I wanted, since I fixed that issue I believe, and I think that would be faster, but for now I'm just leaving it to be safe...
         //TODO whenever I erase a constraint below, I erase references to expressions and probably cause memory leaks
         if (typeid(c) == typeid(PrimitiveFirstConstraint)) {
             carriedConstraints.erase(c);
-            PrimitiveFirstConstraint &pc = static_cast<PrimitiveFirstConstraint &>(c);
-            VariableExpression &ve = *new VariableExpression(pc.mVariable);
-            carriedConstraints.insert(*new EqualConstraint(ve, *new ConstantExpression(assignment.at(pc.mVariable))));
         } else if (typeid(c) == typeid(PrimitiveNextConstraint)) {
            PrimitiveNextConstraint &pc = static_cast<PrimitiveNextConstraint &>(c);
            carriedAssignments[pc.mNextVariable] = assignment.at(pc.mVariable);
@@ -126,67 +117,7 @@ std::pair<std::set<Constraint_r>, std::map<Variable_r, int>> Solver::carryConstr
             }
         }
     }
-    return std::make_pair(carriedConstraints, carriedAssignments);
 }
 
-void Solver::printTree(bool includeAuxiliaryVariables) {
-    std::set<SearchNode *> visited;
-    printTreeRe(*mTree, visited, includeAuxiliaryVariables);
-    std::cout<<"\n";
-}
-
-std::set<SearchNode *>& Solver::printTreeRe(SearchNode &currentState, std::set<SearchNode *> &visited, bool includeAuxiliaryVariables) {
-    if (visited.find(&currentState) != visited.end()) {
-        return visited;
-    }
-    std::cout<<"state at "<<&currentState<<":\n";
-    for (auto &pair : currentState.getChildNodes()) {
-        SearchNode &child = pair.first;
-        std::cout<<"\tchild at "<<&child<<" with assignments:\n";
-        for (auto &assignment : pair.second) {
-            Variable &v = assignment.first;
-            if (mOriginalVariables.find(v) != mOriginalVariables.end() || includeAuxiliaryVariables) {
-                std::cout<<"\t\tvariable at "<<&v<<" with value "<<assignment.second<<"\n";
-            }
-        }
-    }
-    visited.insert(&currentState);
-    for (auto &pair : currentState.getChildNodes()) {
-        SearchNode &child = pair.first;
-        visited = printTreeRe(child, visited, includeAuxiliaryVariables);
-    }
-    return visited;
-}
-//
-//add variable
-//    set prefixk for variable
-//add constraint
-//has variable-chooser protocol that it gives to each statenode
-//also gives a value-chooser protocol to each statenode, but user can give each variable its own value-chooser as well
-//also give constraint-chooser? maybe
-//
-//
-//solve
-//    create StateNode
-//    iterate calling getnextassignment or something which will invoke its coroutine
-//    if getnextassignment returns something, check for dominance, and place it further down the tree if not dominated
-//
-//
-//StateNode:
-//    has timeStep
-//    has ordered set of constraints
-//    has ordered set of variables
-//    is give variable and value choosers
-//    calls propagate on each variable iterating over values
-//        and co_yield each total assignment when it finds one
-//        can implement as a generator coroutine as described here kind of https://kirit.com/How%20C%2B%2B%20coroutines%20work/Generating%20Iterators
-//
-//
-//prefix k is just how many steps previously we should look to make sure we're consistent with those previous steps
-//normalization kind of makes this pointless since it reduces everything to just one 'next' at a time
-//
-//ASK JASPER IF THE PREFIX K SHOULD BE USED FOR NORMALIZATION, OR WHAT
-//
-//
-//TAKE OUT UNORDERED SET AND REPLACE WITH AN ORDERED SET SINCE WE'LL BE ITERATING
-//
+void Solver::printTree() { SolverPrinter::printTree(*this); }
+void Solver::writeGraph() { SolverPrinter::writeGraph(*this); }

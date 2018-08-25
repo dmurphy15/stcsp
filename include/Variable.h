@@ -10,7 +10,7 @@
 class Variable
 {
 public:
-    Variable(const domain_t& domain);
+    Variable(const domain_t& domain, const char *name="");
     int evaluate(SearchNode &context, int time);
     const domain_t& getInitialDomain() const;
     const domain_t& getDomain(SearchNode &context, int time);
@@ -21,6 +21,7 @@ public:
     friend bool operator ==(const Variable &a, const Variable &b) {
         return &a == &b;
     }
+    const char *mName;
 private:
     domain_t mInitialDomain;
 };

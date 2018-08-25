@@ -16,7 +16,7 @@ using SearchNode_r = std::reference_wrapper<SearchNode>;
 
 using assignment_t = std::map<Variable_r, int>;
 // performance appears to be slightly better with unordered_set
-using domain_t = std::unordered_set<int>;
+using domain_t = std::set<int>;
 
 using namespace std::__cxx11;
 #include "boost/coroutine2/all.hpp"

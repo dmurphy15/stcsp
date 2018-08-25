@@ -34,7 +34,7 @@ struct cmp_str
 };
 // maps a string identifier to its variable instance
 std::map<char *, Variable *, cmp_str> variableMap;
-Solver s(GAC_NODE, 2);
+Solver s(BC_NODE, 2);
 
 //#extern "C"
 //{
@@ -55,15 +55,23 @@ char **my_argv = NULL;
     char *str;
     int num;
     Expression *expr;
-    Constraint *constr;
 }
 
 %token <str> IDENTIFIER
 %token <num> CONSTANT
-%type <constr> constraint
 
 %type <expr> expression
-%type <expr> binary_expression
+%type <expr> logical_or_expression
+%type <expr> logical_and_expression
+%type <expr> equality_expression
+%type <expr> relational_expression
+%type <expr> additive_expression
+%type <expr> multiplicative_expression
+%type <expr> at_expression
+%type <expr> fby_expression
+%type <expr> unary_expression
+%type <expr> primary_expression
+
 
 %start program_statement
 
@@ -78,7 +86,18 @@ program_statement
 
 // places variable in global map
 declaration_statement
-    : VAR IDENTIFIER ':' '[' CONSTANT ',' CONSTANT ']' ';' { variableMap[$2] = new Variable(constructDomain($5, $7)); }
+    : VAR IDENTIFIER ':' '[' CONSTANT ',' CONSTANT ']' ';' { variableMap[$2] = new Variable(constructDomain($5, $7), $2); }
+    ;
+
+constraint_statement
+    : expression '<' expression ';' { s.addConstraint(*new LTConstraint(*$1, *$3)); }
+    | expression '>' expression ';' { s.addConstraint(*new GTConstraint(*$1, *$3)); }
+    | expression LE_CON expression ';' { s.addConstraint(*new LEConstraint(*$1, *$3)); }
+    | expression GE_CON expression ';' { s.addConstraint(*new GEConstraint(*$1, *$3)); }
+    | expression EQ_CON expression ';' { s.addConstraint(*new EqualConstraint(*$1, *$3)); }
+    | expression NE_CON expression ';' { s.addConstraint(*new NEQConstraint(*$1, *$3)); }
+    | expression UNTIL_CON expression ';' { s.addConstraint(*new UntilConstraint(*$1, *$3)); }
+    | expression IMPLY_CON expression ';' { s.addConstraint(*new ImplyConstraint(*$1, *$3)); }
     ;
 
 expression
@@ -87,12 +106,12 @@ expression
 
 logical_or_expression
     : logical_and_expression { $$ = $1; }
-    | logical_or_expression OR_OP logical_and_expression { $$ = new OrExpression(*$1, *$3); }
+    | logical_or_expression OR_OP logical_and_expression { $$ = new LOrExpression(*$1, *$3); }
     ;
 
 logical_and_expression
     : equality_expression { $$ = $1; }
-    | logical_and_expression AND_OP equality_expression { $$ = new AndExpression(*$1, *$3); }
+    | logical_and_expression AND_OP equality_expression { $$ = new LAndExpression(*$1, *$3); }
     ;
 
 equality_expression
@@ -124,7 +143,7 @@ multiplicative_expression
 
 at_expression
     : fby_expression { $$ = $1;}
-    | fby_expression AT CONSTANT { $$ = new AtExpression($1, *new ConstantExpression($3)); }
+    | fby_expression AT CONSTANT { $$ = new AtExpression(*$1, *new ConstantExpression($3)); }
     ;
 
 fby_expression
@@ -147,6 +166,11 @@ primary_expression
     ;
 
 %%
+
+#include <iostream>
+#include <chrono>
+
+using namespace std;
 
 extern FILE *yyin;
 
@@ -187,8 +211,14 @@ int main(int argc, char *argv[]) {
     if (filename != NULL) {
         fclose(yyin);
     }
-    //std::cout<<"num variables: "<<variableMap.size()<<", num constraints: "<<constraintList.size()<<"\n";
-    printf("num variables: %d\n", variableMap.size());
+
+	auto start = chrono::system_clock::now();
+	s.solve();
+	auto ending = chrono::system_clock::now();
+	std::chrono::duration<double> elapsed = ending - start;
+	s.printTree();
+	s.writeGraph();
+	cout<<"ploop "<< elapsed.count() <<"\n";
 
     return 0;
 }

@@ -9,6 +9,7 @@
 #include "types.h"
 #include "SearchNodeTypes.h"
 #include "searchNodes/GACSearchNode.h"
+#include "searchNodes/BCSearchNode.h"
 
 class SearchNodeFactory
 {
@@ -21,6 +22,8 @@ public:
         switch (SearchNodeType) {
             case GAC_NODE :
                 return *new GACSearchNode(constraints, historicalValues, domains);
+            case BC_NODE :
+                return *new BCSearchNode(constraints, historicalValues, domains);
             default :
                 throw std::invalid_argument("use a valid instant solver name pls. thx.\n");
         }

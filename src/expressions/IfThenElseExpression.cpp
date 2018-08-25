@@ -10,7 +10,7 @@ IfThenElseExpression::IfThenElseExpression(Expression &ifExpr, Expression &thenE
 
 int IfThenElseExpression::evaluate(SearchNode &context, int time) const
 {
-    return mExpr1.evaluate(context, time) >= mExpr2.evaluate(context, time);
+    return mExpr1.evaluate(context, time) != 0 ? mExpr2.evaluate(context, time) : mExpr3.evaluate(context, time);
 }
 
 domain_t IfThenElseExpression::getDomain(SearchNode &context, int time) const

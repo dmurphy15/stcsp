@@ -13,40 +13,18 @@
 #include "../../include/SearchNode.h"
 
 LEConstraint::LEConstraint(Expression &a, Expression &b) :
+        Constraint({a, b}, false),
         mExpr1(a),
         mExpr2(b) {}
 
 LEConstraint::~LEConstraint() {}
 
-void LEConstraint::normalize(std::set<Constraint_r> &constraintList,
-                                std::set<Variable_r> &variableList)
+bool LEConstraint::isSatisfied(SearchNode &context, int time) const
 {
-    Expression &equivalentExpr1 = mExpr1.normalize(constraintList, variableList);
-    Expression &equivalentExpr2 = mExpr2.normalize(constraintList, variableList);
-    Expression &LEQExpr = *new LEExpression(equivalentExpr1, equivalentExpr2);
-    Constraint &equivalentConstraint = *new EqualConstraint(LEQExpr, *new ConstantExpression(1));
-    constraintList.insert(equivalentConstraint);
-}
-
-int LEConstraint::isSatisfied(SearchNode &context, int time) const
-{
-    throw std::logic_error(std::string(__FILE__) + "has been implemented as a stub; normalization should have removed it");
-}
-
-std::set<Variable_r> LEConstraint::getVariables() const
-{
-    throw std::logic_error(std::string(__FILE__) + "has been implemented as a stub; normalization should have removed it");
+    return mExpr1.evaluate(context, time) <= mExpr2.evaluate(context, time);
 }
 
 std::vector<std::set<int>> LEConstraint::propagate(Variable &v, SearchNode &context)
 {
-    throw std::logic_error(std::string(__FILE__) + "has been implemented as a stub; normalization should have removed it");
-}
-
-bool LEConstraint::lt(const Constraint &rhs) const {
-    throw std::logic_error(std::string(__FILE__) + "has been implemented as a stub; normalization should have removed it");
-}
-
-bool LEConstraint::eq(const Constraint &rhs) const {
-    throw std::logic_error(std::string(__FILE__) + "has been implemented as a stub; normalization should have removed it");
+    return context.defaultPropagate(v, *this);
 }

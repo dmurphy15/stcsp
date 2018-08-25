@@ -5,19 +5,19 @@
 #include "../../../include/SearchNode.h"
 
 PrimitiveUntilConstraint::PrimitiveUntilConstraint(VariableExpression &variable, VariableExpression &untilVariable) :
-        mVariable(*variable.getVariables().begin()),
-        mUntilVariable(*untilVariable.getVariables().begin()) {}
+        Constraint({variable, untilVariable}, false),
+        mVariable(variable.mVariable),
+        mUntilVariable(untilVariable.mVariable) {}
 
 PrimitiveUntilConstraint::~PrimitiveUntilConstraint() {}
 
 void PrimitiveUntilConstraint::normalize(std::set<Constraint_r> &constraintList,
                                         std::set<Variable_r> &variableList)
 {
-    // can do this bc normalizing the member variable expressions would do nothing anyway
-    constraintList.insert(*this);
+    throw std::logic_error("this should have only been produced through normalization, so the contents should have already been normalized");
 }
 
-int PrimitiveUntilConstraint::isSatisfied(SearchNode &context, int time) const
+bool PrimitiveUntilConstraint::isSatisfied(SearchNode &context, int time) const
 {
     for (int i=0; i < time; i++) {
         if (mUntilVariable.evaluate(context, i) != 0) {
@@ -25,11 +25,6 @@ int PrimitiveUntilConstraint::isSatisfied(SearchNode &context, int time) const
         }
     }
     return (mVariable.evaluate(context, time) != 0) || (mUntilVariable.evaluate(context, time) != 0);
-}
-
-std::set<Variable_r> PrimitiveUntilConstraint::getVariables() const
-{
-    return {mVariable, mUntilVariable};
 }
 
 // could have used defaultPropagate here, but I think this is faster
@@ -55,24 +50,4 @@ std::vector<std::set<int>> PrimitiveUntilConstraint::propagate(Variable &v, Sear
     }
     return ret;
 }
-
-bool PrimitiveUntilConstraint::lt(const Constraint &rhs) const {
-    if (typeid(*this).before(typeid(rhs))) {
-        return true;
-    } else if (typeid(*this) == typeid(rhs)) {
-        const PrimitiveUntilConstraint &p = static_cast<const PrimitiveUntilConstraint&>(rhs);
-        if (mVariable < p.mVariable) {
-            return true;
-        } else if (mVariable == p.mVariable) {
-            return mUntilVariable < p.mUntilVariable;
-        }
-    }
-    return false;
-}
-bool PrimitiveUntilConstraint::eq(const Constraint &rhs) const {
-    if (typeid(*this) == typeid(rhs)) {
-        const PrimitiveUntilConstraint &p = static_cast<const PrimitiveUntilConstraint&>(rhs);
-        return (mVariable == p.mVariable) && (mUntilVariable == p.mUntilVariable);
-    }
-    return false;
-}
+

@@ -6,7 +6,7 @@
 
 SearchNode::SearchNode(const std::set<Constraint_r>& constraints,
                        const assignment_t& historicalValues,
-                       const std::vector<std::map<Variable_r, domain_t>>& domains) {
+                       const std::vector<std::map<Variable_r, domain_t>>& domains) : id(idSource++) {
     mConstraints = constraints;
     mHistoricalValues = historicalValues;
     mDomains = domains;
@@ -44,11 +44,28 @@ std::set<Constraint_r> SearchNode::getConstraints() {
 void SearchNode::addChildNode(SearchNode &child, assignment_t assignment) {
     mChildNodes.push_back({child, assignment});
 }
+void SearchNode::addParentNode(SearchNode &parent) {
+    mParentNodes.push_back(parent);
+}
+void SearchNode::removeChildNode(SearchNode &child) {
+    for (auto it = mChildNodes.begin(); it != mChildNodes.end(); it++) {
+        SearchNode& s = it->first;
+        if (&s == &child) {
+            mChildNodes.erase(it);
+        }
+    }
+}
 void SearchNode::removeLastChildNode() {
     mChildNodes.pop_back();
 }
+void SearchNode::removeLastParentNode(){
+    mParentNodes.pop_back();
+}
 std::vector<std::pair<SearchNode_r, assignment_t>> SearchNode::getChildNodes() {
     return mChildNodes;
+}
+std::vector<SearchNode_r> SearchNode::getParentNodes() {
+    return mParentNodes;
 }
 
 int SearchNode::getPrefixK() const {
@@ -64,3 +81,5 @@ bool operator<(SearchNode &lhs, SearchNode &rhs) {
             || ((lhs.mHistoricalValues == rhs.mHistoricalValues)
                 && (lhs.mConstraints < rhs.mConstraints));
 }
+
+int SearchNode::idSource = 0;

@@ -120,11 +120,9 @@ union YYSTYPE
 
     char *str;
     int num;
-    void *ptr;
     Expression *expr;
-    Constraint *constr;
 
-#line 128 "y.tab.h" /* yacc.c:1909  */
+#line 126 "y.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;

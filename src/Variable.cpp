@@ -1,7 +1,7 @@
 #include "../include/Variable.h"
 #include "../include/SearchNode.h"
 
-Variable::Variable(const domain_t& domain)
+Variable::Variable(const domain_t& domain, const char *name) : mName(name)
 {
     mInitialDomain = domain;
 }
