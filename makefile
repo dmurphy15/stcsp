@@ -40,8 +40,10 @@ ifeq ($(OPT),yes)
 CXX_FLAGS += -O2 -funroll-loops -fomit-frame-pointer
 endif
 
-# Final binary
+# name your own custom script here if you want
 BIN = mtest
+# dir for binaries
+BIN_DIR = bin
 # Put all auto generated stuff to this build dir.
 BUILD_DIR = build
 SRC = src
@@ -55,16 +57,16 @@ OBJ = $(CPP:%.cpp=$(BUILD_DIR)/%.o)
 DEP = $(OBJ:%.o=%.d)
 
 
+scanner : convenience $(BIN_DIR)/stcsp
 
-scanner: convenience $(BUILD_DIR)/stcsp
-
-build : convenience $(BIN)
-
-$(BUILD_DIR)/stcsp: $(BUILD_DIR)/$(SRC)lex.yy.c $(BUILD_DIR)/$(SRC)y.tab.cpp $(OBJ)
+$(BIN_DIR)/stcsp: $(BUILD_DIR)/$(SRC)/lex.yy.c $(BUILD_DIR)/$(SRC)/y.tab.cpp $(OBJ)
+	mkdir -p $(BIN_DIR)
 	$(CXX) $(CXX_FLAGS) $^ -o $@ -lboost_coroutine -lboost_context
 
+build : convenience $(BIN_DIR)/$(BIN)
+
 # Actual target of the binary - depends on all .o files.
-$(BIN) : $(BIN).cpp $(OBJ)
+$(BIN_DIR)/$(BIN) : $(BIN).cpp $(OBJ)
 	mkdir -p $(@D)
 	# Just link all the object files.
 	$(CXX) $(CXX_FLAGS) $^ -o $@ -lboost_coroutine -lboost_context
@@ -87,7 +89,7 @@ $(BUILD_DIR)/$(SRC)/lex.yy.c: $(SRC)/stcsp.l
 	$(LEX) -o $@ $(SRC)/stcsp.l
 $(BUILD_DIR)/$(SRC)/y.tab.cpp: $(SRC)/stcsp.y
 	mkdir -p $(BUILD_DIR)/$(SRC)
-	$(YACC) -o $@ -d $(SRC)/stcsp.y; mv $(BUILD_DIR)/$(SRC)/y.tab.c $(BUILD_DIR)/$(SRC)/y.tab.cpp
+	$(YACC) -o $@ -d $(SRC)/stcsp.y
 
 .PHONY : clean convenience
 
@@ -101,7 +103,8 @@ convenience :
 
 clean :
     # This should remove all generated files.
-	-rm $(BIN) $(OBJ) $(DEP)
+	-rm $(BIN_DIR)/$(BIN) $(BIN_DIR)/stcsp $(OBJ) $(DEP)
 	-rm $(INCLUDE)/all.h
-	-rm $(BUILD)/$(SRC)/lex.yy.c
-	-rm $(BUILD)/$(SRC)/y.tab.cpp
+	-rm $(BUILD_DIR)/$(SRC)/lex.yy.c
+	-rm $(BUILD_DIR)/$(SRC)/y.tab.cpp
+	-rm $(BUILD_DIR)/$(SRC)/y.tab.hpp

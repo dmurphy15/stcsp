@@ -1,6 +1,0 @@
-The following are special primitives:
-
-PrimitiveNextConstraint
-PrimitiveUntilConstraint
-VariableExpression
-ConstantExpression

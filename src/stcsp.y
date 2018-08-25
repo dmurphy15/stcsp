@@ -20,7 +20,7 @@
 #include <vector>
 #include <unordered_set>
 
-#include "include/all.h"
+#include "../../include/all.h"
 
 domain_t constructDomain(int lower, int upper);
 

@@ -5,8 +5,8 @@ L       [a-zA-Z]
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "include/all.h"
-#include "y.tab.h"
+#include "../../include/all.h"
+#include "y.tab.hpp"
 
 extern int line_num;
 #ifdef __cplusplus
