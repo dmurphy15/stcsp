@@ -21,3 +21,9 @@ in makefile, generate all .o files plus the lex script that solves problems
 
 ask Jasper what the deal was with Array variables wtf are those
 also objective statements wtf are those
+
+
+could binarize all expressions in the beginning, which would reduce their domains
+when propagating an equality constraint, could compute domain size on each size, and based on that prune the larger domain first to save time
+could represent domains as a list of endpoints of ranges - worst case takes 2x memory, best case is unlimited
+add an alldifferent constraint just for fun?

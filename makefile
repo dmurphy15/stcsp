@@ -103,7 +103,7 @@ convenience :
 
 clean :
     # This should remove all generated files.
-	-rm $(BIN_DIR)/$(BIN) $(BIN_DIR)/stcsp $(OBJ) $(DEP)
+	-rm $(OBJ) $(DEP)
 	-rm $(INCLUDE)/all.h
 	-rm $(BUILD_DIR)/$(SRC)/lex.yy.c
 	-rm $(BUILD_DIR)/$(SRC)/y.tab.cpp
