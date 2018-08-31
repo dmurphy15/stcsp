@@ -45,26 +45,31 @@ void SearchNode::addChildNode(SearchNode &child, assignment_t assignment) {
     mChildNodes.push_back({child, assignment});
 }
 void SearchNode::addParentNode(SearchNode &parent) {
-    mParentNodes.push_back(parent);
+    mParentNodes.insert(parent);
 }
 void SearchNode::removeChildNode(SearchNode &child) {
     for (auto it = mChildNodes.begin(); it != mChildNodes.end(); it++) {
         SearchNode& s = it->first;
         if (&s == &child) {
             mChildNodes.erase(it);
+            return;
         }
     }
 }
 void SearchNode::removeLastChildNode() {
     mChildNodes.pop_back();
 }
-void SearchNode::removeLastParentNode(){
-    mParentNodes.pop_back();
+void SearchNode::removeParentNode(SearchNode& p) {
+    for (auto it = mParentNodes.begin(); it != mParentNodes.end(); it++) {
+        if (&(it->get()) == &p) {
+            mParentNodes.erase(it);
+        }
+    }
 }
 std::vector<std::pair<SearchNode_r, assignment_t>> SearchNode::getChildNodes() {
     return mChildNodes;
 }
-std::vector<SearchNode_r> SearchNode::getParentNodes() {
+std::set<SearchNode_r> SearchNode::getParentNodes() {
     return mParentNodes;
 }
 

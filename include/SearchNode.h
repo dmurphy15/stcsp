@@ -94,15 +94,15 @@ public:
      * removes the last childNode that was added
      */
     void removeLastChildNode();
-    void removeLastParentNode();
 
     void removeChildNode(SearchNode& child);
+    void removeParentNode(SearchNode& parent);
     /**
      * get the vector of pairs of SearchNodes and full assignments that can come out of this SearchNode
      * @return the vector
      */
     std::vector<std::pair<SearchNode_r, assignment_t>> getChildNodes();
-    std::vector<SearchNode_r> getParentNodes();
+    std::set<SearchNode_r> getParentNodes();
 
     /**
      * reduces the domain of v until the only remaining values are those for which c can be satisfied
@@ -136,8 +136,8 @@ protected:
     std::vector<std::map<Variable_r, domain_t>> mDomains;
     std::set<Constraint_r> mConstraints;
     assignment_t mHistoricalValues;
-    std::vector<std::pair<SearchNode_r, assignment_t>> mChildNodes;
-    std::vector<SearchNode_r> mParentNodes;
+    std::vector<std::pair<SearchNode_r, assignment_t>> mChildNodes; // using a vector bc we do care when different assignments are used to reach the same child
+    std::set<SearchNode_r> mParentNodes; // using a set bc we don't care when the same parent is added multiple times
 private:
     static int idSource;
 };
@@ -146,19 +146,14 @@ namespace std {
     template <>
     struct hash<SearchNode_r>
     {
-        // hashing based solely on mAssignments, since I'm expecting mConstraints to be pretty
+        // hashing based solely on mHistoricalValues, since I'm expecting mConstraints to be pretty
         // similar between timepoints, so if there are collisions I'm guessing there won't be many
         std::size_t operator()(const SearchNode& s) const
         {
             std::size_t seed = 0;
-            for (int i=0; i < s.getPrefixK(); i++) {
-                seed += s.mAssignments[i].size();
-            }
-            for (int i=0; i < s.getPrefixK(); i++) {
-                for(auto& pair : s.mAssignments[i]) {
-                    int val = pair.second;
-                    seed ^= val + 0x9e3779b9 + (seed << 6) + (seed >> 2);
-                }
+            for (auto pair : s.mHistoricalValues) {
+                seed ^= (std::size_t)&(pair.first.get()) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+                seed ^= pair.second + 0x9e3779b9 + (seed << 6) + (seed >> 2);
             }
             return seed;
         }

@@ -5,9 +5,9 @@
 #include "../../include/Variable.h"
 
 #include "../../include/expressions/specialExpressions/VariableExpression.h"
-#include "../../include/expressions/specialExpressions/ConstantExpression.h"
-#include "../../include/expressions/AddExpression.h"
-#include "../../include/expressions/MultiplyExpression.h"
+#include "../../include/expressions/FirstExpression.h"
+#include "../../include/expressions/NextExpression.h"
+#include "../../include/constraints/specialConstraints/EqualConstraint.h"
 
 FbyExpression::FbyExpression(Expression &a, Expression &b) :
         Expression({a, b}, false),
@@ -24,13 +24,19 @@ Expression& FbyExpression::normalize(std::set<Constraint_r> &constraintList, std
     Expression &equivalentExpr1 = mExpr1.normalize(constraintList, variableList);
     Expression &equivalentExpr2 = mExpr2.normalize(constraintList, variableList);
     domain_t domain1 = equivalentExpr1.getInitialDomain();
-    domain_t domain2 = equivalentExpr2.getInitialDomain();
+    domain_t&& domain2 = equivalentExpr2.getInitialDomain();
+
     domain1.insert(domain2.begin(), domain2.end());
     Variable &var = *new Variable(domain1);
     variableList.insert(var);
-    VariableExpression &varExp = *new VariableExpression(var);
+    VariableExpression &varExpr = *new VariableExpression(var);
 
-    return *new AddExpression(equivalentExpr1, *new MultiplyExpression(*new ConstantExpression(-1), equivalentExpr2));
+    Constraint& firsts = *new EqualConstraint(*new FirstExpression(varExpr), *new FirstExpression(equivalentExpr1));
+    Constraint& nexts = *new EqualConstraint(*new NextExpression(varExpr), *new NextExpression(equivalentExpr2));
+    firsts.normalize(constraintList, variableList);
+    nexts.normalize(constraintList, variableList);
+
+    return varExpr;
 }
 
 domain_t FbyExpression::getDomain(SearchNode &context, int time) const

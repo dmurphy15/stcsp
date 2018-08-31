@@ -15,6 +15,8 @@ UntilConstraint::UntilConstraint(Expression &a, Expression &b) :
 
 UntilConstraint::~UntilConstraint() {}
 
+// I don't think we actually need to normalize this, since its all contained within 1 timepoint
+// then again, the auxiliary variables could speed up consistency enforcement
 void UntilConstraint::normalize(std::set<Constraint_r> &constraintList,
                                 std::set<Variable_r> &variableList)
 {

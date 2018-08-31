@@ -27,3 +27,8 @@ could binarize all expressions in the beginning, which would reduce their domain
 when propagating an equality constraint, could compute domain size on each size, and based on that prune the larger domain first to save time
 could represent domains as a list of endpoints of ranges - worst case takes 2x memory, best case is unlimited
 add an alldifferent constraint just for fun?
+could keep a list of seen failed nodes, to not try them again
+
+ASK ABOUT NORMALIZATION OF THE OTHER THINGS LIKE FIRST, NEXT, FBY, UNTIL
+also ask - I think when you normalize an @ expression as in the paper, you need to also have x1 == nex x1???
+AT IS BROKEN; FBY IS BROKEN

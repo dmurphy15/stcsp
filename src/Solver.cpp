@@ -2,6 +2,7 @@
 
 #include <algorithm>
 
+#include "../include/constraints/specialConstraints/PrimitiveAtConstraint.h"
 #include "../include/constraints/specialConstraints/PrimitiveNextConstraint.h"
 #include "../include/constraints/specialConstraints/PrimitiveUntilConstraint.h"
 #include "../include/constraints/specialConstraints/PrimitiveFirstConstraint.h"
@@ -89,7 +90,7 @@ bool Solver::solveRe(SearchNode &currentNode) {
             if (!nextWasSuccessful) {
                 numChildNodes--;
                 currentNode.removeLastChildNode();
-                nextNode.removeLastParentNode();
+                nextNode.removeParentNode(currentNode);
                 mSeenSearchNodes.erase(nextNode);
             }
         }
@@ -115,6 +116,10 @@ void Solver::carryConstraints(const std::set<Constraint_r>& constraints,
             if (assignment.at(pc.mUntilVariable) != 0) {
                 carriedConstraints.erase(c);
             }
+        } else if (typeid(c) == typeid(PrimitiveAtConstraint)) {
+            carriedConstraints.erase(c);
+            PrimitiveAtConstraint &pc = static_cast<PrimitiveAtConstraint &>(c);
+            carriedConstraints.insert(pc.makeDecrementedCopy());
         }
     }
 }

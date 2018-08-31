@@ -16,10 +16,16 @@ int NextExpression::evaluate(SearchNode &context, int time) const
 
 Expression& NextExpression::normalize(std::set<Constraint_r> &constraintList, std::set<Variable_r> &variableList)
 {
-
     Expression &equivalentExpr = mExpr.normalize(constraintList, variableList);
     domain_t&& d = equivalentExpr.getInitialDomain();
     Variable &equivalentVar = *new Variable(d);
+
+    // new normalization technique
+//    Expression& equivalentVarExpr = *new VariableExpression(equivalentVar);
+//    constraintList.insert(*new PrimitiveNextConstraint(equivalentVarExpr, equivalentExpr));
+//    return equivalentVarExpr;
+
+
     // give it the same starting domain, since before propagation all future timepoints have the same domain as previous timepoints
     Variable &equivalentNextVar = *new Variable(d);
     VariableExpression &equivalentVarExpr = *new VariableExpression(equivalentVar);

@@ -75,7 +75,7 @@ extern int line_num;
 [-]?{D}+            { yylval.num = atoi(yytext); return CONSTANT; }
 
 "'"[^\n]*       { }
-[ \t\v\f]       { }
+[ \t\v\f\r]       { }
 \n              { line_num++; }
 .               { return yytext[0]; }
 

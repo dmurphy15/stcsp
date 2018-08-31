@@ -18,14 +18,14 @@ std::set<SearchNode *>& SolverPrinter::printTreeRe(Solver& s, SearchNode &curren
     if (visited.find(&currentState) != visited.end()) {
         return visited;
     }
-    std::cout<<"state at "<<&currentState<<":\n";
+    std::cout<<"state "<<currentState.id<<":\n";
     for (auto &pair : currentState.getChildNodes()) {
         SearchNode &child = pair.first;
-        std::cout<<"\tchild at "<<&child<<" with assignments:\n";
+        std::cout<<"\tchild "<<child.id<<" with assignments:\n";
         for (auto &assignment : pair.second) {
             Variable &v = assignment.first;
             if (s.mOriginalVariables.find(v) != s.mOriginalVariables.end() || includeAuxiliaryVariables) {
-                std::cout<<"\t\tvariable at "<<&v<<" with value "<<assignment.second<<"\n";
+                std::cout<<"\t\tvariable at "<<(v.mName)<<" with value "<<assignment.second<<"\n";
             }
         }
     }
