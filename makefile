@@ -97,7 +97,7 @@ $(BUILD_DIR)/$(SRC)/y.tab.cpp: $(SRC)/stcsp.y
 convenience :
 	echo "#pragma once" > $(INCLUDE)/all.h
 	for file in $(shell cd include; find constraints \
-		expressions -name "*.h") SearchNodeTypes.h Solver.h Variable.h; do \
+		expressions -name "*.h") Domain.h SearchNodeTypes.h Solver.h Variable.h; do \
 		echo "#include \"$$file\"" >> $(INCLUDE)/all.h; \
 	done
 

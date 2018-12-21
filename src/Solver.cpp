@@ -53,7 +53,7 @@ void Solver::solve() {
     for (Variable& v: mVariables) {
         mDomainsInitializer.insert({v, v.getInitialDomain()});
     };
-    std::vector<std::map<Variable_r, domain_t>> initialDomains;
+    std::vector<std::map<Variable_r, Domain>> initialDomains;
     for (int i=0; i < mPrefixK; i++) {
         initialDomains.push_back(mDomainsInitializer);
     }
@@ -70,7 +70,7 @@ bool Solver::solveRe(SearchNode &currentNode) {
     for (assignment_t& assignment : currentNode.generateNextAssignmentIterator()) {
         std::set<Constraint_r> carriedConstraints; assignment_t carriedAssignments;
         carryConstraints(currentNode.getConstraints(), assignment, carriedConstraints, carriedAssignments);
-        std::vector<std::map<Variable_r, domain_t>> nextInitialDomains(mPrefixK);
+        std::vector<std::map<Variable_r, Domain>> nextInitialDomains(mPrefixK);
         for (int i=0; i < mPrefixK - 1; i++) {
             nextInitialDomains[i] = currentNode.getDomains(i+1);
         }

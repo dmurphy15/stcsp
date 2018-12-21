@@ -78,7 +78,7 @@ private:
     // that we know will fail
     std::unordered_set<SearchNode_r> mSeenSearchNodes;
 
-    std::map<Variable_r, domain_t> mDomainsInitializer;
+    std::map<Variable_r, Domain> mDomainsInitializer;
 
     int mPrefixK;
 

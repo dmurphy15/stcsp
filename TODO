@@ -32,3 +32,11 @@ could keep a list of seen failed nodes, to not try them again
 ASK ABOUT NORMALIZATION OF THE OTHER THINGS LIKE FIRST, NEXT, FBY, UNTIL
 also ask - I think when you normalize an @ expression as in the paper, you need to also have x1 == nex x1???
 AT IS BROKEN; FBY IS BROKEN
+
+
+
+
+
+modularize domains to be more BC friendly and lightweight
+change dominance detection to only compare constraints that would change (at, until, first)
+first constraints check for tautologies and throw out

@@ -4,6 +4,7 @@
 #include <stdexcept>
 
 #include "../include/Variable.h"
+#include "../include/Domain.h"
 
 Expression::Expression(std::initializer_list<Expression_r> expressions, bool symmetric) : mExpressions(expressions) {
     if (symmetric) {
@@ -25,15 +26,15 @@ Expression& Expression::normalize(std::set<Constraint_r> &constraintList, std::s
     return build(normalized);
 }
 
-domain_t Expression::getDomain(SearchNode &context, int time) const {
-    domain_t ret;
+Domain Expression::getDomain(SearchNode &context, int time) const {
+    Domain ret;
     std::vector<int> v(mExpressions.size());
     getDomainHelper(mExpressions, context, time, v, 0, ret);
     return ret;
 }
 
-domain_t Expression::getInitialDomain() const {
-    domain_t ret;
+Domain Expression::getInitialDomain() const {
+    Domain ret;
     std::vector<int> v(mExpressions.size());
     getInitialDomainHelper(mExpressions, v, 0, ret);
     return ret;
@@ -52,12 +53,12 @@ void Expression::getDomainHelper(const std::vector<Expression_r>& expressions,
                                  int time,
                                  std::vector<int>& values,
                                  std::size_t index,
-                                 domain_t& accumulator) const {
+                                 Domain& accumulator) const {
     if (index == expressions.size()) {
         accumulator.insert(evaluateFake(values));
         return;
     }
-    domain_t&& d = expressions[index].get().getDomain(context, time);
+    Domain&& d = expressions[index].get().getDomain(context, time);
     for (auto it = d.begin(); it != d.end(); it++) {
         values[index] = *it;
         getDomainHelper(expressions, context, time, values, index+1, accumulator);
@@ -67,12 +68,12 @@ void Expression::getDomainHelper(const std::vector<Expression_r>& expressions,
 void Expression::getInitialDomainHelper(const std::vector<Expression_r>& expressions,
                                  std::vector<int>& values,
                                  std::size_t index,
-                                 domain_t& accumulator) const {
+                                 Domain& accumulator) const {
     if (index == expressions.size()) {
         accumulator.insert(evaluateFake(values));
         return;
     }
-    domain_t&& d = expressions[index].get().getInitialDomain();
+    Domain&& d = expressions[index].get().getInitialDomain();
     for (auto it = d.begin(); it != d.end(); it++) {
         values[index] = *it;
         getInitialDomainHelper(expressions, values, index+1, accumulator);

@@ -20,7 +20,7 @@ public:
      */
     SearchNode(const std::set<Constraint_r>& constraints,
                const assignment_t& historicalValues,
-               const std::vector<std::map<Variable_r, domain_t>>& domains);
+               const std::vector<std::map<Variable_r, Domain>>& domains);
 
     /**
      * get whatever value is currently assigned to a variable at a certain time within this time period
@@ -44,7 +44,7 @@ public:
      * @param time - the time at which to check it
      * @return - the domain of v at time
      */
-    const domain_t& getDomain(Variable &v, int time) const;
+    const Domain& getDomain(Variable &v, int time) const;
 
     /**
      * set the domain of v at the specified time index within this SearchNode's time period
@@ -52,7 +52,7 @@ public:
      * @param time - the time at which to set it
      * @param domain - the domain to give to v
      */
-    void setDomain(Variable &v, domain_t domain, int time);
+    void setDomain(Variable &v, Domain domain, int time);
 
     /**
      * removes a single value from a certain variable's domain
@@ -60,14 +60,14 @@ public:
      * @param toPrune - value to remove
      * @param time - time of the domain to prune
      */
-    domain_t::const_iterator pruneDomain(Variable &v, domain_t::const_iterator &toPrune, int time);
+    Domain::const_iterator pruneDomain(Variable &v, Domain::const_iterator &toPrune, int time);
 
     /**
      * get all the domains at a certain time
      * @param time - the time for which to get them
      * @return all the domains at time
      */
-    const std::map<Variable_r, domain_t> &getDomains(int time) const;
+    const std::map<Variable_r, Domain> &getDomains(int time) const;
 
     /**
      * get the set of constraints that constrain this SearchNode
@@ -133,7 +133,7 @@ protected:
     /**
      * maps the variables to their domains at each time point
      */
-    std::vector<std::map<Variable_r, domain_t>> mDomains;
+    std::vector<std::map<Variable_r, Domain>> mDomains;
     std::set<Constraint_r> mConstraints;
     assignment_t mHistoricalValues;
     std::vector<std::pair<SearchNode_r, assignment_t>> mChildNodes; // using a vector bc we do care when different assignments are used to reach the same child

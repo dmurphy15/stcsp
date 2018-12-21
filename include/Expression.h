@@ -23,8 +23,8 @@ public:
      */
      // the expression returned should not be *this
     virtual Expression& normalize(std::set<Constraint_r> &constraintList, std::set<Variable_r> &variableList);
-    virtual domain_t getDomain(SearchNode &context, int time) const;
-    virtual domain_t getInitialDomain() const;
+    virtual Domain getDomain(SearchNode &context, int time) const;
+    virtual Domain getInitialDomain() const;
 
     // TODO give it an optional "binarize" function
 
@@ -68,9 +68,9 @@ private:
                          int time,
                          std::vector<int>& values,
                          std::size_t index,
-                         domain_t& accumulator) const;
+                         Domain& accumulator) const;
     void getInitialDomainHelper(const std::vector<Expression_r>& expressions,
                                 std::vector<int>& values,
                                 std::size_t index,
-                                domain_t& accumulator) const;
+                                Domain& accumulator) const;
 };
