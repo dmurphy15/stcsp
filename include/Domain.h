@@ -19,19 +19,41 @@ public:
         friend bool operator!=(const iterator& a, const iterator& b) {
             return !(a == b);
         };
-        void operator++(int) {
+        // prefix
+        iterator operator++() {
+            iterator copy = this;
             mVal++;
             if (mVal == (*mRangeIterator).second) {
                 mRangeIterator++;
                 mVal = mRangeIterator != mEnd ? (*mRangeIterator).first : -1;
             }
+            return copy;
         };
-        void operator--(int) {
+        // postfix
+        iterator operator++(int) {
+            mVal++;
+            if (mVal == (*mRangeIterator).second) {
+                mRangeIterator++;
+                mVal = mRangeIterator != mEnd ? (*mRangeIterator).first : -1;
+            }
+            return this;
+        };
+        iterator operator--() {
+            iterator copy = this;
             mVal--;
             if (mVal < (*mRangeIterator).first) {
                 mRangeIterator--;
                 mVal = std::next(mRangeIterator) != mBegin ? (*mRangeIterator).second : -1;
             }
+            return copy;
+        };
+        iterator operator--(int) {
+            mVal--;
+            if (mVal < (*mRangeIterator).first) {
+                mRangeIterator--;
+                mVal = std::next(mRangeIterator) != mBegin ? (*mRangeIterator).second : -1;
+            }
+            return this;
         };
         int operator*() {
             return mVal;
@@ -51,13 +73,27 @@ public:
     using const_iterator = iterator;
 
     Domain(std::set<int> &&vals);
+    Domain(std::set<std::pair<int, int>> &&ranges) : mRanges(ranges) { };
     friend bool operator==(const Domain &a, const Domain &b) {
         return a.mRanges == b.mRanges;
     }
     iterator begin();
     iterator end();
     iterator insert(int val);
+    iterator insert(std::pair<int, int> range);
+    iterator insert(Domain &&d);
     iterator erase(iterator &it);
+    iterator find(int val);
+    iterator at(int where);
+    Domain slice(int from, int to);
+    int size() {
+        int count = 0;
+        for (std::pair<int, int> &&range : mRanges) {
+            count += range.second - range.first;
+        }
+        return count;
+    }
+
 private:
     std::set<std::pair<int, int>> mRanges;
 };

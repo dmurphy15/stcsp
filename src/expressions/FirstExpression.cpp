@@ -30,12 +30,12 @@ Expression& FirstExpression::normalize(std::set<Constraint_r> &constraintList, s
     return equivalentVarExpr;
 }
 
-domain_t FirstExpression::getDomain(SearchNode &context, int time) const
+Domain FirstExpression::getDomain(SearchNode &context, int time) const
 {
     throw std::logic_error("these should be removed with normalization");
 }
 
-domain_t FirstExpression::getInitialDomain() const
+Domain FirstExpression::getInitialDomain() const
 {
     throw std::logic_error("these should be removed with normalization");
 }

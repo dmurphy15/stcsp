@@ -17,7 +17,7 @@ int NextExpression::evaluate(SearchNode &context, int time) const
 Expression& NextExpression::normalize(std::set<Constraint_r> &constraintList, std::set<Variable_r> &variableList)
 {
     Expression &equivalentExpr = mExpr.normalize(constraintList, variableList);
-    domain_t&& d = equivalentExpr.getInitialDomain();
+    Domain&& d = equivalentExpr.getInitialDomain();
     Variable &equivalentVar = *new Variable(d);
 
     // new normalization technique
@@ -38,12 +38,12 @@ Expression& NextExpression::normalize(std::set<Constraint_r> &constraintList, st
     return equivalentVarExpr;
 }
 
-domain_t NextExpression::getDomain(SearchNode &context, int time) const
+Domain NextExpression::getDomain(SearchNode &context, int time) const
 {
     throw std::logic_error("should have been removed by normalization");
 }
 
-domain_t NextExpression::getInitialDomain() const
+Domain NextExpression::getInitialDomain() const
 {
     throw std::logic_error("should have been removed by normalization");
 }

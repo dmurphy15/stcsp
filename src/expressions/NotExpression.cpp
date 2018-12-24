@@ -11,10 +11,10 @@ int NotExpression::evaluate(SearchNode &context, int time) const
     return mExpr1.evaluate(context, time) != 0 ? 0 : 1;
 }
 
-domain_t NotExpression::getDomain(SearchNode &context, int time) const
+Domain NotExpression::getDomain(SearchNode &context, int time) const
 {
-    domain_t domain1 = mExpr1.getDomain(context, time);
-    domain_t ret;
+    Domain domain1 = mExpr1.getDomain(context, time);
+    Domain ret;
     for (int i : domain1) {
         if (i != 0) {
             ret.insert(0);
@@ -27,10 +27,10 @@ domain_t NotExpression::getDomain(SearchNode &context, int time) const
     return ret;
 }
 
-domain_t NotExpression::getInitialDomain() const
+Domain NotExpression::getInitialDomain() const
 {
-    domain_t domain1 = mExpr1.getInitialDomain();
-    domain_t ret;
+    Domain domain1 = mExpr1.getInitialDomain();
+    Domain ret;
     for (int i : domain1) {
         if (i != 0) {
             ret.insert(0);

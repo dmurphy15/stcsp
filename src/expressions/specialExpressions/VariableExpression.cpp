@@ -17,13 +17,13 @@ void VariableExpression::getVariables(std::set<Variable_r>& variables) const
     variables.insert(mVariable);
 }
 
-domain_t VariableExpression::getDomain(SearchNode &context, int time) const {
+Domain VariableExpression::getDomain(SearchNode &context, int time) const {
     return mVariable.getDomain(context, time);
 }
 
-domain_t VariableExpression::getInitialDomain() const {
+Domain VariableExpression::getInitialDomain() const {
     // doing this so that I can get a mutable copy of the const vector that the variable returns
-    domain_t a = mVariable.getInitialDomain();
+    Domain a = mVariable.getInitialDomain();
     return a;
 }
 

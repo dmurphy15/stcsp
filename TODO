@@ -34,6 +34,9 @@ also ask - I think when you normalize an @ expression as in the paper, you need 
 AT IS BROKEN; FBY IS BROKEN
 
 
+If still slow, could also look into GAC returning a condensed set of ranges instead of a set of ints...
+also in primitiveFirstConstraint, looks like we dump entire domains into sets - do we have to do that?
+
 
 
 

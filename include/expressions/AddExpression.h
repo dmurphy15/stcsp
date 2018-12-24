@@ -10,8 +10,8 @@ public:
         return mExpr1.evaluate(context, time) + mExpr2.evaluate(context, time);
     }
     // overriding default implementations so I can take advantage of symmetry
-    domain_t getDomain(SearchNode &context, int time) const override;
-    domain_t getInitialDomain() const override;
+    Domain getDomain(SearchNode &context, int time) const override;
+    Domain getInitialDomain() const override;
 private:
     Expression &mExpr1;
     Expression &mExpr2;

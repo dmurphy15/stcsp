@@ -23,10 +23,10 @@ Expression& FbyExpression::normalize(std::set<Constraint_r> &constraintList, std
 {
     Expression &equivalentExpr1 = mExpr1.normalize(constraintList, variableList);
     Expression &equivalentExpr2 = mExpr2.normalize(constraintList, variableList);
-    domain_t domain1 = equivalentExpr1.getInitialDomain();
-    domain_t&& domain2 = equivalentExpr2.getInitialDomain();
+    Domain domain1 = equivalentExpr1.getInitialDomain();
+    Domain&& domain2 = equivalentExpr2.getInitialDomain();
 
-    domain1.insert(domain2.begin(), domain2.end());
+    domain1.insert(domain2);
     Variable &var = *new Variable(domain1);
     variableList.insert(var);
     VariableExpression &varExpr = *new VariableExpression(var);
@@ -39,12 +39,12 @@ Expression& FbyExpression::normalize(std::set<Constraint_r> &constraintList, std
     return varExpr;
 }
 
-domain_t FbyExpression::getDomain(SearchNode &context, int time) const
+Domain FbyExpression::getDomain(SearchNode &context, int time) const
 {
     throw std::logic_error(std::string(__FILE__) + "has been implemented as a stub; normalization should have removed it");
 }
 
-domain_t FbyExpression::getInitialDomain() const
+Domain FbyExpression::getInitialDomain() const
 {
     throw std::logic_error(std::string(__FILE__) + "has been implemented as a stub; normalization should have removed it");
 }

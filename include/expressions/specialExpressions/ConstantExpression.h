@@ -9,8 +9,8 @@ public:
 
     int evaluate(SearchNode &context, int time) const override;
 
-    domain_t getDomain(SearchNode &context, int time) const override;
-    domain_t getInitialDomain() const override;
+    Domain getDomain(SearchNode &context, int time) const override;
+    Domain getInitialDomain() const override;
     void getVariables(std::set<Variable_r>& variables) const override;
     const int mConstant;
 private:

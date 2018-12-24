@@ -1,4 +1,5 @@
 #include "../../../include/expressions/specialExpressions/ConstantExpression.h"
+#include "../../../include/Domain.h"
 
 
 ConstantExpression::ConstantExpression(int constant) :
@@ -15,13 +16,13 @@ void ConstantExpression::getVariables(std::set<Variable_r>& variables) const
     return;
 }
 
-domain_t ConstantExpression::getDomain(SearchNode &context, int time) const
+Domain ConstantExpression::getDomain(SearchNode &context, int time) const
 {
-    return {mConstant};
+    return Domain({mConstant, mConstant + 1});
 }
 
-domain_t ConstantExpression::getInitialDomain() const
+Domain ConstantExpression::getInitialDomain() const
 {
-    return {mConstant};
+    return Domain({mConstant, mConstant + 1});
 }
 

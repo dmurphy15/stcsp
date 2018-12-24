@@ -13,10 +13,10 @@ int IfThenElseExpression::evaluate(SearchNode &context, int time) const
     return mExpr1.evaluate(context, time) != 0 ? mExpr2.evaluate(context, time) : mExpr3.evaluate(context, time);
 }
 
-domain_t IfThenElseExpression::getDomain(SearchNode &context, int time) const
+Domain IfThenElseExpression::getDomain(SearchNode &context, int time) const
 {
-    domain_t&& domain1 = mExpr1.getDomain(context, time);
-    domain_t ret;
+    Domain&& domain1 = mExpr1.getDomain(context, time);
+    Domain ret;
     for (int i : domain1) {
         if (i != 0) {
             ret = mExpr2.getDomain(context, time);
@@ -30,10 +30,10 @@ domain_t IfThenElseExpression::getDomain(SearchNode &context, int time) const
     return ret;
 }
 
-domain_t IfThenElseExpression::getInitialDomain() const
+Domain IfThenElseExpression::getInitialDomain() const
 {
-    domain_t&& domain1 = mExpr1.getInitialDomain();
-    domain_t ret;
+    Domain&& domain1 = mExpr1.getInitialDomain();
+    Domain ret;
     for (int i : domain1) {
         if (i != 0) {
             ret = mExpr2.getInitialDomain();

@@ -6,12 +6,12 @@
  * the more similar the two subdomains are, the better we can take advantage of symmetry,
  * up to almost 2x speedup best case
  */
-domain_t AddExpression::getDomain(SearchNode &context, int time) const
+Domain AddExpression::getDomain(SearchNode &context, int time) const
 {
-    domain_t&& tmp1 = mExpr1.getDomain(context, time);
-    domain_t&& tmp2 = mExpr2.getDomain(context, time);
+    Domain&& tmp1 = mExpr1.getDomain(context, time);
+    Domain&& tmp2 = mExpr2.getDomain(context, time);
     std::set<int> shared;
-    domain_t ret;
+    Domain ret;
     for (int i : tmp1) {
         if (tmp2.find(i) == tmp2.end()) {
             for (int j : tmp2) {
@@ -36,12 +36,12 @@ domain_t AddExpression::getDomain(SearchNode &context, int time) const
     return ret;
 }
 
-domain_t AddExpression::getInitialDomain() const
+Domain AddExpression::getInitialDomain() const
 {
-    domain_t&& tmp1 = mExpr1.getInitialDomain();
-    domain_t&& tmp2 = mExpr2.getInitialDomain();
+    Domain&& tmp1 = mExpr1.getInitialDomain();
+    Domain&& tmp2 = mExpr2.getInitialDomain();
     std::set<int> shared;
-    domain_t ret;
+    Domain ret;
     for (int i : tmp1) {
         if (tmp2.find(i) == tmp2.end()) {
             for (int j : tmp2) {

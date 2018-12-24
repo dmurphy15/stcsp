@@ -54,8 +54,8 @@ void PrimitiveNextConstraint::propagateHelper(bool vIsNext,
     Variable& v = vIsNext ? mNextVariable : mVariable;
     Variable& other = vIsNext ? mVariable : mNextVariable;
     for (int i=0; i < context.getPrefixK() - 1; i++) {
-        const domain_t& vDom = context.getDomain(v, i + vIsNext);
-        const domain_t& otherDom = context.getDomain(other, i + (!vIsNext));
+        const Domain& vDom = context.getDomain(v, i + vIsNext);
+        const Domain& otherDom = context.getDomain(other, i + (!vIsNext));
         for (auto it = vDom.begin(); it != vDom.end(); ) {
             if (otherDom.find(*it) == otherDom.end()) {
                 ret[i+vIsNext].insert(*it);

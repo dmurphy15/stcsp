@@ -25,12 +25,12 @@ Expression& SubtractExpression::normalize(std::set<Constraint_r> &constraintList
     return *new AddExpression(equivalentExpr1, *new MultiplyExpression(*new ConstantExpression(-1), equivalentExpr2));
 }
 
-domain_t SubtractExpression::getDomain(SearchNode &context, int time) const
+Domain SubtractExpression::getDomain(SearchNode &context, int time) const
 {
     throw std::logic_error(std::string(__FILE__) + "has been implemented as a stub; normalization should have removed it");
 }
 
-domain_t SubtractExpression::getInitialDomain() const
+Domain SubtractExpression::getInitialDomain() const
 {
     throw std::logic_error(std::string(__FILE__) + "has been implemented as a stub; normalization should have removed it");
 }

@@ -43,12 +43,12 @@ Expression& AtExpression::normalize(std::set<Constraint_r> &constraintList, std:
     }
 }
 
-domain_t AtExpression::getDomain(SearchNode &context, int time) const
+Domain AtExpression::getDomain(SearchNode &context, int time) const
 {
     throw std::logic_error(std::string(__FILE__) + "has been implemented as a stub; normalization should have removed it");
 }
 
-domain_t AtExpression::getInitialDomain() const
+Domain AtExpression::getInitialDomain() const
 {
     throw std::logic_error(std::string(__FILE__) + "has been implemented as a stub; normalization should have removed it");
 }

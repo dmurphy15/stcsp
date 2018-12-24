@@ -12,8 +12,8 @@ public:
     LAndExpression(Expression &a, Expression &b);
 
     int evaluate(SearchNode &context, int time) const override;
-    domain_t getDomain(SearchNode &context, int time) const override;
-    domain_t getInitialDomain() const override;
+    Domain getDomain(SearchNode &context, int time) const override;
+    Domain getInitialDomain() const override;
 private:
     Expression &mExpr1;
     Expression &mExpr2;

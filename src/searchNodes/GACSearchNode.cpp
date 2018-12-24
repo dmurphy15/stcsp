@@ -4,10 +4,11 @@
 
 #include "../../include/Constraint.h"
 #include "../../include/Variable.h"
+#include "../../include/Domain.h"
 
 GACSearchNode::GACSearchNode(const std::set<Constraint_r>& constraints,
                              const assignment_t& historicalValues,
-                             const std::vector<std::map<Variable_r, domain_t>>& domains)
+                             const std::vector<std::map<Variable_r, Domain>>& domains)
         : SearchNode(constraints, historicalValues, domains)
 {
     for (Constraint &c : constraints)
@@ -32,7 +33,7 @@ void GACSearchNode::generateNextAssignment(coro_assignment_t::push_type& yield)
     std::vector<std::map<Variable_r, std::set<int>>> removals = GAC();
     bool yieldAssignment = true;
     // only ever split domains on the first timepoint in our time period, since that's the one we're trying to assign
-    std::map<Variable_r, domain_t>& firstDomains = mDomains[0];
+    std::map<Variable_r, Domain>& firstDomains = mDomains[0];
     for (auto &p : firstDomains)
     {
         Variable &v = p.first;
@@ -44,14 +45,14 @@ void GACSearchNode::generateNextAssignment(coro_assignment_t::push_type& yield)
         else if (firstDomains[v].size() > 1)
         {
             yieldAssignment = false;
-            domain_t loDomain, hiDomain;
+            Domain loDomain, hiDomain;
             splitDomain(firstDomains[v], loDomain, hiDomain);
             firstDomains[v] = loDomain;
             generateNextAssignment(yield);
             firstDomains[v] = hiDomain;
             generateNextAssignment(yield);
             // reset the domain
-            firstDomains[v].insert(loDomain.begin(), loDomain.end());
+            firstDomains[v].insert(loDomain);
             break;
         }
     }
@@ -68,7 +69,9 @@ void GACSearchNode::generateNextAssignment(coro_assignment_t::push_type& yield)
     // reset the changes we made to the domains
     for (int i=0; i < getPrefixK(); i++) {
         for (auto const &p : removals[i]) {
-            mDomains[i][p.first].insert(p.second.begin(), p.second.end());
+            for (int &&removed : p.second) {
+                mDomains[i][p.first].insert(removed);
+            }
         }
     }
 }
@@ -142,16 +145,11 @@ bool GACSearchNode::shouldPrune(Constraint& c,
     return true;
 }
 
-void GACSearchNode::splitDomain(domain_t& inDomain, domain_t& loDomain, domain_t& hiDomain)
+void GACSearchNode::splitDomain(Domain& inDomain, Domain& loDomain, Domain& hiDomain)
 {
-    std::size_t i=0;
-    for (auto it = inDomain.begin(); it != inDomain.end(); it++, i++) {
-        if (i < inDomain.size() / 2) {
-            loDomain.insert(*it);
-        } else {
-            hiDomain.insert(*it);
-        }
-    }
+    int size = inDomain.size();
+    loDomain.insert(inDomain.slice(0, size / 2));
+    hiDomain.insert(inDomain.slice(size / 2, size));
 }
 
 coro_assignment_t::pull_type GACSearchNode::generateNextAssignmentIterator() {

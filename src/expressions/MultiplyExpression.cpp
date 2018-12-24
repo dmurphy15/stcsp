@@ -12,12 +12,12 @@ int MultiplyExpression::evaluate(SearchNode &context, int time) const
     return mExpr1.evaluate(context, time) * mExpr2.evaluate(context, time);
 }
 
-domain_t MultiplyExpression::getDomain(SearchNode &context, int time) const
+Domain MultiplyExpression::getDomain(SearchNode &context, int time) const
 {
-    domain_t&& tmp1 = mExpr1.getDomain(context, time);
-    domain_t&& tmp2 = mExpr2.getDomain(context, time);
+    Domain&& tmp1 = mExpr1.getDomain(context, time);
+    Domain&& tmp2 = mExpr2.getDomain(context, time);
     std::set<int> shared;
-    domain_t ret;
+    Domain ret;
     for (int i : tmp1) {
         if (tmp2.find(i) == tmp2.end()) {
             for (int j : tmp2) {
@@ -42,12 +42,12 @@ domain_t MultiplyExpression::getDomain(SearchNode &context, int time) const
     return ret;
 }
 
-domain_t MultiplyExpression::getInitialDomain() const
+Domain MultiplyExpression::getInitialDomain() const
 {
-    domain_t&& tmp1 = mExpr1.getInitialDomain();
-    domain_t&& tmp2 = mExpr2.getInitialDomain();
+    Domain&& tmp1 = mExpr1.getInitialDomain();
+    Domain&& tmp2 = mExpr2.getInitialDomain();
     std::set<int> shared;
-    domain_t ret;
+    Domain ret;
     for (int i : tmp1) {
         if (tmp2.find(i) == tmp2.end()) {
             for (int j : tmp2) {

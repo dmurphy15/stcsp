@@ -7,7 +7,7 @@ class GACSearchNode : public SearchNode
 public:
     GACSearchNode(const std::set<Constraint_r>& constraints,
                   const assignment_t& historicalValues,
-                  const std::vector<std::map<Variable_r, domain_t>>& domains);
+                  const std::vector<std::map<Variable_r, Domain>>& domains);
     std::vector<std::set<int>> defaultPropagate(Variable &v, Constraint &c) override;
     coro_assignment_t::pull_type generateNextAssignmentIterator() override;// {
 //        return coro_assignment_t::pull_type(boost::bind(&GACSearchNode::generateNextAssignment, this, _1));
@@ -18,7 +18,7 @@ private:
     std::map<Constraint_r, std::vector<Variable_r>> mConstraintToVariables;
 
     std::vector<std::map<Variable_r, std::set<int>>> GAC();
-    void splitDomain(domain_t& inDomain, domain_t& loDomain, domain_t& hiDomain);
+    void splitDomain(domain_t& inDomain, Domain& loDomain, Domain& hiDomain);
     void generateNextAssignment(coro_assignment_t::push_type &yield) override;
     bool shouldPrune(Constraint& c,
                      int time,
