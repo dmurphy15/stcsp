@@ -23,7 +23,7 @@ GACSearchNode::GACSearchNode(const std::set<Constraint_r>& constraints,
         }
     }
     for (auto &assignment : historicalValues) {
-        mDomains[0][assignment.first] = {assignment.second};
+        mDomains[0][assignment.first] = Domain({assignment.second});
     }
     mAssignments.resize(getPrefixK());
 }
@@ -69,9 +69,7 @@ void GACSearchNode::generateNextAssignment(coro_assignment_t::push_type& yield)
     // reset the changes we made to the domains
     for (int i=0; i < getPrefixK(); i++) {
         for (auto const &p : removals[i]) {
-            for (int &&removed : p.second) {
-                mDomains[i][p.first].insert(removed);
-            }
+            mDomains[i][p.first].insert(Domain(p.second));
         }
     }
 }

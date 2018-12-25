@@ -18,11 +18,11 @@ void ConstantExpression::getVariables(std::set<Variable_r>& variables) const
 
 Domain ConstantExpression::getDomain(SearchNode &context, int time) const
 {
-    return Domain({mConstant, mConstant + 1});
+    return Domain({mConstant});
 }
 
 Domain ConstantExpression::getInitialDomain() const
 {
-    return Domain({mConstant, mConstant + 1});
+    return Domain({mConstant});
 }
 

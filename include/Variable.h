@@ -3,6 +3,7 @@
 #include <functional>
 
 #include "types.h"
+#include "Domain.h"
 
 /**
  * will be passed around via pointers

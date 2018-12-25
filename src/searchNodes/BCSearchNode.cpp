@@ -7,7 +7,7 @@
 
 BCSearchNode::BCSearchNode(const std::set<Constraint_r>& constraints,
                              const assignment_t& historicalValues,
-                             const std::vector<std::map<Variable_r, domain_t>>& domains)
+                             const std::vector<std::map<Variable_r, Domain>>& domains)
         : SearchNode(constraints, historicalValues, domains)
 {
     for (Constraint &c : constraints)
@@ -21,7 +21,7 @@ BCSearchNode::BCSearchNode(const std::set<Constraint_r>& constraints,
         }
     }
     for (auto &assignment : historicalValues) {
-        mDomains[0][assignment.first] = {assignment.second};
+        mDomains[0][assignment.first] = Domain({assignment.second});
     }
     mAssignments.resize(getPrefixK());
 }
@@ -30,7 +30,7 @@ void BCSearchNode::generateNextAssignment(coro_assignment_t::push_type& yield)
 {
     std::vector<std::map<Variable_r, std::set<int>>> removals = BC();
     bool yieldAssignment = true;
-    std::map<Variable_r, domain_t>& firstDomains = mDomains[0];
+    std::map<Variable_r, Domain>& firstDomains = mDomains[0];
     for (auto &p : firstDomains)
     {
         Variable &v = p.first;
@@ -42,13 +42,13 @@ void BCSearchNode::generateNextAssignment(coro_assignment_t::push_type& yield)
         else if (firstDomains[v].size() > 1)
         {
             yieldAssignment = false;
-            domain_t loDomain, hiDomain;
+            Domain loDomain, hiDomain;
             splitDomain(firstDomains[v], loDomain, hiDomain);
             firstDomains[v] = loDomain;
             generateNextAssignment(yield);
             firstDomains[v] = hiDomain;
             generateNextAssignment(yield);
-            firstDomains[v].insert(loDomain.begin(), loDomain.end());
+            firstDomains[v].insert(loDomain);
             break;
         }
     }
@@ -65,7 +65,7 @@ void BCSearchNode::generateNextAssignment(coro_assignment_t::push_type& yield)
     // reset the changes we made to the domains
     for (int i=0; i < getPrefixK(); i++) {
         for (auto const &p : removals[i]) {
-            mDomains[i][p.first].insert(p.second.begin(), p.second.end());
+            mDomains[i][p.first].insert(Domain(p.second));
         }
     }
 }
@@ -126,7 +126,7 @@ std::vector<std::set<int>> BCSearchNode::defaultPropagate(Variable &v, Constrain
                 ret[time].insert(*riter);
                 // bc erasing using a reverse iterator in C++ is wonky
                 riter++;
-                domain_t::const_iterator it = riter.base();
+                Domain::const_iterator it = riter.base();
                 it = pruneDomain(v, it, time);
                 riter = std::make_reverse_iterator(it);
             } else {
@@ -154,7 +154,7 @@ bool BCSearchNode::shouldPrune(Constraint& c,
     return true;
 }
 
-void BCSearchNode::splitDomain(domain_t& inDomain, domain_t& loDomain, domain_t& hiDomain)
+void BCSearchNode::splitDomain(Domain& inDomain, Domain& loDomain, Domain& hiDomain)
 {
     std::size_t i=0;
     for (auto it = inDomain.begin(); it != inDomain.end(); it++, i++) {

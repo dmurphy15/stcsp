@@ -27,8 +27,8 @@ void printSolution(std::set<Constraint_r> constraints) {
 
 
 int main(int argc, char **argv) {
-    Variable v_a({1, 2});
-    Variable v_b({1, 2, 3});
+    Variable v_a(Domain(std::set<int>{1, 2}));
+    Variable v_b(Domain({1, 2, 3}));
 
     Expression &e_a = *new VariableExpression(v_a);
     Expression &e_b = *new VariableExpression(v_b);
@@ -82,16 +82,16 @@ int main(int argc, char **argv) {
 //    printSolution({*new PrimitiveNextConstraint(*new VariableExpression(v_a), *new VariableExpression(v_a))});
     printSolution({*new EqualConstraint(e_a, *new NextExpression(e_a))});
 
-    Expression &e_c = *new VariableExpression(*new Variable({0, 1, 2}));
-    Expression &e_d = *new VariableExpression(*new Variable({0, 1, 2, 3}));
+    Expression &e_c = *new VariableExpression(*new Variable(Domain({0, 1, 2})));
+    Expression &e_d = *new VariableExpression(*new Variable(Domain({0, 1, 2, 3})));
     printSolution({*new UntilConstraint(e_c, e_d)});
 
     printSolution({*new EqualConstraint(*new FirstExpression(e_a), e_b)});
 
-    VariableExpression *time = new VariableExpression(*new Variable({-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5}));
-    VariableExpression *position = new VariableExpression(*new Variable({0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25}));
-    VariableExpression *velocity = new VariableExpression(*new Variable({-10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}));
-    VariableExpression *acceleration = new VariableExpression(*new Variable({-25, -24, -23, -22, -21, -20, -19, -18, -17, -16, -15, -14, -13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2}));
+    VariableExpression *time = new VariableExpression(*new Variable(Domain({-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5})));
+    VariableExpression *position = new VariableExpression(*new Variable(Domain({0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25})));
+    VariableExpression *velocity = new VariableExpression(*new Variable(Domain({-10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10})));
+    VariableExpression *acceleration = new VariableExpression(*new Variable(Domain({-25, -24, -23, -22, -21, -20, -19, -18, -17, -16, -15, -14, -13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2})));
 
     // lol it says that this is unsatisfiable, and ITS CORRECT since I say that time must always increase, but it has a
             // finite domain so eventually it will always be unable to increase further
@@ -106,7 +106,7 @@ int main(int argc, char **argv) {
                   *new EqualConstraint(*new FirstExpression(*time), *new ConstantExpression(-5))});
 
     // fixing that naively with an until constraint
-    VariableExpression *switchExp = new VariableExpression(*new Variable({0, 1}));
+    VariableExpression *switchExp = new VariableExpression(*new Variable(Domain(std::set<int>{0, 1})));
     printSolution({*new EqualConstraint(*position, *new MultiplyExpression(*time, *time)),
                    *new EqualConstraint(*velocity,
                                         *new AddExpression(*new NextExpression(*position),

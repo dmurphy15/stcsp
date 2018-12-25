@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "types.h"
+#include "Domain.h"
 
 class SearchNode
 {

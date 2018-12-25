@@ -18,7 +18,7 @@ private:
     std::map<Constraint_r, std::vector<Variable_r>> mConstraintToVariables;
 
     std::vector<std::map<Variable_r, std::set<int>>> GAC();
-    void splitDomain(domain_t& inDomain, Domain& loDomain, Domain& hiDomain);
+    void splitDomain(Domain& inDomain, Domain& loDomain, Domain& hiDomain);
     void generateNextAssignment(coro_assignment_t::push_type &yield) override;
     bool shouldPrune(Constraint& c,
                      int time,

@@ -2,6 +2,7 @@
 #include <initializer_list>
 
 #include "types.h"
+#include "Domain.h"
 
 /*
  * Interface that all variables and operations on variables must implement

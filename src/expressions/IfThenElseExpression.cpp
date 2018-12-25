@@ -24,8 +24,8 @@ Domain IfThenElseExpression::getDomain(SearchNode &context, int time) const
         }
     }
     if (domain1.find(0) != domain1.end()) {
-        domain_t&& domain3 = mExpr3.getDomain(context, time);
-        ret.insert(domain3.begin(), domain3.end());
+        Domain&& domain3 = mExpr3.getDomain(context, time);
+        ret.insert(domain3);
     }
     return ret;
 }
@@ -41,8 +41,8 @@ Domain IfThenElseExpression::getInitialDomain() const
         }
     }
     if (domain1.find(0) != domain1.end()) {
-        domain_t&& domain3 = mExpr3.getInitialDomain();
-        ret.insert(domain3.begin(), domain3.end());
+        Domain&& domain3 = mExpr3.getInitialDomain();
+        ret.insert(domain3);
     }
     return ret;
 }
