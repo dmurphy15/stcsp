@@ -22,7 +22,7 @@
 
 #include "../../include/all.h"
 
-domain_t constructDomain(int lower, int upper);
+Domain constructDomain(int lower, int upper);
 
 // PERHAPS IN THE FUTURE MAKE A GLOBAL SOLVER, AND ADD TO IT INSTEAD OF ADDING TO THESE. SHOULD PROBABLY DO THAT
 struct cmp_str
@@ -228,10 +228,6 @@ void yyerror(const char *msg) {
     exit(1);
 }
 
-domain_t constructDomain(int lower, int upper) {
-    domain_t ret;
-    for (int i=lower;i<=upper;i++) {
-        ret.insert(i);
-    }
-    return ret;
+Domain constructDomain(int lower, int upper) {
+	return Domain({std::pair<int, int>{lower, upper+1}});
 }

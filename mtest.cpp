@@ -68,7 +68,7 @@ int main(int argc, char **argv) {
 //
 //    printStates(*new GACSearchNode({*new EqualConstraint(add_add, *new AddExpression(add_a_b, *new ConstantExpression(3)))}));
 
-
+    printSolution({*new EqualConstraint(e_a, e_b)});
 
 
     printSolution({*new EqualConstraint(*new FirstExpression(e_a), e_b)});

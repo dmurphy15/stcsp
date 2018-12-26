@@ -135,13 +135,20 @@ Domain Domain::slice(int from, int to) {
     std::set<std::pair<int, int>>::iterator hint = ranges.begin();
     if (it != toIt.mRangeIterator) {
         hint = ranges.insert({*fromIt, (*it).second}).first;
+        ++it;
     }
-    it++;
-    for (; it != toIt.mRangeIterator; it++) {
+    for (; it != toIt.mRangeIterator; ++it) {
         hint = ranges.insert(hint, *it);
     }
     if (toIt != end() && *toIt != (*it).first) {
-        ranges.insert(hint, {(*it).first, *toIt});
+        std::pair<int, int> toInsert((*it).first, *toIt);
+        if (*fromIt > toInsert.first) { toInsert.first = *fromIt; }
+        ranges.insert(hint, toInsert);
     }
     return Domain(ranges);
+}
+
+// not inlining, bc that caused problems when compiler tried to optimize
+int& Domain::iterator::operator*() {
+    return mVal;
 }
