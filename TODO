@@ -33,13 +33,10 @@ ASK ABOUT NORMALIZATION OF THE OTHER THINGS LIKE FIRST, NEXT, FBY, UNTIL
 also ask - I think when you normalize an @ expression as in the paper, you need to also have x1 == nex x1???
 AT IS BROKEN; FBY IS BROKEN
 
-
-If still slow, could also look into GAC returning a condensed set of ranges instead of a set of ints...
-also in primitiveFirstConstraint, looks like we dump entire domains into sets - do we have to do that?
-
-
-
-
 modularize domains to be more BC friendly and lightweight
 change dominance detection to only compare constraints that would change (at, until, first)
 first constraints check for tautologies and throw out
+
+Added a new Domain class, representing them with ranges.
+in primitiveFirstConstraint, looks like we dump entire domains into sets - do we have to do that?
+
