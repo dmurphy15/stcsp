@@ -6,10 +6,12 @@
 
 SearchNode::SearchNode(const std::set<Constraint_r>& constraints,
                        const assignment_t& historicalValues,
-                       const std::vector<std::map<Variable_r, domain_t>>& domains) : id(idSource++) {
+                       const std::vector<std::pair<std::map<Variable_r, domain_t>::const_iterator,std::map<Variable_r, domain_t>::const_iterator>>& domains) : id(idSource++) {
     mConstraints = constraints;
     mHistoricalValues = historicalValues;
-    mDomains = domains;
+    for (auto&& v : domains) {
+        mDomains.push_back({v.first, v.second});
+    }
 }
 
 int SearchNode::getAssignment(Variable &v, int time) {
@@ -83,8 +85,8 @@ bool operator==(SearchNode &lhs, SearchNode &rhs) {
 
 bool operator<(SearchNode &lhs, SearchNode &rhs) {
     return (lhs.mHistoricalValues < rhs.mHistoricalValues)
-            || ((lhs.mHistoricalValues == rhs.mHistoricalValues)
-                && (lhs.mConstraints < rhs.mConstraints));
+           || ((lhs.mHistoricalValues == rhs.mHistoricalValues)
+               && (lhs.mConstraints < rhs.mConstraints));
 }
 
 int SearchNode::idSource = 0;
