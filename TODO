@@ -27,3 +27,10 @@ could binarize all expressions in the beginning, which would reduce their domain
 when propagating an equality constraint, could compute domain size on each size, and based on that prune the larger domain first to save time
 could represent domains as a list of endpoints of ranges - worst case takes 2x memory, best case is unlimited
 add an alldifferent constraint just for fun?
+
+
+
+
+do the whole first constraint swapping out thing. THen try out adding assessment of constraints to the searchnode hash function. then try storing the
+searchnode's constraint lists as doubly linked lists instead of sets to try to get constant time removal, also maybe you could save iteration time if you stored
+a global set of constraint sets that could be given to searchnodes, and just infer which is the correct one.
