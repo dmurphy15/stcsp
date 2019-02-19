@@ -7,10 +7,16 @@
 
 class Variable;
 using Variable_r = std::reference_wrapper<Variable>;
+bool operator==(const Variable &a, const Variable &b);
+bool operator<(const Variable &a, const Variable &b);
 class Expression;
 using Expression_r = std::reference_wrapper<Expression>;
+bool operator==(const Expression &a, const Expression &b);
+bool operator<(const Expression &a, const Expression &b);
 class Constraint;
 using Constraint_r = std::reference_wrapper<Constraint>;
+bool operator==(const Constraint &a, const Constraint &b);
+bool operator<(const Constraint &a, const Constraint &b);
 class SearchNode;
 using SearchNode_r = std::reference_wrapper<SearchNode>;
 

@@ -1,0 +1,56 @@
+#pragma once
+#include <iterator>
+
+class range_it : std::iterator<std::bidirectional_iterator_tag, int>
+{
+public:
+    friend bool operator==(const range_it& a, const range_it& b) {
+        return a.mVal == b.mVal;
+    }
+    void operator++() {
+        mVal++;
+    }
+    void operator--() {
+        mVal--;
+    }
+    int operator*() {
+        return mVal;
+    }
+private:
+    range_it(int val) : mVal(val) { }
+    int mVal;
+    friend class Range;
+};
+
+/**
+ * Representation of a range. Careful; the iterator does not check bounds.
+ */
+class Range
+{
+public:
+    Range(int begin, int end) : mBegin(begin), mEnd(end) { }
+    friend bool operator==(const Range &a, const Range &b) {
+        return a.mBegin == b.mBegin && a.mEnd == b.mEnd;
+    }
+    std::iterator<std::bidirectional_iterator_tag, int> begin() {
+        return range_it(mBegin);
+    }
+    std::iterator<std::bidirectional_iterator_tag, int> end() {
+        return range_it(mEnd);
+    }
+    void inc_start() {
+        mBegin++;
+    }
+    void dec_start() {
+        mBegin--;
+    }
+    void inc_end() {
+        mEnd++;
+    }
+    void dec_end() {
+        mEnd--;
+    }
+private:
+    int mBegin;
+    int mEnd;
+};

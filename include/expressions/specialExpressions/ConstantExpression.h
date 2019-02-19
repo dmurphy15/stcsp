@@ -11,7 +11,7 @@ public:
 
     domain_t getDomain(SearchNode &context, int time) const override;
     domain_t getInitialDomain() const override;
-    void getVariables(std::set<Variable_r>& variables) const override;
+    void getVariables(std::set<Variable_r>& variables, bool root = true) const override;
     const int mConstant;
 private:
     bool lt(const Expression &rhs) const override {

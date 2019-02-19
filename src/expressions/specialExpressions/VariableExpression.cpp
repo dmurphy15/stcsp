@@ -12,7 +12,7 @@ int VariableExpression::evaluate(SearchNode &context, int time) const
     return mVariable.evaluate(context, time);
 }
 
-void VariableExpression::getVariables(std::set<Variable_r>& variables) const
+void VariableExpression::getVariables(std::set<Variable_r>& variables, bool root) const
 {
     variables.insert(mVariable);
 }

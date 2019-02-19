@@ -66,7 +66,8 @@ private:
     void carryConstraints(const std::set<Constraint_r>& constraints,
                           const assignment_t& assignment,
                           std::set<Constraint_r>& carriedConstraints,
-                          assignment_t& carriedAssignments);
+                          assignment_t& carriedAssignments,
+                          bool solvingFirstNode);
 
     std::set<Variable_r> mOriginalVariables;
     std::set<Constraint_r> mOriginalConstraints;

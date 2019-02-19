@@ -7,12 +7,12 @@
 
 BCSearchNode::BCSearchNode(const std::set<Constraint_r>& constraints,
                              const assignment_t& historicalValues,
-                             const std::vector<std::map<Variable_r, domain_t>>& domains)
+                             const std::vector<std::pair<std::map<Variable_r, domain_t>::const_iterator,std::map<Variable_r, domain_t>::const_iterator>>& domains)
         : SearchNode(constraints, historicalValues, domains)
 {
     for (Constraint &c : constraints)
     {
-        std::set<Variable_r> vars; c.getVariables(vars);
+        std::set<Variable_r> vars; c.getVariables(vars, id==0);
         mConstraintToVariables.insert({c, std::vector<Variable_r>()});
         for (Variable &v : vars)
         {

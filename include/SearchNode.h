@@ -20,7 +20,7 @@ public:
      */
     SearchNode(const std::set<Constraint_r>& constraints,
                const assignment_t& historicalValues,
-               const std::vector<std::map<Variable_r, domain_t>>& domains);
+               const std::vector<std::pair<std::map<Variable_r, domain_t>::const_iterator,std::map<Variable_r, domain_t>::const_iterator>>& domains);
 
     /**
      * get whatever value is currently assigned to a variable at a certain time within this time period
@@ -37,6 +37,7 @@ public:
      * @param value - value to assign
      */
     void setAssignment(Variable &v, int time, int value);
+    void setAssignments(assignment_t& a, int time);
 
     /**
      * get the domain of v at the specified time index within this SearchNode's time period
@@ -119,6 +120,7 @@ public:
 
     int getPrefixK() const;
     const int id;
+    static SearchNode *root;
 protected:
     /**
      * helper function from which one could create a coroutine to iterate through all valid output assignments

@@ -10,7 +10,7 @@ class BCSearchNode : public SearchNode
 public:
     BCSearchNode(const std::set<Constraint_r>& constraints,
                   const assignment_t& historicalValues,
-                  const std::vector<std::map<Variable_r, domain_t>>& domains);
+                  const std::vector<std::pair<std::map<Variable_r, domain_t>::const_iterator,std::map<Variable_r, domain_t>::const_iterator>>& domains);
     std::vector<std::set<int>> defaultPropagate(Variable &v, Constraint &c) override;
     coro_assignment_t::pull_type generateNextAssignmentIterator() override;
 

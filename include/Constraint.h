@@ -34,7 +34,7 @@ public:
 
     // used by instantaneous csp to set up mappings from vars to constraints and vice versa,
     // which it can later use for GAC, etc
-    void getVariables(std::set<Variable_r>& variables) const;
+    void getVariables(std::set<Variable_r>& variables, bool root=false) const;
 
     ////remember that whenever you return something from propagate, it MUST have length prefixK
 

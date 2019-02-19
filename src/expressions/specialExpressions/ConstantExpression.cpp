@@ -10,7 +10,7 @@ int ConstantExpression::evaluate(SearchNode &context, int time) const
     return mConstant;
 }
 
-void ConstantExpression::getVariables(std::set<Variable_r>& variables) const
+void ConstantExpression::getVariables(std::set<Variable_r>& variables, bool root) const
 {
     return;
 }

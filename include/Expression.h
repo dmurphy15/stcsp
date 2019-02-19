@@ -30,8 +30,9 @@ public:
 
     /**
      * virtual so that variableExpression and constantExpression can override it
+     * !!!!! also FirstExpression is now going to override it! nice!
      */
-    virtual void getVariables(std::set<Variable_r>& variables) const;
+    virtual void getVariables(std::set<Variable_r>& variables, bool root = true) const;
     friend bool operator ==(const Expression &a, const Expression &b) {
         return a.eq(b);
     }

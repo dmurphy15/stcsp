@@ -61,7 +61,7 @@ scanner : convenience $(BIN_DIR)/stcsp
 
 $(BIN_DIR)/stcsp: $(BUILD_DIR)/$(SRC)/lex.yy.c $(BUILD_DIR)/$(SRC)/y.tab.cpp $(OBJ)
 	mkdir -p $(BIN_DIR)
-	$(CXX) $(CXX_FLAGS) $^ -o $@ -lboost_coroutine -lboost_context
+	$(CXX) $(CXX_FLAGS) -flto $^ -o $@ -lboost_coroutine -lboost_context
 
 build : convenience $(BIN_DIR)/$(BIN)
 

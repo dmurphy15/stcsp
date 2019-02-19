@@ -53,9 +53,9 @@ void Solver::solve() {
     for (Variable& v: mVariables) {
         mDomainsInitializer.insert({v, v.getInitialDomain()});
     };
-    std::vector<std::map<Variable_r, domain_t>> initialDomains;
+    std::vector<std::pair<std::map<Variable_r, domain_t>::const_iterator, std::map<Variable_r, domain_t>::const_iterator>> initialDomains;
     for (int i=0; i < mPrefixK; i++) {
-        initialDomains.push_back(mDomainsInitializer);
+        initialDomains.push_back({mDomainsInitializer.begin(), mDomainsInitializer.end()});
     }
     // allocates the new solver
     assignment_t initialAssignments;
@@ -68,13 +68,16 @@ bool Solver::solveRe(SearchNode &currentNode) {
     mSeenSearchNodes.insert(currentNode);
     int numChildNodes = 0;
     for (assignment_t& assignment : currentNode.generateNextAssignmentIterator()) {
-        std::set<Constraint_r> carriedConstraints; assignment_t carriedAssignments;
-        carryConstraints(currentNode.getConstraints(), assignment, carriedConstraints, carriedAssignments);
-        std::vector<std::map<Variable_r, domain_t>> nextInitialDomains(mPrefixK);
-        for (int i=0; i < mPrefixK - 1; i++) {
-            nextInitialDomains[i] = currentNode.getDomains(i+1);
+        if (&currentNode == SearchNode::root) {
+            currentNode.setAssignments(assignment, 0);
         }
-        nextInitialDomains[mPrefixK-1] = mDomainsInitializer;
+        std::set<Constraint_r> carriedConstraints; assignment_t carriedAssignments;
+        carryConstraints(currentNode.getConstraints(), assignment, carriedConstraints, carriedAssignments, &currentNode==SearchNode::root);
+        std::vector<std::pair<std::map<Variable_r, domain_t>::const_iterator, std::map<Variable_r, domain_t>::const_iterator>> nextInitialDomains(mPrefixK);
+        for (int i=0; i < mPrefixK - 1; i++) {
+            nextInitialDomains[i] = {currentNode.getDomains(i+1).begin(), currentNode.getDomains(i+1).end()};
+        }
+        nextInitialDomains[mPrefixK-1] = {mDomainsInitializer.begin(), mDomainsInitializer.end()};
         SearchNode &nextNode = SearchNodeFactory::MakeSearchNode(mNodeType, carriedConstraints, carriedAssignments, nextInitialDomains);
         // detect dominance
         auto dominator = mSeenSearchNodes.find(nextNode);
@@ -99,13 +102,47 @@ bool Solver::solveRe(SearchNode &currentNode) {
     return numChildNodes > 0;
 }
 
+#include <iostream>
 void Solver::carryConstraints(const std::set<Constraint_r>& constraints,
                          const assignment_t& assignment,
                          std::set<Constraint_r>& carriedConstraints,
-                         assignment_t& carriedAssignments) {
+                         assignment_t& carriedAssignments,
+                         bool solvingFirstNode) {
     carriedConstraints = constraints;
     for (Constraint &c : constraints) {
         //TODO whenever I erase a constraint below, I erase references to expressions and probably cause memory leaks
+
+        // tautology detection
+//        if (solvingFirstNode) {
+//            std::set<Variable_r> vs;
+//            // c must have been satisfied. Also, constant expressions do not contain variables.
+//            // Thus the constraint is a tautology if and only if there are no variables, or all variables have v == next v
+//            c.getVariables(vs);
+//            bool tautology = true;
+//            for (auto v : vs) {
+//                VariableExpression ve(v);
+//                PrimitiveNextConstraint pc(ve, ve);
+//                if (c == pc || constraints.find(pc) == constraints.end()) {
+//                    tautology = false;
+//                    break;
+//                }
+//            }
+//            if (tautology) {
+//                carriedConstraints.erase(c);
+//                std::cout<<"yum"<<carriedConstraints.size()<<"\n";
+//                continue;
+//            }
+//        }
+
+        // here's another attempt at tautology detection; doesn't mean the first attempt was wrong though
+        if (solvingFirstNode) {
+            std::set<Variable_r> vs;
+            c.getVariables(vs, false); // setting root=false since now we're done solving the first node
+            if (vs.size() == 0) { // it is a tautology if everything it deals with is constant. had to do some trickery with first expressions to do this
+                carriedConstraints.erase(c);
+                std::cout<<"asdfasdf\n";
+            }
+        }
         if (typeid(c) == typeid(PrimitiveFirstConstraint)) {
             carriedConstraints.erase(c);
         } else if (typeid(c) == typeid(PrimitiveNextConstraint)) {

@@ -11,9 +11,9 @@ Expression::Expression(std::initializer_list<Expression_r> expressions, bool sym
     }
 }
 
-void Expression::getVariables(std::set<Variable_r>& variables) const {
+void Expression::getVariables(std::set<Variable_r>& variables, bool root) const {
     for (Expression& e : mExpressions) {
-        e.getVariables(variables);
+        e.getVariables(variables, root);
     }
 }
 

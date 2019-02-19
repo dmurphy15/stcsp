@@ -3,14 +3,19 @@
 #include "../include/Variable.h"
 #include "../include/Constraint.h"
 
-
+#include <iostream>
 SearchNode::SearchNode(const std::set<Constraint_r>& constraints,
                        const assignment_t& historicalValues,
-                       const std::vector<std::pair<std::map<Variable_r, domain_t>::const_iterator,std::map<Variable_r, domain_t>::const_iterator>>& domains) : id(idSource++) {
+                       const std::vector<std::pair<std::map<Variable_r, domain_t>::const_iterator,std::map<Variable_r, domain_t>::const_iterator>>& domains)
+        : id(idSource++) {
     mConstraints = constraints;
     mHistoricalValues = historicalValues;
     for (auto&& v : domains) {
         mDomains.push_back({v.first, v.second});
+    }
+    if (id==0) {
+        std::cout<<"moose am I\n";
+        SearchNode::root = this;
     }
 }
 
@@ -19,6 +24,9 @@ int SearchNode::getAssignment(Variable &v, int time) {
 }
 void SearchNode::setAssignment(Variable &v, int time, int value) {
     mAssignments.at(time)[v] = value;
+}
+void SearchNode::setAssignments(assignment_t &a, int time) {
+    mAssignments.at(time) = a;
 }
 const domain_t& SearchNode::getDomain(Variable &v, int time) const {
     return mDomains.at(time).at(v);
@@ -90,3 +98,4 @@ bool operator<(SearchNode &lhs, SearchNode &rhs) {
 }
 
 int SearchNode::idSource = 0;
+SearchNode *SearchNode::root = nullptr;

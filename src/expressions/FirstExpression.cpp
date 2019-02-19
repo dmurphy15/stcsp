@@ -1,41 +1,39 @@
 #include "../../include/expressions/FirstExpression.h"
 
-#include <stdexcept>
-
-#include "../../include/Variable.h"
-#include "../../include/constraints/specialConstraints/PrimitiveFirstConstraint.h"
-#include "../../include/constraints/specialConstraints/PrimitiveNextConstraint.h"
-#include "../../include/expressions/specialExpressions/VariableExpression.h"
+#include "../../include/SearchNode.h"
 
 FirstExpression::FirstExpression(Expression &a) : Expression({a}, false), mExpr(a) {}
 
 int FirstExpression::evaluate(SearchNode &context, int time) const
 {
-    throw std::logic_error("these should be removed with normalization");
-}
-
-// this only creates 1 auxiliary variable instead of 2. I believe this should be faster, because the 2nd
-// auxiliary variable would have been obsoleted after the first time point, and we would have been stuck making
-// its value consistent with the value of the expression for all future timepoints
-Expression& FirstExpression::normalize(std::set<Constraint_r> &constraintList, std::set<Variable_r> &variableList)
-{
-    Expression &equivalentExpr = mExpr.normalize(constraintList, variableList);
-
-    Variable &equivalentVar = *new Variable(equivalentExpr.getInitialDomain());
-    VariableExpression &equivalentVarExpr = *new VariableExpression(equivalentVar);
-
-    constraintList.insert(*new PrimitiveFirstConstraint(equivalentVarExpr, equivalentExpr));
-    constraintList.insert(*new PrimitiveNextConstraint(equivalentVarExpr, equivalentVarExpr));
-    variableList.insert(equivalentVar);
-    return equivalentVarExpr;
+    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    //!WARNING: THIS ONLY WORKS IF WE ASSUME THAT WE ARE PROGRESSING DEPTH-FIRST THROUGH THE SEARCHNODE TREE
+    // this allows us to say that the root searchnode will still have the proper assignments to variables that we want,
+    // which are the ones that would lead us to the searchnode we're currently at
+    // we ensured this by adding a part in Solver that checks if the current node is root, and if so it sets the first assignment
+    // to correspond to the most recent solution, so we can now call evaluate without things being screwed up
+    return mExpr.evaluate(*SearchNode::root, 0);
 }
 
 domain_t FirstExpression::getDomain(SearchNode &context, int time) const
 {
-    throw std::logic_error("these should be removed with normalization");
+    if (&context == SearchNode::root) {
+        return mExpr.getDomain(context, 0);
+    } else {
+        return {mExpr.evaluate(*SearchNode::root, 0)};
+    }
 }
 
 domain_t FirstExpression::getInitialDomain() const
 {
-    throw std::logic_error("these should be removed with normalization");
+    return mExpr.getInitialDomain();
+}
+
+void FirstExpression::getVariables(std::set<Variable_r>& variables, bool root) const
+{
+    if (!root) { // after the root node, this expression is effectively constant
+        return;
+    }
+    mExpr.getVariables(variables, root);
 }

@@ -12,9 +12,9 @@ Constraint::Constraint(std::initializer_list<Expression_r> expressions, bool sym
     }
 }
 
-void Constraint::getVariables(std::set<Variable_r>& variables) const {
+void Constraint::getVariables(std::set<Variable_r>& variables, bool root) const {
     for (Expression& e : mExpressions) {
-        e.getVariables(variables);
+        e.getVariables(variables, root);
     }
 }
 
