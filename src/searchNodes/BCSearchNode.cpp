@@ -1,24 +1,27 @@
 #include "../../include/searchNodes/BCSearchNode.h"
 
 #include <iterator>
+#include <vector>
 
 #include "../../include/Constraint.h"
 #include "../../include/Variable.h"
 
 BCSearchNode::BCSearchNode(const std::set<Constraint_r>& constraints,
                              const assignment_t& historicalValues,
-                             const std::vector<std::pair<std::map<Variable_r, domain_t>::const_iterator,std::map<Variable_r, domain_t>::const_iterator>>& domains)
-        : SearchNode(constraints, historicalValues, domains)
+                             const std::vector<std::pair<std::map<Variable_r, domain_t>::const_iterator,std::map<Variable_r, domain_t>::const_iterator>>& domains,
+                             int constraintSetId)
+        : SearchNode(constraints, historicalValues, domains, constraintSetId)
 {
     for (Constraint &c : constraints)
     {
         std::set<Variable_r> vars; c.getVariables(vars, id==0);
-        mConstraintToVariables.insert({c, std::vector<Variable_r>()});
+        mConstraintToVariables.insert({&c, std::vector<Variable_r>()});
         for (Variable &v : vars)
         {
-            mConstraintToVariables[c].push_back(v);
-            mVariableToConstraints[v].push_back(c);
+            mConstraintToVariables[&c].push_back(v);
+            mVariableToConstraints[v].push_back(&c);
         }
+        mConstraintPtrs.insert(&c);
     }
     for (auto &assignment : historicalValues) {
         mDomains[0][assignment.first] = {assignment.second};
@@ -74,16 +77,16 @@ void BCSearchNode::generateNextAssignment(coro_assignment_t::push_type& yield)
 std::vector<std::map<Variable_r, std::set<int>>> BCSearchNode::BC()
 {
     std::vector<std::map<Variable_r, std::set<int>>> total_alterations(getPrefixK());
-    std::set<Constraint_r> constraintQueue = mConstraints;
+    std::set<Constraint *> constraintQueue = mConstraintPtrs;
     while (constraintQueue.size() > 0)
     {
         auto it = constraintQueue.begin();
-        Constraint &c = *it;
+        Constraint *c_ptr = *it;
         constraintQueue.erase(it);
-        for (Variable &v : mConstraintToVariables[c])
+        for (Variable &v : mConstraintToVariables[c_ptr])
         {
             bool altered = false;
-            std::vector<std::set<int>> alterations = c.propagate(v, *this);
+            std::vector<std::set<int>> alterations = c_ptr->propagate(v, *this);
             for (int time=0; time < getPrefixK(); time++) {
                 // propagate has adjusted the domain of the chosen variable
                 if (alterations[time].size() > 0)
@@ -103,9 +106,11 @@ std::vector<std::set<int>> BCSearchNode::defaultPropagate(Variable &v, Constrain
 {
     std::vector<std::set<int>> ret(getPrefixK());
     // get all the related variables in this arc
-    std::vector<Variable_r> others = mConstraintToVariables[c];
-    std::vector<Variable_r>::iterator position = std::find(others.begin(), others.end(), v);
-    if (position != others.end()) others.erase(position);
+    std::vector<Variable_r>::iterator position = std::find(mConstraintToVariables[&c].begin(),
+                                                           mConstraintToVariables[&c].end(),
+                                                           v);
+    std::vector<Variable_r> others(mConstraintToVariables[&c].begin(), position);
+    others.insert(others.end(), ++position, mConstraintToVariables[&c].end());
 
     // iterate over the domain of our variable
     for (int time = 0; time < getPrefixK(); time++) {
@@ -157,13 +162,11 @@ bool BCSearchNode::shouldPrune(Constraint& c,
 void BCSearchNode::splitDomain(domain_t& inDomain, domain_t& loDomain, domain_t& hiDomain)
 {
     std::size_t i=0;
-    for (auto it = inDomain.begin(); it != inDomain.end(); it++, i++) {
-        if (i < inDomain.size() / 2) {
-            loDomain.insert(*it);
-        } else {
-            hiDomain.insert(*it);
-        }
-    }
+    int halfSize = inDomain.size() / 2;
+    auto mid = inDomain.begin();
+    std::advance(mid, halfSize);
+    loDomain.insert(inDomain.begin(), mid);
+    hiDomain.insert(mid, inDomain.end());
 }
 
 coro_assignment_t::pull_type BCSearchNode::generateNextAssignmentIterator() {

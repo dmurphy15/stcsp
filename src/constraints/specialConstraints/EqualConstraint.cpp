@@ -5,8 +5,8 @@
 #include "../../../include/Constraint.h"
 #include "../../../include/Variable.h"
 
-EqualConstraint::EqualConstraint(Expression &a, Expression &b) :
-        Constraint({a, b}, true),
+EqualConstraint::EqualConstraint(Expression &a, Expression &b, int expressionSetId) :
+        Constraint({a, b}, true, expressionSetId),
         mExpr1(a),
         mExpr2(b) {}
 

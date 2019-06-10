@@ -6,8 +6,8 @@
 #include "../../../include/Variable.h"
 #include "../../../include/SearchNode.h"
 
-PrimitiveFirstConstraint::PrimitiveFirstConstraint(VariableExpression &variableExpr, Expression &firstExpr) :
-        Constraint({variableExpr, firstExpr}, false),
+PrimitiveFirstConstraint::PrimitiveFirstConstraint(VariableExpression &variableExpr, Expression &firstExpr, int expressionSetId) :
+        Constraint({variableExpr, firstExpr}, false, expressionSetId),
         mVariableExpr(variableExpr),
         mFirstExpr(firstExpr),
         mVariable(variableExpr.mVariable){}

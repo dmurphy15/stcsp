@@ -5,7 +5,7 @@
 class LTConstraint : public Constraint
 {
 public:
-    LTConstraint(Expression &a, Expression &b);
+    LTConstraint(Expression &a, Expression &b, int expressionSetId=-1);
     ~LTConstraint();
     bool isSatisfied(SearchNode &context, int time) const override;
     std::vector<std::set<int>> propagate(Variable &v, SearchNode &context) override;

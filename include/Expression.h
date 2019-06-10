@@ -44,10 +44,10 @@ private:
      * these are virtual so that variableExpression and constantExpression can override them
      */
     virtual bool eq(const Expression &b) const {
-        return typeid(*this) == typeid(b) && mExpressions == b.mExpressions;
+        return (this==&b) || (typeid(*this) == typeid(b) && mExpressions == b.mExpressions);
     }
     virtual bool lt(const Expression &b) const {
-        return (typeid(*this).before(typeid(b))) || (typeid(*this) == typeid(b) && mExpressions < b.mExpressions);
+        return (this != &b) && ((typeid(*this).before(typeid(b))) || (typeid(*this) == typeid(b) && mExpressions < b.mExpressions));
     }
     /**
      * build: simply call the constructor, passing in the expressions from the vector. the returned expression should not be *this

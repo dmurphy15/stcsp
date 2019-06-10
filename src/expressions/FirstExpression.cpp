@@ -12,7 +12,7 @@ int FirstExpression::evaluate(SearchNode &context, int time) const
     // this allows us to say that the root searchnode will still have the proper assignments to variables that we want,
     // which are the ones that would lead us to the searchnode we're currently at
     // we ensured this by adding a part in Solver that checks if the current node is root, and if so it sets the first assignment
-    // to correspond to the most recent solution, so we can now call evaluate without things being screwed up
+    // to correspond to the most recent solution, so we can now call evaluate without things being screwed up (since we are fully exploring each branch from root)
     return mExpr.evaluate(*SearchNode::root, 0);
 }
 

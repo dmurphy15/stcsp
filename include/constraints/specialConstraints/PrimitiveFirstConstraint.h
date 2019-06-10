@@ -19,7 +19,7 @@ class VariableExpression;
 class PrimitiveFirstConstraint : public Constraint
 {
 public:
-    PrimitiveFirstConstraint(VariableExpression &variableExpr, Expression &firstExpr);
+    PrimitiveFirstConstraint(VariableExpression &variableExpr, Expression &firstExpr, int expressionSetId=-1);
     ~PrimitiveFirstConstraint();
 
     void normalize(std::set<Constraint_r> &constraintList,

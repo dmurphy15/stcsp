@@ -19,7 +19,7 @@
 class PrimitiveNextConstraint : public Constraint
 {
 public:
-    PrimitiveNextConstraint(VariableExpression &varExpr, VariableExpression &nextVarExpr);
+    PrimitiveNextConstraint(VariableExpression &varExpr, VariableExpression &nextVarExpr, int expressionSetId=-1);
     ~PrimitiveNextConstraint();
 
     void normalize(std::set<Constraint_r> &constraintList,

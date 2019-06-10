@@ -5,7 +5,7 @@
 class UntilConstraint : public Constraint
 {
 public:
-    UntilConstraint(Expression &a, Expression &b);
+    UntilConstraint(Expression &a, Expression &b, int expressionSetId=-1);
     ~UntilConstraint();
 
     void normalize(std::set<Constraint_r> &constraintList,

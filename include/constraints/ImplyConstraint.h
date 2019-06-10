@@ -5,7 +5,7 @@
 class ImplyConstraint : public Constraint
 {
 public:
-    ImplyConstraint(Expression &a, Expression &b);
+    ImplyConstraint(Expression &a, Expression &b, int expressionSetId=-1);
     ~ImplyConstraint();
     bool isSatisfied(SearchNode &context, int time) const override;
     std::vector<std::set<int>> propagate(Variable &v, SearchNode &context) override;

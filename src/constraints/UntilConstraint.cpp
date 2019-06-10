@@ -8,8 +8,8 @@
 
 #include "../../include/SearchNode.h"
 
-UntilConstraint::UntilConstraint(Expression &a, Expression &b) :
-        Constraint({a, b}, false),
+UntilConstraint::UntilConstraint(Expression &a, Expression &b, int expressionSetId) :
+        Constraint({a, b}, false, expressionSetId),
         mExpr(a),
         mUntilExpr(b) {}
 

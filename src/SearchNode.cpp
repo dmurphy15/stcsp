@@ -1,12 +1,15 @@
 #include "../include/SearchNode.h"
 
+#include "../include/SetRegistry.h"
 #include "../include/Variable.h"
 #include "../include/Constraint.h"
 
 #include <iostream>
 SearchNode::SearchNode(const std::set<Constraint_r>& constraints,
                        const assignment_t& historicalValues,
-                       const std::vector<std::pair<std::map<Variable_r, domain_t>::const_iterator,std::map<Variable_r, domain_t>::const_iterator>>& domains)
+                       const std::vector<std::pair<std::map<Variable_r, domain_t>::const_iterator,
+                                                   std::map<Variable_r, domain_t>::const_iterator>>& domains,
+                       int constraintSetId)
         : id(idSource++) {
     mConstraints = constraints;
     mHistoricalValues = historicalValues;
@@ -16,6 +19,11 @@ SearchNode::SearchNode(const std::set<Constraint_r>& constraints,
     if (id==0) {
         std::cout<<"moose am I\n";
         SearchNode::root = this;
+    }
+    if (constraintSetId < 0) {
+        mConstraintSetId = SetRegistry::GetConstraintSetId(mConstraints);
+    } else {
+        mConstraintSetId = constraintSetId;
     }
 }
 
@@ -88,13 +96,24 @@ int SearchNode::getPrefixK() const {
 }
 
 bool operator==(SearchNode &lhs, SearchNode &rhs) {
-    return (lhs.mHistoricalValues == rhs.mHistoricalValues) && (lhs.mConstraints == rhs.mConstraints);
+    return (&lhs == &rhs) ||
+           ((lhs.mConstraintSetId == rhs.mConstraintSetId) &&
+            (lhs.mHistoricalValues == rhs.mHistoricalValues));
+//    return (&lhs == &rhs) || ((lhs.mHistoricalValues == rhs.mHistoricalValues) &&
+//            ((lhs.constraintSetId == rhs.constraintSetId) || (lhs.mConstraints == rhs.mConstraints)));
+
+//    return (lhs.mHistoricalValues == rhs.mHistoricalValues) &&
+//            (lhs.mConstraints == rhs.mConstraints);
 }
 
 bool operator<(SearchNode &lhs, SearchNode &rhs) {
-    return (lhs.mHistoricalValues < rhs.mHistoricalValues)
-           || ((lhs.mHistoricalValues == rhs.mHistoricalValues)
-               && (lhs.mConstraints < rhs.mConstraints));
+    return (lhs.mConstraintSetId < rhs.mConstraintSetId) ||
+           (lhs.mConstraintSetId == rhs.mConstraintSetId && lhs.mHistoricalValues < rhs.mHistoricalValues);
+
+//    return ((&lhs != &rhs) && (lhs.constraintSetId != rhs.constraintSetId)) &&
+//            ((lhs.mHistoricalValues < rhs.mHistoricalValues)
+//           || ((lhs.mHistoricalValues == rhs.mHistoricalValues)
+//               && (lhs.mConstraints < rhs.mConstraints)));
 }
 
 int SearchNode::idSource = 0;

@@ -19,22 +19,20 @@ Expression& NextExpression::normalize(std::set<Constraint_r> &constraintList, st
     Expression &equivalentExpr = mExpr.normalize(constraintList, variableList);
     domain_t&& d = equivalentExpr.getInitialDomain();
     Variable &equivalentVar = *new Variable(d);
-
-    // new normalization technique
-//    Expression& equivalentVarExpr = *new VariableExpression(equivalentVar);
-//    constraintList.insert(*new PrimitiveNextConstraint(equivalentVarExpr, equivalentExpr));
-//    return equivalentVarExpr;
-
-
-    // give it the same starting domain, since before propagation all future timepoints have the same domain as previous timepoints
-    Variable &equivalentNextVar = *new Variable(d);
     VariableExpression &equivalentVarExpr = *new VariableExpression(equivalentVar);
-    VariableExpression &equivalentNextVarExpr = *new VariableExpression(equivalentNextVar);
 
-    constraintList.insert(*new EqualConstraint(equivalentNextVarExpr, equivalentExpr));
-    constraintList.insert(*new PrimitiveNextConstraint(equivalentVarExpr, equivalentNextVarExpr));
+    if (typeid(mExpr) == typeid(VariableExpression)) { // if our expression is next(x), we can take this shortcut
+        constraintList.insert(*new PrimitiveNextConstraint(equivalentVarExpr, static_cast<VariableExpression &>(mExpr)));
+    } else {
+        // give it the same starting domain, since before propagation all future timepoints have the same domain as previous timepoints
+        Variable &equivalentNextVar = *new Variable(d);
+        VariableExpression &equivalentNextVarExpr = *new VariableExpression(equivalentNextVar);
+        constraintList.insert(*new EqualConstraint(equivalentNextVarExpr, equivalentExpr));
+        constraintList.insert(*new PrimitiveNextConstraint(equivalentVarExpr, equivalentNextVarExpr));
+        variableList.insert(equivalentNextVar);
+    }
+
     variableList.insert(equivalentVar);
-    variableList.insert(equivalentNextVar);
     return equivalentVarExpr;
 }
 

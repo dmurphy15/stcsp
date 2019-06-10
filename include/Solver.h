@@ -63,7 +63,8 @@ private:
     // returns false if currentState is a failure node
     bool solveRe(SearchNode &currentNode);
     // creates the appropriate instantaneous assignments and constraints for the next state
-    void carryConstraints(const std::set<Constraint_r>& constraints,
+    // returns true if it changed the constraint list
+    bool carryConstraints(const std::set<Constraint_r>& constraints,
                           const assignment_t& assignment,
                           std::set<Constraint_r>& carriedConstraints,
                           assignment_t& carriedAssignments,

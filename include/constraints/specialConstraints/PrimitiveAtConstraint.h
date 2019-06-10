@@ -10,7 +10,7 @@ class ConstantExpression;
 class PrimitiveAtConstraint : public Constraint
 {
 public:
-    PrimitiveAtConstraint(VariableExpression &varExpr, Expression &expr, ConstantExpression &c);
+    PrimitiveAtConstraint(VariableExpression &varExpr, Expression &expr, ConstantExpression &c, int expressionSetId=-1);
     ~PrimitiveAtConstraint();
 
     void normalize(std::set<Constraint_r> &constraintList,

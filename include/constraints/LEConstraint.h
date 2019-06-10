@@ -5,7 +5,7 @@
 class LEConstraint : public Constraint
 {
 public:
-    LEConstraint(Expression &a, Expression &b);
+    LEConstraint(Expression &a, Expression &b, int expressionSetId=-1);
     ~LEConstraint();
     bool isSatisfied(SearchNode &context, int time) const override;
     std::vector<std::set<int>> propagate(Variable &v, SearchNode &context) override;

@@ -12,8 +12,8 @@
 
 #include "../../include/SearchNode.h"
 
-LEConstraint::LEConstraint(Expression &a, Expression &b) :
-        Constraint({a, b}, false),
+LEConstraint::LEConstraint(Expression &a, Expression &b, int expressionSetId) :
+        Constraint({a, b}, false, expressionSetId),
         mExpr1(a),
         mExpr2(b) {}
 

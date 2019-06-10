@@ -12,8 +12,8 @@
 
 #include "../../include/SearchNode.h"
 
-NEQConstraint::NEQConstraint(Expression &a, Expression &b) :
-        Constraint({a, b}, true),
+NEQConstraint::NEQConstraint(Expression &a, Expression &b, int expressionSetId) :
+        Constraint({a, b}, true, expressionSetId),
         mExpr1(a),
         mExpr2(b) {}
 

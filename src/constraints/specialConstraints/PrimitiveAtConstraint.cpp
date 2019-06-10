@@ -6,8 +6,8 @@
 #include "../../../include/Variable.h"
 #include "../../../include/SearchNode.h"
 
-PrimitiveAtConstraint::PrimitiveAtConstraint(VariableExpression &varExpr, Expression &expr, ConstantExpression &c) :
-        Constraint({varExpr, expr, c}, false),
+PrimitiveAtConstraint::PrimitiveAtConstraint(VariableExpression &varExpr, Expression &expr, ConstantExpression &c, int expressionSetId) :
+        Constraint({varExpr, expr, c}, false, expressionSetId),
         mVarExpr(varExpr),
         mExpr(expr),
         mConstExpr(c) {}
@@ -39,7 +39,7 @@ std::vector<std::set<int>> PrimitiveAtConstraint::propagate(Variable &v, SearchN
 Constraint& PrimitiveAtConstraint::makeDecrementedCopy()
 {
     if (mConstExpr.mConstant == 1) {
-        return *new PrimitiveFirstConstraint(mVarExpr, mExpr);
+        return *new PrimitiveFirstConstraint(mVarExpr, mExpr, getExpressionSetId());
     }
-    return *new PrimitiveAtConstraint(mVarExpr, mExpr, *new ConstantExpression(mConstExpr.mConstant - 1));
+    return *new PrimitiveAtConstraint(mVarExpr, mExpr, *new ConstantExpression(mConstExpr.mConstant - 1), getExpressionSetId());
 }

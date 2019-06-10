@@ -21,7 +21,8 @@
 class Constraint
 {
 public:
-    Constraint(std::initializer_list<Expression_r> expressions, bool symmetric);
+    // expressionSetId uniquely identifies
+    Constraint(std::initializer_list<Expression_r> expressions, bool symmetric, int expressionSetId=-1);
 
     // again a default implementation is provided; should be overridden if you're making a constraint
     // with special normalization rules
@@ -47,7 +48,10 @@ public:
 
     friend bool operator< (const Constraint &lhs, const Constraint &rhs);
     friend bool operator== (const Constraint &lhs, const Constraint &rhs);
+
+    int getExpressionSetId() { return mExpressionSetId; };
 private:
     std::vector<Expression_r> mExpressions;
     virtual Constraint& build(std::vector<Expression_r>& expressions);
+    int mExpressionSetId;
 };

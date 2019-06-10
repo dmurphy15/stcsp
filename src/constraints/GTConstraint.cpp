@@ -12,8 +12,8 @@
 
 #include "../../include/SearchNode.h"
 
-GTConstraint::GTConstraint(Expression &a, Expression &b) :
-        Constraint({a, b}, false),
+GTConstraint::GTConstraint(Expression &a, Expression &b, int expressionSetId) :
+        Constraint({a, b}, false, expressionSetId),
         mExpr1(a),
         mExpr2(b) {}
 

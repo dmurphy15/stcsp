@@ -5,7 +5,7 @@
 class GEConstraint : public Constraint
 {
 public:
-    GEConstraint(Expression &a, Expression &b);
+    GEConstraint(Expression &a, Expression &b, int expressionSetId=-1);
     ~GEConstraint();
     bool isSatisfied(SearchNode &context, int time) const override;
     std::vector<std::set<int>> propagate(Variable &v, SearchNode &context) override;

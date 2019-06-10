@@ -4,8 +4,8 @@
 #include "../../../include/Variable.h"
 #include "../../../include/SearchNode.h"
 
-PrimitiveUntilConstraint::PrimitiveUntilConstraint(VariableExpression &variable, VariableExpression &untilVariable) :
-        Constraint({variable, untilVariable}, false),
+PrimitiveUntilConstraint::PrimitiveUntilConstraint(VariableExpression &variable, VariableExpression &untilVariable, int expressionSetId) :
+        Constraint({variable, untilVariable}, false, expressionSetId),
         mVariable(variable.mVariable),
         mUntilVariable(untilVariable.mVariable) {}
 
@@ -50,4 +50,4 @@ std::vector<std::set<int>> PrimitiveUntilConstraint::propagate(Variable &v, Sear
     }
     return ret;
 }
-
+

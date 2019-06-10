@@ -8,8 +8,8 @@
 #include "../../../include/Variable.h"
 #include "../../../include/Expression.h"
 
-PrimitiveNextConstraint::PrimitiveNextConstraint(VariableExpression &varExpr, VariableExpression &nextVarExpr) :
-        Constraint({varExpr, nextVarExpr}, false),
+PrimitiveNextConstraint::PrimitiveNextConstraint(VariableExpression &varExpr, VariableExpression &nextVarExpr, int expressionSetId) :
+        Constraint({varExpr, nextVarExpr}, false, expressionSetId),
         mVarExpr(varExpr),
         mNextVarExpr(nextVarExpr),
         mVariable(varExpr.mVariable),

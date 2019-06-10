@@ -18,7 +18,7 @@ class VariableExpression;
 class PrimitiveUntilConstraint : public Constraint
 {
 public:
-    PrimitiveUntilConstraint(VariableExpression &variable, VariableExpression &untilVariable);
+    PrimitiveUntilConstraint(VariableExpression &variable, VariableExpression &untilVariable, int expressionSetId=-1);
     ~PrimitiveUntilConstraint();
 
     void normalize(std::set<Constraint_r> &constraintList,

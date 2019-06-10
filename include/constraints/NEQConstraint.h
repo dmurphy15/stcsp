@@ -5,7 +5,7 @@
 class NEQConstraint : public Constraint
 {
 public:
-    NEQConstraint(Expression &a, Expression &b);
+    NEQConstraint(Expression &a, Expression &b, int expressionSetId=-1);
     ~NEQConstraint();
     bool isSatisfied(SearchNode &context, int time) const override;
     std::vector<std::set<int>> propagate(Variable &v, SearchNode &context) override;

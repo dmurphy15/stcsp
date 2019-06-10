@@ -14,13 +14,17 @@ public:
      * (the number of timepoints involved is determined by prefix-k)
      * @param constraints - the set of constraints involved
      * @param historicalValues - a partial assignment, representing the assigned values of any variables in
-     * @param domains - the domains that the variables will start with when we begin solving the first timepoint
      * the previous timepoint that were involved in "primitive next constraints" and which will therefore affect
      * the domains in the current set of timepoints
+     * @param domains - the domains that the variables will start with when we begin solving the first timepoint
+     * @param constraintSetId - an ID to use as a shortcut to distinguish this set of constraints from different sets.
+     * If it's -1, we look up an ID for this set from amongst other sets we've seen (using the SetRegistry static class)
      */
     SearchNode(const std::set<Constraint_r>& constraints,
                const assignment_t& historicalValues,
-               const std::vector<std::pair<std::map<Variable_r, domain_t>::const_iterator,std::map<Variable_r, domain_t>::const_iterator>>& domains);
+               const std::vector<std::pair<std::map<Variable_r, domain_t>::const_iterator,
+                                           std::map<Variable_r, domain_t>::const_iterator>>& domains,
+               int constraintSetId=-1);
 
     /**
      * get whatever value is currently assigned to a variable at a certain time within this time period
@@ -120,6 +124,7 @@ public:
 
     int getPrefixK() const;
     const int id;
+    int getConstraintSetId() { return mConstraintSetId; };
     static SearchNode *root;
 protected:
     /**
@@ -142,6 +147,7 @@ protected:
     std::set<SearchNode_r> mParentNodes; // using a set bc we don't care when the same parent is added multiple times
 private:
     static int idSource;
+    int mConstraintSetId;
 };
 
 namespace std {

@@ -5,8 +5,8 @@
 
 #include "../../include/SearchNode.h"
 
-ImplyConstraint::ImplyConstraint(Expression &a, Expression &b) :
-        Constraint({a, b}, false),
+ImplyConstraint::ImplyConstraint(Expression &a, Expression &b, int expressionSetId) :
+        Constraint({a, b}, false, expressionSetId),
         mExpr1(a),
         mExpr2(b) {}
 

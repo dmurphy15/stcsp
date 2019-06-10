@@ -13,11 +13,16 @@
 #include "../include/SearchNode.h"
 #include "../include/SearchNodeFactory.h"
 
+#include "../include/SetRegistry.h"
+
 #include "../include/Variable.h"
 #include "../include/Constraint.h"
 
 #include "../include/SolverPruner.h"
 #include "../include/SolverPrinter.h"
+
+
+#include <iostream>
 
 Solver::Solver(SearchNodeType searchNodeType, int prefixK) {
     mNodeType = searchNodeType;
@@ -72,13 +77,28 @@ bool Solver::solveRe(SearchNode &currentNode) {
             currentNode.setAssignments(assignment, 0);
         }
         std::set<Constraint_r> carriedConstraints; assignment_t carriedAssignments;
-        carryConstraints(currentNode.getConstraints(), assignment, carriedConstraints, carriedAssignments, &currentNode==SearchNode::root);
-        std::vector<std::pair<std::map<Variable_r, domain_t>::const_iterator, std::map<Variable_r, domain_t>::const_iterator>> nextInitialDomains(mPrefixK);
+        bool changedConstraintSet = carryConstraints(currentNode.getConstraints(),
+                                                      assignment,
+                                                      carriedConstraints,
+                                                      carriedAssignments,
+                                                      &currentNode==SearchNode::root);
+        int nextConstraintSetId;
+        if (changedConstraintSet) {
+            nextConstraintSetId = SetRegistry::GetConstraintSetId(carriedConstraints);
+        } else {
+            nextConstraintSetId = currentNode.getConstraintSetId();
+        }
+        std::vector<std::pair<std::map<Variable_r, domain_t>::const_iterator,
+                              std::map<Variable_r, domain_t>::const_iterator>> nextInitialDomains(mPrefixK);
         for (int i=0; i < mPrefixK - 1; i++) {
             nextInitialDomains[i] = {currentNode.getDomains(i+1).begin(), currentNode.getDomains(i+1).end()};
         }
         nextInitialDomains[mPrefixK-1] = {mDomainsInitializer.begin(), mDomainsInitializer.end()};
-        SearchNode &nextNode = SearchNodeFactory::MakeSearchNode(mNodeType, carriedConstraints, carriedAssignments, nextInitialDomains);
+        SearchNode &nextNode = SearchNodeFactory::MakeSearchNode(mNodeType,
+                                                                 carriedConstraints,
+                                                                 carriedAssignments,
+                                                                 nextInitialDomains,
+                                                                 nextConstraintSetId);
         // detect dominance
         auto dominator = mSeenSearchNodes.find(nextNode);
         SearchNode &child = (dominator == mSeenSearchNodes.end()) ? nextNode : (*dominator).get();
@@ -102,12 +122,12 @@ bool Solver::solveRe(SearchNode &currentNode) {
     return numChildNodes > 0;
 }
 
-#include <iostream>
-void Solver::carryConstraints(const std::set<Constraint_r>& constraints,
+bool Solver::carryConstraints(const std::set<Constraint_r>& constraints,
                          const assignment_t& assignment,
                          std::set<Constraint_r>& carriedConstraints,
                          assignment_t& carriedAssignments,
                          bool solvingFirstNode) {
+    bool changedConstraintSet = false;
     carriedConstraints = constraints;
     for (Constraint &c : constraints) {
         //TODO whenever I erase a constraint below, I erase references to expressions and probably cause memory leaks
@@ -140,11 +160,13 @@ void Solver::carryConstraints(const std::set<Constraint_r>& constraints,
             c.getVariables(vs, false); // setting root=false since now we're done solving the first node
             if (vs.size() == 0) { // it is a tautology if everything it deals with is constant. had to do some trickery with first expressions to do this
                 carriedConstraints.erase(c);
-                std::cout<<"asdfasdf\n";
+                changedConstraintSet = true;
+                continue;
             }
         }
         if (typeid(c) == typeid(PrimitiveFirstConstraint)) {
             carriedConstraints.erase(c);
+            changedConstraintSet = true;
         } else if (typeid(c) == typeid(PrimitiveNextConstraint)) {
            PrimitiveNextConstraint &pc = static_cast<PrimitiveNextConstraint &>(c);
            carriedAssignments[pc.mNextVariable] = assignment.at(pc.mVariable);
@@ -152,13 +174,16 @@ void Solver::carryConstraints(const std::set<Constraint_r>& constraints,
             PrimitiveUntilConstraint &pc = static_cast<PrimitiveUntilConstraint &>(c);
             if (assignment.at(pc.mUntilVariable) != 0) {
                 carriedConstraints.erase(c);
+                changedConstraintSet = true;
             }
         } else if (typeid(c) == typeid(PrimitiveAtConstraint)) {
             carriedConstraints.erase(c);
             PrimitiveAtConstraint &pc = static_cast<PrimitiveAtConstraint &>(c);
             carriedConstraints.insert(pc.makeDecrementedCopy());
+            changedConstraintSet = true;
         }
     }
+    return changedConstraintSet;
 }
 
 void Solver::printTree() { SolverPrinter::printTree(*this); }
