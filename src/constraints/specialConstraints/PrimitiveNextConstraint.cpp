@@ -64,6 +64,27 @@ void PrimitiveNextConstraint::propagateHelper(bool vIsNext,
                 it++;
             }
         }
+
+
+        // a bounds consistency version
+//        for (auto it = vDom.begin(); it != vDom.end(); ) {
+//            if (otherDom.find(*it) == otherDom.end()) {
+//                ret[i+vIsNext].insert(*it);
+//                it = context.pruneDomain(v, it, i+vIsNext);
+//            } else {
+//                break;
+//            }
+//        }
+//        for (auto it = vDom.rbegin(); it != vDom.rend(); ) {
+//            if (otherDom.find(*it) == otherDom.end()) {
+//                ret[i+vIsNext].insert(*it);
+//                auto b = (++it).base();
+//                b = context.pruneDomain(v, b, i+vIsNext);
+//                it = std::make_reverse_iterator(b);
+//            } else {
+//                break;
+//            }
+//        }
     }
 }
 

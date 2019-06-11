@@ -216,8 +216,8 @@ int main(int argc, char *argv[]) {
 	s.solve();
 	auto ending = chrono::system_clock::now();
 	std::chrono::duration<double> elapsed = ending - start;
-	//s.printTree();
-	//s.writeGraph();
+	s.printTree();
+	s.writeGraph();
 	cout<<"ploop "<< elapsed.count() <<"\n";
 
     return 0;

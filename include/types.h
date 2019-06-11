@@ -5,6 +5,8 @@
 #include <unordered_set>
 #include <vector>
 
+#include "Domain.h"
+
 class Variable;
 using Variable_r = std::reference_wrapper<Variable>;
 bool operator==(const Variable &a, const Variable &b);

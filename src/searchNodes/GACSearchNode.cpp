@@ -1,14 +1,15 @@
 #include "../../include/searchNodes/GACSearchNode.h"
 
 #include <iterator>
+#include <vector>
 
 #include "../../include/Constraint.h"
 #include "../../include/Variable.h"
 
 GACSearchNode::GACSearchNode(const std::set<Constraint_r>& constraints,
-                             const assignment_t& historicalValues,
-                             const std::vector<std::pair<std::map<Variable_r, domain_t>::const_iterator,std::map<Variable_r, domain_t>::const_iterator>>& domains,
-                             int constraintSetId)
+                           const assignment_t& historicalValues,
+                           const std::vector<std::pair<std::map<Variable_r, domain_t>::const_iterator,std::map<Variable_r, domain_t>::const_iterator>>& domains,
+                           int constraintSetId)
         : SearchNode(constraints, historicalValues, domains, constraintSetId)
 {
     for (Constraint &c : constraints)
@@ -18,7 +19,6 @@ GACSearchNode::GACSearchNode(const std::set<Constraint_r>& constraints,
         for (Variable &v : vars)
         {
             mConstraintToVariables[&c].push_back(v);
-            // if v is not in mVariableToConstraints, this will automatically create an empty entry for it
             mVariableToConstraints[v].push_back(&c);
         }
         mConstraintPtrs.insert(&c);
@@ -33,27 +33,25 @@ void GACSearchNode::generateNextAssignment(coro_assignment_t::push_type& yield)
 {
     std::vector<std::map<Variable_r, std::set<int>>> removals = GAC();
     bool yieldAssignment = true;
-    // only ever split domains on the first timepoint in our time period, since that's the one we're trying to assign
     std::map<Variable_r, domain_t>& firstDomains = mDomains[0];
     for (auto &p : firstDomains)
     {
-        Variable &v = p.first;
-        if (firstDomains[v].size() == 0)
+        domain_t &d = p.second;
+        if (d.size() == 0)
         {
             yieldAssignment = false;
             break;
         }
-        else if (firstDomains[v].size() > 1)
+        else if (d.size() > 1)
         {
             yieldAssignment = false;
             domain_t loDomain, hiDomain;
-            splitDomain(firstDomains[v], loDomain, hiDomain);
-            firstDomains[v] = loDomain;
+            splitDomain(d, loDomain, hiDomain);
+            d = loDomain;
             generateNextAssignment(yield);
-            firstDomains[v] = hiDomain;
+            d = hiDomain;
             generateNextAssignment(yield);
-            // reset the domain
-            firstDomains[v].insert(loDomain.begin(), loDomain.end());
+            d.insert(loDomain.begin(), loDomain.end());
             break;
         }
     }
@@ -63,7 +61,8 @@ void GACSearchNode::generateNextAssignment(coro_assignment_t::push_type& yield)
         for (auto &p : firstDomains)
         {
             Variable &v = p.first;
-            map.insert({v, *firstDomains[v].begin()});
+            domain_t &d = p.second;
+            map.insert({v, *d.begin()});
         }
         yield(map);
     }
@@ -97,8 +96,9 @@ std::vector<std::map<Variable_r, std::set<int>>> GACSearchNode::GAC()
                     altered = true;
                 }
             }
+            auto& cs = mVariableToConstraints[v];
             if (altered)
-                constraintQueue.insert(mVariableToConstraints[v].begin(), mVariableToConstraints[v].end());
+                constraintQueue.insert(cs.begin(), cs.end());
         }
     }
     return total_alterations;
@@ -116,8 +116,10 @@ std::vector<std::set<int>> GACSearchNode::defaultPropagate(Variable &v, Constrai
 
     // iterate over the domain of our variable
     for (int time = 0; time < getPrefixK(); time++) {
-        for (auto iter = getDomain(v, time).begin(); iter != getDomain(v, time).end(); ) {
-            mAssignments[time][v] = *iter;
+        auto& d = getDomain(v, time);
+        auto& asgnmnt = mAssignments[time][v];
+        for (auto iter = d.begin(); iter != d.end(); ) {
+            asgnmnt = *iter;
             if (shouldPrune(c, time, others.begin(), others.end())) {
                 ret[time].insert(*iter);
                 iter = pruneDomain(v, iter, time);
@@ -137,8 +139,9 @@ bool GACSearchNode::shouldPrune(Constraint& c,
     if (index == endIt) {
         return !c.isSatisfied(*this, time);
     }
+    auto& asgnmnt = mAssignments[time][*index];
     for (int val : mDomains[time][*index]) {
-        mAssignments[time][*index] = val;
+        asgnmnt = val;
         if (!shouldPrune(c, time, std::next(index), endIt)) {
             return false;
         }

@@ -3,6 +3,9 @@
 //
 //
 // special constraint for First constraints
+// we need this because currently our First Expressions assume that we are referring to the VERY FIRST
+// timepoint we ever consider, whereas the AT constraint requires us to use the first value of
+// some variables AFTER A CERTAIN AMOUNT OF TIME has passed
 //
 //
 //

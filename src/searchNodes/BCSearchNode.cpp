@@ -36,22 +36,22 @@ void BCSearchNode::generateNextAssignment(coro_assignment_t::push_type& yield)
     std::map<Variable_r, domain_t>& firstDomains = mDomains[0];
     for (auto &p : firstDomains)
     {
-        Variable &v = p.first;
-        if (firstDomains[v].size() == 0)
+        domain_t &d = p.second;
+        if (d.size() == 0)
         {
             yieldAssignment = false;
             break;
         }
-        else if (firstDomains[v].size() > 1)
+        else if (d.size() > 1)
         {
             yieldAssignment = false;
             domain_t loDomain, hiDomain;
-            splitDomain(firstDomains[v], loDomain, hiDomain);
-            firstDomains[v] = loDomain;
+            splitDomain(d, loDomain, hiDomain);
+            d = loDomain;
             generateNextAssignment(yield);
-            firstDomains[v] = hiDomain;
+            d = hiDomain;
             generateNextAssignment(yield);
-            firstDomains[v].insert(loDomain.begin(), loDomain.end());
+            d.insert(loDomain.begin(), loDomain.end());
             break;
         }
     }
@@ -61,7 +61,8 @@ void BCSearchNode::generateNextAssignment(coro_assignment_t::push_type& yield)
         for (auto &p : firstDomains)
         {
             Variable &v = p.first;
-            map.insert({v, *firstDomains[v].begin()});
+            domain_t &d = p.second;
+            map.insert({v, *d.begin()});
         }
         yield(map);
     }
@@ -72,7 +73,6 @@ void BCSearchNode::generateNextAssignment(coro_assignment_t::push_type& yield)
         }
     }
 }
-
 
 std::vector<std::map<Variable_r, std::set<int>>> BCSearchNode::BC()
 {
@@ -95,8 +95,9 @@ std::vector<std::map<Variable_r, std::set<int>>> BCSearchNode::BC()
                     altered = true;
                 }
             }
+            auto& cs = mVariableToConstraints[v];
             if (altered)
-                constraintQueue.insert(mVariableToConstraints[v].begin(), mVariableToConstraints[v].end());
+                constraintQueue.insert(cs.begin(), cs.end());
         }
     }
     return total_alterations;
@@ -115,8 +116,10 @@ std::vector<std::set<int>> BCSearchNode::defaultPropagate(Variable &v, Constrain
     // iterate over the domain of our variable
     for (int time = 0; time < getPrefixK(); time++) {
         // prune from the bottom of our domain until the lower bound becomes consistent
-        for (auto iter = getDomain(v, time).begin(); iter != getDomain(v, time).end(); ) {
-            mAssignments[time][v] = *iter;
+        auto& d = getDomain(v, time);
+        auto& asgnmnt = mAssignments[time][v];
+        for (auto iter = d.begin(); iter != d.end(); ) {
+            asgnmnt = *iter;
             if (shouldPrune(c, time, others.begin(), others.end())) {
                 ret[time].insert(*iter);
                 iter = pruneDomain(v, iter, time);
@@ -124,14 +127,16 @@ std::vector<std::set<int>> BCSearchNode::defaultPropagate(Variable &v, Constrain
                 break;
             }
         }
+
         // prune from the top of our domain until the upper bound becomes consistent
-        for (auto riter = getDomain(v, time).rbegin(); riter != getDomain(v, time).rend(); ) {
-            mAssignments[time][v] = *riter;
+        for (auto riter = d.rbegin(); riter != d.rend(); ) {
+            asgnmnt = *riter;
             if (shouldPrune(c, time, others.begin(), others.end())) {
                 ret[time].insert(*riter);
                 // bc erasing using a reverse iterator in C++ is wonky
                 riter++;
                 domain_t::const_iterator it = riter.base();
+
                 it = pruneDomain(v, it, time);
                 riter = std::make_reverse_iterator(it);
             } else {
@@ -150,8 +155,9 @@ bool BCSearchNode::shouldPrune(Constraint& c,
     if (index == endIt) {
         return !c.isSatisfied(*this, time);
     }
+    auto& asgnmnt = mAssignments[time][*index];
     for (int val : mDomains[time][*index]) {
-        mAssignments[time][*index] = val;
+        asgnmnt = val;
         if (!shouldPrune(c, time, std::next(index), endIt)) {
             return false;
         }
@@ -161,12 +167,13 @@ bool BCSearchNode::shouldPrune(Constraint& c,
 
 void BCSearchNode::splitDomain(domain_t& inDomain, domain_t& loDomain, domain_t& hiDomain)
 {
-    std::size_t i=0;
     int halfSize = inDomain.size() / 2;
     auto mid = inDomain.begin();
     std::advance(mid, halfSize);
     loDomain.insert(inDomain.begin(), mid);
     hiDomain.insert(mid, inDomain.end());
+//    loDomain = inDomain.slice(0, halfSize);
+//    hiDomain = inDomain.slice(halfSize, inDomain.size());
 }
 
 coro_assignment_t::pull_type BCSearchNode::generateNextAssignmentIterator() {

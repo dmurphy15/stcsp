@@ -17,7 +17,6 @@ SearchNode::SearchNode(const std::set<Constraint_r>& constraints,
         mDomains.push_back({v.first, v.second});
     }
     if (id==0) {
-        std::cout<<"moose am I\n";
         SearchNode::root = this;
     }
     if (constraintSetId < 0) {

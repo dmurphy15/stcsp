@@ -149,7 +149,6 @@ bool Solver::carryConstraints(const std::set<Constraint_r>& constraints,
 //            }
 //            if (tautology) {
 //                carriedConstraints.erase(c);
-//                std::cout<<"yum"<<carriedConstraints.size()<<"\n";
 //                continue;
 //            }
 //        }
