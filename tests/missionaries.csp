@@ -34,3 +34,5 @@ succ <= (next leftmissionaries) eq leftmissionaries;
 succ <= (next leftcannibals) eq leftcannibals;
 
 1 until succ;
+
+succ @ 77 == 1;

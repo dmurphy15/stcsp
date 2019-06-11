@@ -34,9 +34,6 @@ std::set<SearchNode *>& SolverPrinter::printTreeRe(Solver& s, SearchNode &curren
         SearchNode &child = pair.first;
         visited = printTreeRe(s, child, visited, includeAuxiliaryVariables);
     }
-    std::cout<<"final number of searchnodes: "<<s.mSeenSearchNodes.size()<<"\n";
-    std::cout<<"final number of constraints: "<<s.mOriginalConstraints.size()<<"\n";
-    std::cout<<"final number of variables: "<<s.mVariables.size()<<"\n";
     return visited;
 }
 

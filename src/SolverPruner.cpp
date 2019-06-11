@@ -13,6 +13,14 @@ void SolverPruner::pruneForUntilConstraint(SearchNode& rootNode) {
     for (SearchNode *node : terminalRoots) {
         gatherTerminalParents(*node, terminalParents);
     }
+    // if the root doesn't even lead to any terminal nodes, we
+    // also need to cut its children out of the graph, since pruneForUntilConstraintRe
+    // only cuts out parents
+    if (terminalParents.find(&rootNode) == terminalParents.end()) {
+        for (auto& pair : rootNode.getChildNodes()) {
+            rootNode.removeChildNode(pair.first);
+        }
+    }
     pruneForUntilConstraintRe(rootNode, terminalParents, terminalRoots, visited2);
 }
 
@@ -68,7 +76,7 @@ void SolverPruner::pruneForUntilConstraintRe(SearchNode &currNode,
     if (terminalRoots.find(&currNode) != terminalRoots.end()) {
         return;
     }
-    // we are a terminal parent that is not root; we are terminal, but must still check our children
+    // we are a terminal parent that is not a terminal root; we are terminal, but must still check our children
     if (terminalParents.find(&currNode) != terminalParents.end()) {
         for (auto pair : currNode.getChildNodes()) {
             SearchNode& child = pair.first;
@@ -84,5 +92,6 @@ void SolverPruner::pruneForUntilConstraintRe(SearchNode &currNode,
         // for completeness, I could clear the list of parentNodes contained in currNode, but
         // that would just waste time
         parent.removeChildNode(currNode);
+
     }
 }
