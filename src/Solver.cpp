@@ -178,12 +178,7 @@ bool Solver::carryConstraints(const std::set<Constraint_r>& constraints,
         } else if (typeid(c) == typeid(PrimitiveAtConstraint)) {
             carriedConstraints.erase(c);
             PrimitiveAtConstraint &pc = static_cast<PrimitiveAtConstraint &>(c);
-            Constraint& cpy = pc.makeDecrementedCopy();
-            if (typeid(cpy) == typeid(PrimitiveFirstConstraint)) {
-                PrimitiveFirstConstraint &cpy2 = static_cast<PrimitiveFirstConstraint &>(cpy);
-                carriedConstraints.insert(*new PrimitiveNextConstraint(cpy2.mVariableExpr, cpy2.mVariableExpr));
-            }
-            carriedConstraints.insert(cpy);
+            carriedConstraints.insert(pc.makeDecrementedCopy());
             changedConstraintSet = true;
         }
     }

@@ -7,6 +7,8 @@
 #include "../include/Constraint.h"
 #include "../include/constraints/specialConstraints/PrimitiveUntilConstraint.h"
 
+#include "../include/SetRegistry.h"
+
 void SolverPruner::pruneForUntilConstraint(SearchNode& rootNode) {
     std::set<SearchNode *> terminalRoots, terminalParents, visited1, visited2;
     findTerminalRoots(rootNode, terminalRoots, visited1);
@@ -33,13 +35,7 @@ void SolverPruner::findTerminalRoots(SearchNode& currNode,
                                std::set<SearchNode *>& terminalRoots,
                                std::set<SearchNode *>& visited) {
     visited.insert(&currNode);
-    bool isTerminal = true;
-    for (Constraint& c : currNode.getConstraints()) {
-        if (typeid(c) == typeid(PrimitiveUntilConstraint)) {
-            isTerminal = false;
-            break;
-        }
-    }
+    bool isTerminal = SetRegistry::IsTerminalConstraintSet(currNode.getConstraintSetId());
     if (isTerminal) {
         terminalRoots.insert(&currNode);
         return;
