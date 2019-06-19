@@ -24,7 +24,7 @@ bool LTConstraint::isSatisfied(SearchNode &context, int time) const
     return mExpr1.evaluate(context, time) < mExpr2.evaluate(context, time);
 }
 
-std::vector<std::set<int>> LTConstraint::propagate(Variable &v, SearchNode &context)
+std::map<Variable_r, std::vector<std::set<int>>> LTConstraint::propagate(SearchNode &context)
 {
-    return context.defaultPropagate(v, *this);
+    return context.defaultPropagate(*this);
 }

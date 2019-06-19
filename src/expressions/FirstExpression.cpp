@@ -18,7 +18,7 @@ int FirstExpression::evaluate(SearchNode &context, int time) const
 
 domain_t FirstExpression::getDomain(SearchNode &context, int time) const
 {
-    if (&context == SearchNode::root) {
+    if (context.id == SearchNode::ROOT_ID) {
         return mExpr.getDomain(context, 0);
     } else {
         return {mExpr.evaluate(*SearchNode::root, 0)};
@@ -30,10 +30,10 @@ domain_t FirstExpression::getInitialDomain() const
     return mExpr.getInitialDomain();
 }
 
-void FirstExpression::getVariables(std::set<Variable_r>& variables, bool root) const
+std::set<Variable_r> FirstExpression::getVariables(bool root) const
 {
     if (!root) { // after the root node, this expression is effectively constant
-        return;
+        return {};
     }
-    mExpr.getVariables(variables, root);
+    return mExpr.getVariables(root);
 }

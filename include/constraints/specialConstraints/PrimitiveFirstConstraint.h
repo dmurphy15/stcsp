@@ -29,11 +29,11 @@ public:
                    std::set<Variable_r> &variableList) override;
 
     bool isSatisfied(SearchNode &context, int time) const override;
-    std::vector<std::set<int>> propagate(Variable &v, SearchNode &context) override;
+    std::map<Variable_r, std::vector<std::set<int>>> propagate(SearchNode &context) override;
 
     VariableExpression &mVariableExpr;
     Expression &mFirstExpr;
     Variable &mVariable;
 private:
-    bool shouldPrune(SearchNode& context, std::set<Variable_r>& vars, std::set<Variable_r>::iterator index);
+    bool shouldPrune(SearchNode& context, std::vector<Variable_r>& vars, std::vector<Variable_r>::iterator index);
 };

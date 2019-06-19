@@ -18,12 +18,29 @@ Constraint::Constraint(std::initializer_list<Expression_r> expressions,
     } else {
         mExpressionSetId = expressionSetId;
     }
+    mVariablesAtRoot = getVariables(true);
+    mVariablesAfterRoot = getVariables(false);
 }
 
-void Constraint::getVariables(std::set<Variable_r>& variables, bool root) const {
-    for (Expression& e : mExpressions) {
-        e.getVariables(variables, root);
+std::set<Variable_r> Constraint::getVariables(bool root) const {
+    if (root && !mVariablesAtRoot.empty()) {
+        return mVariablesAtRoot;
+    } else if (!mVariablesAfterRoot.empty()){
+        return mVariablesAfterRoot;
     }
+    std::set<Variable_r> ret;
+    for (Expression& e : mExpressions) {
+        std::set<Variable_r>&& vars = e.getVariables(root);
+        auto it1 = ret.begin(); auto it2 = vars.begin();
+        while (it2 != vars.end()) {
+            while (it1 != ret.end() && &(*it1) < &(*it2)) {
+                it1++;
+            }
+            ret.insert(it1, *it2);
+            it2++;
+        }
+    }
+    return ret;
 }
 
 void Constraint::normalize(std::set<Constraint_r> &constraintList, std::set<Variable_r> &variableList) {

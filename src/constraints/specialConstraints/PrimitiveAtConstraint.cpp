@@ -30,10 +30,14 @@ bool PrimitiveAtConstraint::isSatisfied(SearchNode &context, int time) const
 }
 
 // if we had non-naively evaluated isSatisfied, then we could have pruned the domains here
-std::vector<std::set<int>> PrimitiveAtConstraint::propagate(Variable &v, SearchNode &context)
+std::map<Variable_r, std::vector<std::set<int>>> PrimitiveAtConstraint::propagate(SearchNode &context)
 {
-    std::vector<std::set<int>> ret(context.getPrefixK());
-    return ret;
+    bool root = context.id == SearchNode::ROOT_ID;
+    std::map<Variable_r, std::vector<std::set<int>>> retMap;
+    for (Variable& v : getVariables(root)) {
+        retMap[v].resize(context.getPrefixK());
+    }
+    return retMap;
 }
 
 Constraint& PrimitiveAtConstraint::makeDecrementedCopy()

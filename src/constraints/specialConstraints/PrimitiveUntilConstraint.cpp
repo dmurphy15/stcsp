@@ -28,26 +28,37 @@ bool PrimitiveUntilConstraint::isSatisfied(SearchNode &context, int time) const
 }
 
 // could have used defaultPropagate here, but I think this is faster
-std::vector<std::set<int>> PrimitiveUntilConstraint::propagate(Variable &v, SearchNode &context)
+std::map<Variable_r, std::vector<std::set<int>>> PrimitiveUntilConstraint::propagate(SearchNode& context)
 {
-    std::vector<std::set<int>> ret(context.getPrefixK());
-    Variable &other = v == mVariable ? mUntilVariable : mVariable;
-    for (int i = 0; i < context.getPrefixK(); i++) {
-        // if other has to be 0, and mUntilVariable cannot have previously been not-0, then we cannot be 0
-        if (context.getDomain(other, i).size() == 1 && *context.getDomain(other, i).begin() == 0) {
-            auto it = context.getDomain(v, i).find(0);
-            if (it != context.getDomain(v, i).end()) {
-                context.pruneDomain(v, it, i);
-                ret[i] = {0};
+    bool root = context.id == SearchNode::ROOT_ID;
+    std::map<Variable_r, std::vector<std::set<int>>> retMap;
+    for (Variable_r v : getVariables(root)) {
+        std::vector<std::set<int>>& ret = retMap[v];
+        ret.resize(context.getPrefixK());
+
+        Variable &other = v == mVariable ? mUntilVariable : mVariable;
+        for (int i = 0; i < context.getPrefixK(); i++) {
+            // if other has to be 0, and mUntilVariable cannot have previously been not-0, then we cannot be 0
+            if (context.getDomain(other, i).size() == 1 && *context.getDomain(other, i).begin() == 0) {
+                auto it = context.getDomain(v, i).find(0);
+                if (it != context.getDomain(v, i).end()) {
+                    context.pruneDomain(v, it, i);
+                    ret[i] = {0};
+                }
             }
-        }
-        // mUntilVariable can be not-0 as of now, so all future timepoints need not be constrained
-        for (int j : context.getDomain(mUntilVariable, i)) {
-            if (j != 0) {
-                return ret;
+            // mUntilVariable can be not-0 as of now, so all future timepoints need not be constrained
+            bool done = false;
+            for (int j : context.getDomain(mUntilVariable, i)) {
+                if (j != 0) {
+                    done = true;
+                    break;
+                }
+            }
+            if (done) {
+                break;
             }
         }
     }
-    return ret;
+    return retMap;
 }
 

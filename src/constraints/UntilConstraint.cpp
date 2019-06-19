@@ -40,7 +40,7 @@ bool UntilConstraint::isSatisfied(SearchNode &context, int time) const
     return (mExpr.evaluate(context, time) != 0) || (mUntilExpr.evaluate(context, time) != 0);
 }
 
-std::vector<std::set<int>> UntilConstraint::propagate(Variable &v, SearchNode &context)
+std::map<Variable_r, std::vector<std::set<int>>> UntilConstraint::propagate(SearchNode &context)
 {
-    return context.defaultPropagate(v, *this);
+    return context.defaultPropagate(*this);
 }

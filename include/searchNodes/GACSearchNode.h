@@ -9,14 +9,10 @@ public:
                   const assignment_t& historicalValues,
                   const std::vector<std::pair<std::map<Variable_r, domain_t>::const_iterator,std::map<Variable_r, domain_t>::const_iterator>>& domains,
                   int constraintSetId=-1);
-    std::vector<std::set<int>> defaultPropagate(Variable &v, Constraint &c) override;
-    coro_assignment_t::pull_type generateNextAssignmentIterator() override;// {
-//        return coro_assignment_t::pull_type(boost::bind(&GACSearchNode::generateNextAssignment, this, _1));
-//    }
+    std::map<Variable_r, std::vector<std::set<int>>> defaultPropagate(Constraint &c) override;
 
 private:
     std::map<Variable_r, std::vector<Constraint *>> mVariableToConstraints;
-    std::map<Constraint *, std::vector<Variable_r>> mConstraintToVariables;
 
     std::set<Constraint *>mConstraintPtrs;
 

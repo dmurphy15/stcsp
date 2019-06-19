@@ -6,6 +6,10 @@
 
 #include "types.h"
 
+/***************************** SEARCHNODE ******************************************************************************
+ * Models a single instantaneous CSP. Subclasses of this implement different algorithms for solving the CSP.
+ * ********************************************************************************************************************/
+
 class SearchNode
 {
 public:
@@ -84,7 +88,7 @@ public:
      * returns a coroutine that can be used to iterate through all valid assignments for this SearchNode
      * @return the coroutine
      */
-    virtual coro_assignment_t::pull_type generateNextAssignmentIterator() = 0;
+    coro_assignment_t::pull_type generateNextAssignmentIterator();
 
     /**
      * adds a new SearchNode as a child of this one, associated with the assignment that takes us from this SearchNode
@@ -110,22 +114,30 @@ public:
     std::set<SearchNode_r> getParentNodes();
 
     /**
-     * reduces the domain of v until the only remaining values are those for which c can be satisfied
-     * @param v - the variable whose domain will be reduced
+     * For a generic constraint, c, provide a default algorithm for propagating c over the domains of variables
+     * it constrains, to help prune their domains. Examples are Bounds Consistency and Generalized Arc Consistency
      * @param c - the constraint to enforce
-     * @param time - the time index of the domain to reduce
-     * @return a set of ints representing those values in the domain of v that were removed
+     * @return a map of variables to sets of ints representing those values in the domain of of each variable that were
+     * removed
      */
-    virtual std::vector<std::set<int>> defaultPropagate(Variable &v, Constraint &c) = 0;
+    virtual std::map<Variable_r, std::vector<std::set<int>>> defaultPropagate(Constraint &c) = 0;
 
     friend bool operator==(SearchNode &lhs, SearchNode &rhs);
     friend bool operator<(SearchNode &lhs, SearchNode &rhs);
     friend class std::hash<SearchNode_r>;
 
+    /** returns how many timepoints this SearchNode will consider when producing solutions */
     int getPrefixK() const;
+    /** id that uniquely specifies this SearchNode */
     const int id;
+    /** get the id for the set of constraints this SearchNode is using */
     int getConstraintSetId() { return mConstraintSetId; };
+    /** the first SearchNode created. This should be the same SearchNode as Solver::mTree; we could probably
+     * replace Solver::mTree with this
+     */
     static SearchNode *root;
+    /** special id for the root SearchNode */
+    const static int ROOT_ID;
 protected:
     /**
      * helper function from which one could create a coroutine to iterate through all valid output assignments
@@ -134,14 +146,17 @@ protected:
     virtual void generateNextAssignment(coro_assignment_t::push_type &yield) = 0;
 
     /**
-     * vector of assignments to the variables
+     * vector of assignments to the variables; this enables us to evaluate Expressions within the context of this
+     * particular SearchNode
      */
     std::vector<assignment_t> mAssignments;
     /**
      * maps the variables to their domains at each time point
      */
     std::vector<std::map<Variable_r, domain_t>> mDomains;
+    /** constraints for this CSP */
     std::set<Constraint_r> mConstraints;
+    /** historical values that constrain the domains of certain variables at time 0 from the start */
     assignment_t mHistoricalValues;
     std::vector<std::pair<SearchNode_r, assignment_t>> mChildNodes; // using a vector bc we do care when different assignments are used to reach the same child
     std::set<SearchNode_r> mParentNodes; // using a set bc we don't care when the same parent is added multiple times

@@ -35,7 +35,7 @@ public:
 
     // used by instantaneous csp to set up mappings from vars to constraints and vice versa,
     // which it can later use for GAC, etc
-    void getVariables(std::set<Variable_r>& variables, bool root=false) const;
+    std::set<Variable_r> getVariables(bool root) const;
 
     ////remember that whenever you return something from propagate, it MUST have length prefixK
 
@@ -44,7 +44,7 @@ public:
     // could just call the context's default propagator
     // return whatever values it has removed from the variable's domain
             // propagates over all timepoints in the context
-    virtual std::vector<std::set<int>> propagate(Variable &v, SearchNode &context) = 0;
+    virtual std::map<Variable_r, std::vector<std::set<int>>> propagate(SearchNode &context) = 0;
 
     friend bool operator< (const Constraint &lhs, const Constraint &rhs);
     friend bool operator== (const Constraint &lhs, const Constraint &rhs);
@@ -54,4 +54,7 @@ private:
     std::vector<Expression_r> mExpressions;
     virtual Constraint& build(std::vector<Expression_r>& expressions);
     int mExpressionSetId;
+    // variables that are left after the root node has been solved and tautologies have been removed
+    std::set<Variable_r> mVariablesAfterRoot;
+    std::set<Variable_r> mVariablesAtRoot;
 };

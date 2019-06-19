@@ -14,19 +14,13 @@ GACSearchNode::GACSearchNode(const std::set<Constraint_r>& constraints,
 {
     for (Constraint &c : constraints)
     {
-        std::set<Variable_r> vars; c.getVariables(vars, id==0);
-        mConstraintToVariables.insert({&c, std::vector<Variable_r>()});
+        std::set<Variable_r> vars = c.getVariables(id==SearchNode::ROOT_ID);
         for (Variable &v : vars)
         {
-            mConstraintToVariables[&c].push_back(v);
             mVariableToConstraints[v].push_back(&c);
         }
         mConstraintPtrs.insert(&c);
     }
-    for (auto &assignment : historicalValues) {
-        mDomains[0][assignment.first] = {assignment.second};
-    }
-    mAssignments.resize(getPrefixK());
 }
 
 void GACSearchNode::generateNextAssignment(coro_assignment_t::push_type& yield)
@@ -82,12 +76,13 @@ std::vector<std::map<Variable_r, std::set<int>>> GACSearchNode::GAC()
     while (constraintQueue.size() > 0)
     {
         auto it = constraintQueue.begin();
-        Constraint *c = *it;
+        Constraint *c_ptr = *it;
         constraintQueue.erase(it);
-        for (Variable &v : mConstraintToVariables[c])
-        {
+        std::map<Variable_r, std::vector<std::set<int>>> alterationsMap = c_ptr->propagate(*this);
+        for (auto& pair : alterationsMap) {
             bool altered = false;
-            std::vector<std::set<int>> alterations = c->propagate(v, *this);
+            Variable& v = pair.first;
+            std::vector<std::set<int>>& alterations = pair.second;
             for (int time=0; time < getPrefixK(); time++) {
                 // propagate has adjusted the domain of the chosen variable
                 if (alterations[time].size() > 0)
@@ -104,31 +99,35 @@ std::vector<std::map<Variable_r, std::set<int>>> GACSearchNode::GAC()
     return total_alterations;
 }
 
-std::vector<std::set<int>> GACSearchNode::defaultPropagate(Variable &v, Constraint &c)
+std::map<Variable_r, std::vector<std::set<int>>> GACSearchNode::defaultPropagate(Constraint &c)
 {
-    std::vector<std::set<int>> ret(getPrefixK());
-    // get all the related variables in this arc
-    std::vector<Variable_r>::iterator position = std::find(mConstraintToVariables[&c].begin(),
-                                                           mConstraintToVariables[&c].end(),
-                                                           v);
-    std::vector<Variable_r> others(mConstraintToVariables[&c].begin(), position);
-    others.insert(others.end(), ++position, mConstraintToVariables[&c].end());
-
-    // iterate over the domain of our variable
+    std::map<Variable_r, std::vector<std::set<int>>> retMap;
     for (int time = 0; time < getPrefixK(); time++) {
-        auto& d = getDomain(v, time);
-        auto& asgnmnt = mAssignments[time][v];
-        for (auto iter = d.begin(); iter != d.end(); ) {
-            asgnmnt = *iter;
-            if (shouldPrune(c, time, others.begin(), others.end())) {
-                ret[time].insert(*iter);
-                iter = pruneDomain(v, iter, time);
-            } else {
-                iter++;
+        const std::set<Variable_r>& variables = c.getVariables(id == SearchNode::ROOT_ID && time == 0);
+        std::set<Variable_r>::iterator varIter = variables.begin();
+        while (varIter != variables.end()) {
+            Variable& v = *varIter;
+            std::vector<std::set<int>>& ret = retMap[v];
+            ret.resize(getPrefixK());
+            // get all the related variables in this arc
+            std::vector<Variable_r> others(variables.begin(), varIter);
+            others.insert(others.end(), ++varIter, variables.end());
+
+            // iterate over the domain of our variable
+            auto& d = getDomain(v, time);
+            auto& asgnmnt = mAssignments[time][v];
+            for (auto iter = d.begin(); iter != d.end(); ) {
+                asgnmnt = *iter;
+                if (shouldPrune(c, time, others.begin(), others.end())) {
+                    ret[time].insert(*iter);
+                    iter = pruneDomain(v, iter, time);
+                } else {
+                    iter++;
+                }
             }
         }
     }
-    return ret;
+    return retMap;
 }
 
 bool GACSearchNode::shouldPrune(Constraint& c,
@@ -157,8 +156,4 @@ void GACSearchNode::splitDomain(domain_t& inDomain, domain_t& loDomain, domain_t
     std::advance(mid, halfSize);
     loDomain.insert(inDomain.begin(), mid);
     hiDomain.insert(mid, inDomain.end());
-}
-
-coro_assignment_t::pull_type GACSearchNode::generateNextAssignmentIterator() {
-    return coro_assignment_t::pull_type(boost::bind(&GACSearchNode::generateNextAssignment, this, _1));
 }

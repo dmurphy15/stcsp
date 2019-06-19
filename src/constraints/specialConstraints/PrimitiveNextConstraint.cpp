@@ -33,18 +33,24 @@ bool PrimitiveNextConstraint::isSatisfied(SearchNode &context, int time) const
 }
 
 // this will work even if v is both mVariable and mNextVariable
-std::vector<std::set<int>> PrimitiveNextConstraint::propagate(Variable &v, SearchNode &context) {
-    std::vector<std::set<int>> differences(context.getPrefixK());
-    if (context.getPrefixK() < 2) {
-        return differences;
+std::map<Variable_r, std::vector<std::set<int>>> PrimitiveNextConstraint::propagate(SearchNode &context) {
+    bool root = context.id == SearchNode::ROOT_ID;
+    std::map<Variable_r, std::vector<std::set<int>>> retMap;
+    for (Variable& v : getVariables(root)) {
+        std::vector<std::set<int>>& differences = retMap[v];
+        differences.resize(context.getPrefixK());
+
+        if (context.getPrefixK() < 2) {
+            break;
+        }
+        if (v == mVariable && v == mNextVariable) {
+            propagateHelper(true, context, differences);
+            propagateHelper(false, context, differences);
+        } else {
+            propagateHelper(v == mNextVariable, context, differences);
+        }
     }
-    if (v == mVariable && v == mNextVariable) {
-        propagateHelper(true, context, differences);
-        propagateHelper(false, context, differences);
-    } else {
-        propagateHelper(v == mNextVariable, context, differences);
-    }
-    return differences;
+    return retMap;
 }
 
 void PrimitiveNextConstraint::propagateHelper(bool vIsNext,

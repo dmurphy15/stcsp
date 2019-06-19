@@ -17,7 +17,7 @@ bool ImplyConstraint::isSatisfied(SearchNode &context, int time) const
     return mExpr1.evaluate(context, time) == 0 || mExpr2.evaluate(context, time) != 0;
 }
 
-std::vector<std::set<int>> ImplyConstraint::propagate(Variable &v, SearchNode &context)
+std::map<Variable_r, std::vector<std::set<int>>> ImplyConstraint::propagate(SearchNode &context)
 {
-    return context.defaultPropagate(v, *this);
+    return context.defaultPropagate(*this);
 }

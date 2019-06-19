@@ -8,7 +8,7 @@ public:
     EqualConstraint(Expression &a, Expression &b, int expressionSetId=-1);
     ~EqualConstraint();
     bool isSatisfied(SearchNode &context, int time) const override;
-    std::vector<std::set<int>> propagate(Variable &v, SearchNode &context) override;
+    std::map<Variable_r, std::vector<std::set<int>>> propagate(SearchNode &context) override;
 private:
     Expression &mExpr1;
     Expression &mExpr2;

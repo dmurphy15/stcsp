@@ -25,7 +25,7 @@ public:
                    std::set<Variable_r> &variableList) override;
 
     bool isSatisfied(SearchNode &context, int time) const override;
-    std::vector<std::set<int>> propagate(Variable &v, SearchNode &context) override;
+    std::map<Variable_r, std::vector<std::set<int>>> propagate(SearchNode &context) override;
 
     Variable &mVariable;
     Variable &mUntilVariable;

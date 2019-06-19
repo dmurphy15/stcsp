@@ -16,7 +16,10 @@ SearchNode::SearchNode(const std::set<Constraint_r>& constraints,
     for (auto&& v : domains) {
         mDomains.push_back({v.first, v.second});
     }
-    if (id==0) {
+    for (auto &assignment : historicalValues) {
+        mDomains[0][assignment.first] = {assignment.second};
+    }
+    if (id==SearchNode::ROOT_ID) {
         SearchNode::root = this;
     }
     if (constraintSetId < 0) {
@@ -24,6 +27,7 @@ SearchNode::SearchNode(const std::set<Constraint_r>& constraints,
     } else {
         mConstraintSetId = constraintSetId;
     }
+    mAssignments.resize(getPrefixK());
 }
 
 int SearchNode::getAssignment(Variable &v, int time) {
@@ -115,5 +119,10 @@ bool operator<(SearchNode &lhs, SearchNode &rhs) {
 //               && (lhs.mConstraints < rhs.mConstraints)));
 }
 
-int SearchNode::idSource = 0;
+const int SearchNode::ROOT_ID = 0;
+int SearchNode::idSource = SearchNode::ROOT_ID;
 SearchNode *SearchNode::root = nullptr;
+
+coro_assignment_t::pull_type SearchNode::generateNextAssignmentIterator() {
+    return coro_assignment_t::pull_type(boost::bind(&SearchNode::generateNextAssignment, this, _1));
+}

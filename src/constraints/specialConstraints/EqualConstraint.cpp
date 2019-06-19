@@ -17,11 +17,11 @@ bool EqualConstraint::isSatisfied(SearchNode &context, int time) const
     return mExpr1.evaluate(context, time) == mExpr2.evaluate(context, time);
 }
 
-std::vector<std::set<int>> EqualConstraint::propagate(Variable &v, SearchNode &context)
+std::map<Variable_r, std::vector<std::set<int>>> EqualConstraint::propagate(SearchNode &context)
 {
     //TODO in the future, could instead call some kind of set_intersection technique, like I did in primitiveNextConstraint
     //TODO then again, perhaps not, since there I already had to sacrifice the time to iterate through all assignments, so maybe this is faster
-    return context.defaultPropagate(v, *this);
+    return context.defaultPropagate(*this);
 //    throw std::logic_error((std::string)__PRETTY_FUNCTION__ + " should have been overridden");
 //    return {};
 //        std::set<Variable *> vars = getVariables();

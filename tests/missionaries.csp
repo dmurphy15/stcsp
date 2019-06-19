@@ -35,4 +35,3 @@ succ <= (next leftcannibals) eq leftcannibals;
 
 1 until succ;
 
-succ @ 77 == 1;

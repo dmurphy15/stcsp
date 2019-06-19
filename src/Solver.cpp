@@ -34,13 +34,15 @@ Solver::Solver(SearchNodeType searchNodeType, int prefixK, const std::set<Constr
     mPrefixK = prefixK;
     mOriginalConstraints = constraints;
     for (Constraint &c: constraints) {
-        c.getVariables(mOriginalVariables);
+        std::set<Variable_r>&& vars = c.getVariables(true);
+        mOriginalVariables.insert(vars.begin(), vars.end());
     }
 }
 
 void Solver::addConstraint(Constraint &c) {
     mOriginalConstraints.insert(c);
-    c.getVariables(mOriginalVariables);
+    std::set<Variable_r>&& vars = c.getVariables(true);
+    mOriginalVariables.insert(vars.begin(), vars.end());
 }
 
 void Solver::solve() {
@@ -155,8 +157,7 @@ bool Solver::carryConstraints(const std::set<Constraint_r>& constraints,
 
         // here's another attempt at tautology detection; doesn't mean the first attempt was wrong though
         if (solvingFirstNode) {
-            std::set<Variable_r> vs;
-            c.getVariables(vs, false); // setting root=false since now we're done solving the first node
+            std::set<Variable_r> vs = c.getVariables(false); // setting root=false since now we're done solving the first node
             if (vs.size() == 0) { // it is a tautology if everything it deals with is constant. had to do some trickery with first expressions to do this
                 carriedConstraints.erase(c);
                 changedConstraintSet = true;
