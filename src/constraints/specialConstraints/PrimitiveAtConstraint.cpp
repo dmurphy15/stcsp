@@ -42,8 +42,11 @@ std::map<Variable_r, std::vector<std::set<int>>> PrimitiveAtConstraint::propagat
 
 Constraint& PrimitiveAtConstraint::makeDecrementedCopy()
 {
+    Constraint* c;
     if (mConstExpr.mConstant == 1) {
-        return *new PrimitiveFirstConstraint(mVarExpr, mExpr, getExpressionSetId());
+        c = new PrimitiveFirstConstraint(mVarExpr, mExpr, -1);
+    } else {
+        c = new PrimitiveAtConstraint(mVarExpr, mExpr, *new ConstantExpression(mConstExpr.mConstant - 1), -1);
     }
-    return *new PrimitiveAtConstraint(mVarExpr, mExpr, *new ConstantExpression(mConstExpr.mConstant - 1), getExpressionSetId());
+    return *c;
 }

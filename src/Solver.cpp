@@ -21,9 +21,6 @@
 #include "../include/SolverPruner.h"
 #include "../include/SolverPrinter.h"
 
-
-#include <iostream>
-
 Solver::Solver(SearchNodeType searchNodeType, int prefixK) {
     mNodeType = searchNodeType;
     mPrefixK = prefixK;
@@ -72,7 +69,7 @@ void Solver::solve() {
 }
 
 bool Solver::solveRe(SearchNode &currentNode) {
-    mSeenSearchNodes.insert(currentNode);
+    mSeenSearchNodes[currentNode] = true;
     int numChildNodes = 0;
     for (assignment_t& assignment : currentNode.generateNextAssignmentIterator()) {
         if (&currentNode == SearchNode::root) {
@@ -101,22 +98,26 @@ bool Solver::solveRe(SearchNode &currentNode) {
                                                                  carriedAssignments,
                                                                  nextInitialDomains,
                                                                  nextConstraintSetId);
+
         // detect dominance
         auto dominator = mSeenSearchNodes.find(nextNode);
-        SearchNode &child = (dominator == mSeenSearchNodes.end()) ? nextNode : (*dominator).get();
+        SearchNode &child = (dominator == mSeenSearchNodes.end()) ? nextNode : dominator->first.get();
 
-        currentNode.addChildNode(child, assignment);
-        child.addParentNode(currentNode);
-        numChildNodes++;
-
-        // if nextNode has never been seen before, we must go forward to make sure it doesn't fail
-        if (&child == &nextNode) {
-            bool nextWasSuccessful = solveRe(nextNode);
-            if (!nextWasSuccessful) {
-                numChildNodes--;
-                currentNode.removeLastChildNode();
-                nextNode.removeParentNode(currentNode);
-                mSeenSearchNodes.erase(nextNode);
+        bool notSeenFailed = &child == &nextNode || dominator->second;
+        // if the next node is not necessarily failure, look into it; else we can just move on
+        if (notSeenFailed) {
+            currentNode.addChildNode(child, assignment);
+            child.addParentNode(currentNode);
+            numChildNodes++;
+            // if nextNode has never been seen before, we must go forward to make sure it doesn't fail
+            if (&child == &nextNode) {
+                bool nextWasSuccessful = solveRe(nextNode);
+                if (!nextWasSuccessful) {
+                    numChildNodes--;
+                    currentNode.removeLastChildNode();
+                    nextNode.removeParentNode(currentNode);
+                    mSeenSearchNodes[nextNode] = false; // mark it as failed
+                }
             }
         }
     }
@@ -128,61 +129,43 @@ bool Solver::carryConstraints(const std::set<Constraint_r>& constraints,
                          const assignment_t& assignment,
                          std::set<Constraint_r>& carriedConstraints,
                          assignment_t& carriedAssignments,
-                         bool solvingFirstNode) {
+                              bool solvingFirstNode) {
     bool changedConstraintSet = false;
+    std::set<Constraint_r> added = {};
     carriedConstraints = constraints;
-    for (Constraint &c : constraints) {
+//    for (Constraint &c : constraints) {
+    for (auto it = carriedConstraints.begin(); it != carriedConstraints.end(); it++) {
+        Constraint &c = *it;
         //TODO whenever I erase a constraint below, I erase references to expressions and probably cause memory leaks
 
-        // tautology detection
-//        if (solvingFirstNode) {
-//            std::set<Variable_r> vs;
-//            // c must have been satisfied. Also, constant expressions do not contain variables.
-//            // Thus the constraint is a tautology if and only if there are no variables, or all variables have v == next v
-//            c.getVariables(vs);
-//            bool tautology = true;
-//            for (auto v : vs) {
-//                VariableExpression ve(v);
-//                PrimitiveNextConstraint pc(ve, ve);
-//                if (c == pc || constraints.find(pc) == constraints.end()) {
-//                    tautology = false;
-//                    break;
-//                }
-//            }
-//            if (tautology) {
-//                carriedConstraints.erase(c);
-//                continue;
-//            }
-//        }
-
-        // here's another attempt at tautology detection; doesn't mean the first attempt was wrong though
         if (solvingFirstNode) {
             std::set<Variable_r> vs = c.getVariables(false); // setting root=false since now we're done solving the first node
             if (vs.size() == 0) { // it is a tautology if everything it deals with is constant. had to do some trickery with first expressions to do this
-                carriedConstraints.erase(c);
+                it = carriedConstraints.erase(it)--;
                 changedConstraintSet = true;
                 continue;
             }
         }
         if (typeid(c) == typeid(PrimitiveFirstConstraint)) {
-            carriedConstraints.erase(c);
+            it = carriedConstraints.erase(it)--;
             changedConstraintSet = true;
         } else if (typeid(c) == typeid(PrimitiveNextConstraint)) {
-           PrimitiveNextConstraint &pc = static_cast<PrimitiveNextConstraint &>(c);
-           carriedAssignments[pc.mNextVariable] = assignment.at(pc.mVariable);
+            PrimitiveNextConstraint &pc = static_cast<PrimitiveNextConstraint &>(c);
+            carriedAssignments[pc.mNextVariable] = assignment.at(pc.mVariable);
         } else if (typeid(c) == typeid(PrimitiveUntilConstraint)) {
             PrimitiveUntilConstraint &pc = static_cast<PrimitiveUntilConstraint &>(c);
             if (assignment.at(pc.mUntilVariable) != 0) {
-                carriedConstraints.erase(c);
+                it = carriedConstraints.erase(it)--;
                 changedConstraintSet = true;
             }
         } else if (typeid(c) == typeid(PrimitiveAtConstraint)) {
-            carriedConstraints.erase(c);
             PrimitiveAtConstraint &pc = static_cast<PrimitiveAtConstraint &>(c);
-            carriedConstraints.insert(pc.makeDecrementedCopy());
+            added.insert(pc.makeDecrementedCopy());
+            it = carriedConstraints.erase(it)--;
             changedConstraintSet = true;
         }
     }
+    carriedConstraints.insert(added.begin(), added.end());
     return changedConstraintSet;
 }
 

@@ -9,6 +9,7 @@
 #include "../../include/expressions/specialExpressions/ConstantExpression.h"
 #include "../../include/constraints/specialConstraints/PrimitiveAtConstraint.h"
 #include "../../include/constraints/specialConstraints/PrimitiveNextConstraint.h"
+#include "../../include/constraints/specialConstraints/EqualConstraint.h"
 
 AtExpression::AtExpression(Expression &a, ConstantExpression &b) :
         Expression({a, b}, false),
@@ -37,14 +38,17 @@ Expression& AtExpression::normalize(std::set<Constraint_r> &constraintList, std:
         Variable& equivalentVar = *new Variable(equivalentExpr.getInitialDomain());
         variableList.insert(equivalentVar);
         VariableExpression& equivalentVarExpr = *new VariableExpression(equivalentVar);
+
         constraintList.insert(*new PrimitiveAtConstraint(equivalentVarExpr, equivalentExpr, equivalentConstExpr));
         constraintList.insert(*new PrimitiveNextConstraint(equivalentVarExpr, equivalentVarExpr));
+
 //        return equivalentVarExpr;
         // an AtExpression returns something whose value is constant anyway, so we may as well return a
         // FirstExpression, so that we can detect tautologies from the start (though we still want
         // to keep the added PrimitiveNextConstraint, so we dont have to propagate over the entire
         // domain of the added variable at each timepoint)
         return (*new FirstExpression(equivalentVarExpr)).normalize(constraintList, variableList);
+//        return (equivalentVarExpr).normalize(constraintList, variableList);
     }
 }
 

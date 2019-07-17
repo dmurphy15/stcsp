@@ -85,10 +85,9 @@ private:
     /** a complete set of variables, after refactoring */
     std::set<Variable_r> mVariables;
 
-    /** set of SearchNodes that are not failure nodes, used for dominance detection */
-    //TODO in the future it would be pretty easy to also keep a set of seen failure nodes, so we can cut short any nodes
-    // that we know will fail
-    std::unordered_set<SearchNode_r> mSeenSearchNodes;
+    /** maps SearchNodes to a bool indicating whether they were non-failure nodes; used for dominance detection */
+    std::unordered_map<SearchNode_r, bool> mSeenSearchNodes;
+
     /** map of variables to their full domains, for efficient initialization */
     std::map<Variable_r, domain_t> mDomainsInitializer;
     /** how many timepoints should each SearchNode consider during constraint propagation */
