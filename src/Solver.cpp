@@ -57,9 +57,9 @@ void Solver::solve() {
     for (Variable& v: mVariables) {
         mDomainsInitializer.insert({v, v.getInitialDomain()});
     };
-    std::vector<std::pair<std::map<Variable_r, domain_t>::const_iterator, std::map<Variable_r, domain_t>::const_iterator>> initialDomains;
+    std::vector<std::map<Variable_r, domain_t>> initialDomains;
     for (int i=0; i < mPrefixK; i++) {
-        initialDomains.push_back({mDomainsInitializer.begin(), mDomainsInitializer.end()});
+        initialDomains.push_back(mDomainsInitializer);
     }
     // allocates the new solver
     assignment_t initialAssignments;
@@ -87,12 +87,11 @@ bool Solver::solveRe(SearchNode &currentNode) {
         } else {
             nextConstraintSetId = currentNode.getConstraintSetId();
         }
-        std::vector<std::pair<std::map<Variable_r, domain_t>::const_iterator,
-                              std::map<Variable_r, domain_t>::const_iterator>> nextInitialDomains(mPrefixK);
+        std::vector<std::map<Variable_r, domain_t>> nextInitialDomains(mPrefixK);
         for (int i=0; i < mPrefixK - 1; i++) {
-            nextInitialDomains[i] = {currentNode.getDomains(i+1).begin(), currentNode.getDomains(i+1).end()};
+            nextInitialDomains[i] = currentNode.getDomains(i+1);
         }
-        nextInitialDomains[mPrefixK-1] = {mDomainsInitializer.begin(), mDomainsInitializer.end()};
+        nextInitialDomains[mPrefixK-1] = mDomainsInitializer;
         SearchNode &nextNode = SearchNodeFactory::MakeSearchNode(mNodeType,
                                                                  carriedConstraints,
                                                                  carriedAssignments,

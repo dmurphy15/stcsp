@@ -7,15 +7,15 @@
 #include <iostream>
 SearchNode::SearchNode(const std::set<Constraint_r>& constraints,
                        const assignment_t& historicalValues,
-                       const std::vector<std::pair<std::map<Variable_r, domain_t>::const_iterator,
-                                                   std::map<Variable_r, domain_t>::const_iterator>>& domains,
+                       const std::vector<std::map<Variable_r, domain_t>>& domains,
                        int constraintSetId)
         : id(idSource++) {
     mConstraints = constraints;
     mHistoricalValues = historicalValues;
-    for (auto&& v : domains) {
-        mDomains.push_back({v.first, v.second});
-    }
+//    for (auto&& v : domains) {
+//        mDomains.push_back({v.first, v.second});
+//    }
+    mDomains = domains;
     for (auto &assignment : historicalValues) {
         mDomains[0][assignment.first] = {assignment.second};
     }

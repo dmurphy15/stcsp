@@ -47,8 +47,8 @@ Expression& AtExpression::normalize(std::set<Constraint_r> &constraintList, std:
         // FirstExpression, so that we can detect tautologies from the start (though we still want
         // to keep the added PrimitiveNextConstraint, so we dont have to propagate over the entire
         // domain of the added variable at each timepoint)
-        return (*new FirstExpression(equivalentVarExpr)).normalize(constraintList, variableList);
-//        return (equivalentVarExpr).normalize(constraintList, variableList);
+//        return (*new FirstExpression(equivalentVarExpr)).normalize(constraintList, variableList);
+        return (equivalentVarExpr).normalize(constraintList, variableList);
     }
 }
 

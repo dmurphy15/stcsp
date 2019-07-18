@@ -40,15 +40,42 @@ std::map<Variable_r, std::vector<std::set<int>>> PrimitiveFirstConstraint::propa
         if (v == mVariable) {
             // mVariable should be constant, so we can just propagate for 1 timepoint and duplicate the domain
             std::set<int> firstDifference;
+//            for (auto iter = context.getDomain(v, 0).begin(); iter != context.getDomain(v, 0).end(); ) {
+//                context.setAssignment(v, 0, *iter);
+//                if (shouldPrune(context, others, others.begin())) {
+//                    firstDifference.insert(*iter);
+//                    iter = context.pruneDomain(v, iter, 0);
+//                } else {
+//                    iter++;
+//                }
+//            }
+
+
+
             for (auto iter = context.getDomain(v, 0).begin(); iter != context.getDomain(v, 0).end(); ) {
                 context.setAssignment(v, 0, *iter);
                 if (shouldPrune(context, others, others.begin())) {
                     firstDifference.insert(*iter);
                     iter = context.pruneDomain(v, iter, 0);
                 } else {
-                    iter++;
+                    break;
                 }
             }
+//            for (auto iter = context.getDomain(v, 0).rbegin(); iter != context.getDomain(v, 0).rend(); ) {
+//                context.setAssignment(v, 0, *iter);
+//                if (shouldPrune(context, others, others.begin())) {
+//                    firstDifference.insert(*iter);
+//                    auto iter2 = ++iter.base();
+//                    iter2 = context.pruneDomain(v, iter2, 0);
+//                    iter = std::make_reverse_iterator(iter2);
+//                } else {
+//                    break;
+//                }
+//            }
+
+
+
+
             ret[0] = firstDifference;
             for (int i=1;i<context.getPrefixK();i++) {
                 std::set<int> difference;
@@ -62,15 +89,43 @@ std::map<Variable_r, std::vector<std::set<int>>> PrimitiveFirstConstraint::propa
             }
         } else {
             std::set<int> firstDifference;
+//            for (auto iter = context.getDomain(v, 0).begin(); iter != context.getDomain(v, 0).end(); ) {
+//                context.setAssignment(v, 0, *iter);
+//                if (shouldPrune(context, others, others.begin())) {
+//                    firstDifference.insert(*iter);
+//                    iter = context.pruneDomain(v, iter, 0);
+//                } else {
+//                    iter++;
+//                }
+//            }
+
+
+
+
             for (auto iter = context.getDomain(v, 0).begin(); iter != context.getDomain(v, 0).end(); ) {
                 context.setAssignment(v, 0, *iter);
                 if (shouldPrune(context, others, others.begin())) {
                     firstDifference.insert(*iter);
                     iter = context.pruneDomain(v, iter, 0);
                 } else {
-                    iter++;
+                    break;
                 }
             }
+            for (auto iter = context.getDomain(v, 0).rbegin(); iter != context.getDomain(v, 0).rend(); ) {
+                context.setAssignment(v, 0, *iter);
+                if (shouldPrune(context, others, others.begin())) {
+                    firstDifference.insert(*iter);
+                    auto iter2 = ++iter.base();
+                    iter2 = context.pruneDomain(v, iter2, 0);
+                    iter = std::make_reverse_iterator(iter2);
+                } else {
+                    break;
+                }
+            }
+
+
+
+
             ret[0] = firstDifference;
             // we don't constrain any future values of the expression inside the "first" clause
         }

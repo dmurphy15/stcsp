@@ -62,35 +62,35 @@ void PrimitiveNextConstraint::propagateHelper(bool vIsNext,
     for (int i=0; i < context.getPrefixK() - 1; i++) {
         const domain_t& vDom = context.getDomain(v, i + vIsNext);
         const domain_t& otherDom = context.getDomain(other, i + (!vIsNext));
-        for (auto it = vDom.begin(); it != vDom.end(); ) {
-            if (otherDom.find(*it) == otherDom.end()) {
-                ret[i+vIsNext].insert(*it);
-                it = context.pruneDomain(v, it, i+vIsNext);
-            } else {
-                it++;
-            }
-        }
-
-
-        // a bounds consistency version
 //        for (auto it = vDom.begin(); it != vDom.end(); ) {
 //            if (otherDom.find(*it) == otherDom.end()) {
 //                ret[i+vIsNext].insert(*it);
 //                it = context.pruneDomain(v, it, i+vIsNext);
 //            } else {
-//                break;
+//                it++;
 //            }
 //        }
-//        for (auto it = vDom.rbegin(); it != vDom.rend(); ) {
-//            if (otherDom.find(*it) == otherDom.end()) {
-//                ret[i+vIsNext].insert(*it);
-//                auto b = (++it).base();
-//                b = context.pruneDomain(v, b, i+vIsNext);
-//                it = std::make_reverse_iterator(b);
-//            } else {
-//                break;
-//            }
-//        }
+
+
+        // a bounds consistency version
+        for (auto it = vDom.begin(); it != vDom.end(); ) {
+            if (otherDom.find(*it) == otherDom.end()) {
+                ret[i+vIsNext].insert(*it);
+                it = context.pruneDomain(v, it, i+vIsNext);
+            } else {
+                break;
+            }
+        }
+        for (auto it = vDom.rbegin(); it != vDom.rend(); ) {
+            if (otherDom.find(*it) == otherDom.end()) {
+                ret[i+vIsNext].insert(*it);
+                auto b = (++it).base();
+                b = context.pruneDomain(v, b, i+vIsNext);
+                it = std::make_reverse_iterator(b);
+            } else {
+                break;
+            }
+        }
     }
 }
 

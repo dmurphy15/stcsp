@@ -26,8 +26,7 @@ public:
      */
     SearchNode(const std::set<Constraint_r>& constraints,
                const assignment_t& historicalValues,
-               const std::vector<std::pair<std::map<Variable_r, domain_t>::const_iterator,
-                                           std::map<Variable_r, domain_t>::const_iterator>>& domains,
+               const std::vector<std::map<Variable_r, domain_t>>& domains,
                int constraintSetId=-1);
 
     /**
