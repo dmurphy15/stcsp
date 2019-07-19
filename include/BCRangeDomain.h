@@ -6,23 +6,24 @@
 #include <forward_list>
 
 /**
- * Representation of a domain. Hopefully replacement for set of ints.
- * A sorted set of pairs of integers. The pairs represent disjoint ranges of integers that make up the domain;
- * the pair (a, b) represents the range [a, b).
+ * Representation of a domain as a single continuous range of integers.
+ * Represented as a half-open range, i.e. [1,5)
+ * Since it is a single continuous range, this WILL NOT work with GAC, but it will work with BC.
+ * More efficient than GACRangeDomain, since it's simpler.
  */
-class Domain2
+class BCRangeDomain
 {
 public:
     class iterator;
     using const_iterator = iterator;
-    Domain2() : mRange({0, 0}) { };
-    Domain2(const std::set<int> &vals);
-    Domain2(std::initializer_list<int> vals);
-    Domain2& operator=(const Domain2 &d) {
+    BCRangeDomain() : mRange({0, 0}) { };
+    BCRangeDomain(const std::set<int> &vals);
+    BCRangeDomain(std::initializer_list<int> vals);
+    BCRangeDomain& operator=(const BCRangeDomain &d) {
         mRange = d.mRange;
         return *this;
     }
-    friend bool operator==(const Domain2 &a, const Domain2 &b) {
+    friend bool operator==(const BCRangeDomain &a, const BCRangeDomain &b) {
         return a.mRange == b.mRange || (a.size() == 0 && b.size() == 0);
     }
     iterator begin() const;
@@ -35,7 +36,7 @@ public:
     iterator erase(iterator &it);
     iterator find(int val) const;
     iterator at(int where) const;
-    Domain2 slice(int from, int to);
+    BCRangeDomain slice(int from, int to);
     int size() const {
         return mRange.second - mRange.first;
     }
@@ -45,7 +46,7 @@ private:
 };
 
 // inlining to hopefully be slightly faster idk
-class Domain2::iterator : public std::iterator<std::bidirectional_iterator_tag, int>
+class BCRangeDomain::iterator : public std::iterator<std::bidirectional_iterator_tag, int>
 {
 public:
     iterator& operator=(const iterator &it) {
@@ -53,7 +54,7 @@ public:
         return *this;
     }
     friend bool operator==(const iterator& a, const iterator& b) {
-        return a.mVal == b.mVal;// && *(a.mDomain2) == *(b.mDomain2);
+        return a.mVal == b.mVal;// && *(a.mBCRangeDomain) == *(b.mBCRangeDomain);
     };
     friend bool operator!=(const iterator& a, const iterator& b) {
         return !(a == b);
@@ -71,27 +72,27 @@ private:
     iterator(int val) :
         mVal(val) { }
     int mVal = 0;
-    friend class Domain2;
+    friend class BCRangeDomain;
 };
 
-inline Domain2::iterator Domain2::iterator::operator++(int) {
+inline BCRangeDomain::iterator BCRangeDomain::iterator::operator++(int) {
     iterator copy = *this;
     ++mVal;
     return copy;
 }
 
-inline Domain2::iterator Domain2::iterator::operator++() {
+inline BCRangeDomain::iterator BCRangeDomain::iterator::operator++() {
     ++mVal;
     return *this;
 }
 
-inline Domain2::iterator Domain2::iterator::operator--(int) {
+inline BCRangeDomain::iterator BCRangeDomain::iterator::operator--(int) {
     iterator copy = *this;
     --mVal;
     return copy;
 }
 
-inline Domain2::iterator Domain2::iterator::operator--() {
+inline BCRangeDomain::iterator BCRangeDomain::iterator::operator--() {
     --mVal;
     return *this;
 }

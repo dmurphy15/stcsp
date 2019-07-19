@@ -3,11 +3,11 @@
 #include <set>
 
 /**
- * Representation of a domain. Hopefully replacement for set of ints.
- * A sorted set of pairs of integers. The pairs represent disjoint ranges of integers that make up the domain;
- * the pair (a, b) represents the range [a, b).
+ * Representation of a domain as an ordered set of disjoint ranges, i.e. ([1,3), [4,5), [9,17)}.
+ * Works with GAC and BC, since the domain can handle gaps.
+ * Less efficient than BCRangeDomain, but more efficient than a set of ints.
  */
-class Domain3
+class GACRangeDomain
 {
 public:
     class iterator : public std::iterator<std::bidirectional_iterator_tag, int>
@@ -46,34 +46,34 @@ public:
         int mVal;
         std::set<std::pair<int, int>>::const_iterator mRangeIt;
 
-        friend class Domain3;
+        friend class GACRangeDomain;
     };
 
     using const_iterator = iterator;
-    Domain3() : mRanges({}), mSize(0) { }
-    Domain3(const Domain3 &d) : mRanges(d.mRanges), mSize(d.mSize) { }
-    Domain3(const std::set<std::pair<int, int>>& ranges) : mRanges(ranges) {
+    GACRangeDomain() : mRanges({}), mSize(0) { }
+    GACRangeDomain(const GACRangeDomain &d) : mRanges(d.mRanges), mSize(d.mSize) { }
+    GACRangeDomain(const std::set<std::pair<int, int>>& ranges) : mRanges(ranges) {
         for (auto& range : mRanges) {
             mSize += range.second - range.first;
         }
     }
-    Domain3(const std::initializer_list<int>& vals) {
+    GACRangeDomain(const std::initializer_list<int>& vals) {
         for (int v : vals) {
             insert(v);
         }
     }
     template<typename T>
-    Domain3(T& vals) {
+    GACRangeDomain(T& vals) {
         for (int v : vals) {
             insert(v);
         }
     }
-    Domain3& operator=(const Domain3 &d) {
+    GACRangeDomain& operator=(const GACRangeDomain &d) {
         mRanges = d.mRanges;
         mSize = d.mSize;
         return *this;
     }
-    friend bool operator==(const Domain3 &a, const Domain3 &b) {
+    friend bool operator==(const GACRangeDomain &a, const GACRangeDomain &b) {
         return a.mSize == b.mSize && a.mRanges == b.mRanges;
     }
     iterator begin() const;
@@ -82,13 +82,13 @@ public:
     std::reverse_iterator<iterator> rend() const;
     iterator insert(int val);
     void insert(std::pair<int, int> range);
-    void insert(Domain3& d);
+    void insert(GACRangeDomain& d);
     template <typename T>
     void insert(T start, T finish);
     iterator erase(iterator it);
     iterator find(int val) const;
     iterator at(int where) const;
-    Domain3 slice(int from, int to);
+    GACRangeDomain slice(int from, int to);
     std::size_t size() const {
         return mSize;
     }
@@ -98,36 +98,36 @@ private:
     std::size_t mSize = 0;
 };
 
-inline void Domain3::iterator::inc() {
+inline void GACRangeDomain::iterator::inc() {
     if (++mVal == (*mRangeIt).second && mRangeIt != --(mRanges->end())) {
         mVal = (*++mRangeIt).first;
     }
 }
 
-inline void Domain3::iterator::dec() {
+inline void GACRangeDomain::iterator::dec() {
     if (--mVal < (*mRangeIt).first && mRangeIt != mRanges->begin()) {
         mVal = (*--mRangeIt).second-1;
     }
 }
 
-inline Domain3::iterator Domain3::iterator::operator++(int) {
+inline GACRangeDomain::iterator GACRangeDomain::iterator::operator++(int) {
     iterator copy = *this;
     inc();
     return copy;
 }
 
-inline Domain3::iterator Domain3::iterator::operator++() {
+inline GACRangeDomain::iterator GACRangeDomain::iterator::operator++() {
     inc();
     return *this;
 }
 
-inline Domain3::iterator Domain3::iterator::operator--(int) {
+inline GACRangeDomain::iterator GACRangeDomain::iterator::operator--(int) {
     iterator copy = *this;
     dec();
     return copy;
 }
 
-inline Domain3::iterator Domain3::iterator::operator--() {
+inline GACRangeDomain::iterator GACRangeDomain::iterator::operator--() {
     dec();
     return *this;
 }

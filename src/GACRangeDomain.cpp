@@ -1,4 +1,4 @@
-#include "../include/Domain3.h"
+#include "../include/GACRangeDomain.h"
 
 #include <algorithm>
 #include <vector>
@@ -9,34 +9,34 @@
  * the pair (a, b) represents the range [a, b).
  */
 
-Domain3::iterator Domain3::begin() const {
+GACRangeDomain::iterator GACRangeDomain::begin() const {
     if (mSize == 0) {
         return end();
     }
-    return Domain3::iterator(&mRanges, (*mRanges.begin()).first, mRanges.begin());
+    return GACRangeDomain::iterator(&mRanges, (*mRanges.begin()).first, mRanges.begin());
 }
 
-Domain3::iterator Domain3::end() const {
+GACRangeDomain::iterator GACRangeDomain::end() const {
     if (mSize == 0) {
-        return Domain3::iterator(&mRanges, -7, mRanges.end());
+        return GACRangeDomain::iterator(&mRanges, -7, mRanges.end());
     }
-    return Domain3::iterator(&mRanges, (*--mRanges.end()).second, --mRanges.end());
+    return GACRangeDomain::iterator(&mRanges, (*--mRanges.end()).second, --mRanges.end());
 }
 
-std::reverse_iterator<Domain3::iterator> Domain3::rbegin() const {
-    return std::reverse_iterator<Domain3::iterator>(end());
+std::reverse_iterator<GACRangeDomain::iterator> GACRangeDomain::rbegin() const {
+    return std::reverse_iterator<GACRangeDomain::iterator>(end());
 }
 
-std::reverse_iterator<Domain3::iterator> Domain3::rend() const {
-    return std::reverse_iterator<Domain3::iterator>(begin());
+std::reverse_iterator<GACRangeDomain::iterator> GACRangeDomain::rend() const {
+    return std::reverse_iterator<GACRangeDomain::iterator>(begin());
 }
 
-Domain3::iterator Domain3::insert(int val) {
+GACRangeDomain::iterator GACRangeDomain::insert(int val) {
     insert({val, val+1});
     return find(val);
 }
 
-void Domain3::insert(std::pair<int, int> range) {
+void GACRangeDomain::insert(std::pair<int, int> range) {
     if (range.first >= range.second) {
         return;
     }
@@ -65,14 +65,14 @@ void Domain3::insert(std::pair<int, int> range) {
     mSize += addedSize;
 }
 
-void Domain3::insert(Domain3& d) {
+void GACRangeDomain::insert(GACRangeDomain& d) {
     for (auto r : d.mRanges) {
         insert(r);
     }
 }
 
 template <typename T>
-void Domain3::insert(T start, T finish) {
+void GACRangeDomain::insert(T start, T finish) {
     if (start == finish) {
         return;
     }
@@ -90,11 +90,11 @@ void Domain3::insert(T start, T finish) {
     }
     insert(currentRange);
 }
-template void Domain3::insert(Domain3::iterator start, Domain3::iterator finish);
-template void Domain3::insert(std::set<int>::iterator start, std::set<int>::iterator finish);
-template void Domain3::insert(std::vector<int>::iterator start, std::vector<int>::iterator finish);
+template void GACRangeDomain::insert(GACRangeDomain::iterator start, GACRangeDomain::iterator finish);
+template void GACRangeDomain::insert(std::set<int>::iterator start, std::set<int>::iterator finish);
+template void GACRangeDomain::insert(std::vector<int>::iterator start, std::vector<int>::iterator finish);
 
-Domain3::iterator Domain3::erase(Domain3::iterator it) {
+GACRangeDomain::iterator GACRangeDomain::erase(GACRangeDomain::iterator it) {
     std::pair<int, int> range1 = *(it.mRangeIt);
     std::pair<int, int> range2 = range1;
     auto hint = mRanges.erase(it.mRangeIt);
@@ -116,7 +116,7 @@ Domain3::iterator Domain3::erase(Domain3::iterator it) {
     }
 }
 
-Domain3::iterator Domain3::find(int val) const {
+GACRangeDomain::iterator GACRangeDomain::find(int val) const {
     auto it = mRanges.lower_bound({val, val+1});
     if (it != mRanges.end() && (*it).first < val+1) {
         return iterator(&mRanges, val, it);
@@ -128,7 +128,7 @@ Domain3::iterator Domain3::find(int val) const {
     return end();
 }
 
-Domain3::iterator Domain3::at(int where) const {
+GACRangeDomain::iterator GACRangeDomain::at(int where) const {
     int idx = 0;
     auto it = mRanges.begin();
     for (; idx + (*it).second - (*it).first < where; ++it) {
@@ -137,8 +137,8 @@ Domain3::iterator Domain3::at(int where) const {
     return iterator(&mRanges, (*it).first + where - idx, it);
 }
 
-Domain3 Domain3::slice(int from, int to) {
-    Domain3 d = Domain3();
+GACRangeDomain GACRangeDomain::slice(int from, int to) {
+    GACRangeDomain d = GACRangeDomain();
     iterator start = at(from);
     iterator finish = at(to);
     d.insert(start, finish);
@@ -146,7 +146,7 @@ Domain3 Domain3::slice(int from, int to) {
 }
 
 // this really should not be inlined for some reason - whenever it's inlined it breaks things
-int& __attribute__ ((noinline)) Domain3::iterator::operator*() {
+int& __attribute__ ((noinline)) GACRangeDomain::iterator::operator*() {
     asm("");
     return mVal;
 }

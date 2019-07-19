@@ -6,7 +6,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include "Domain3.h"
+#include "GACRangeDomain.h"
 
 class Variable;
 using Variable_r = std::reference_wrapper<Variable>;
@@ -24,7 +24,9 @@ class SearchNode;
 using SearchNode_r = std::reference_wrapper<SearchNode>;
 
 using assignment_t = std::map<Variable_r, int>;
-using domain_t = Domain3;//std::set<int>;
+// a valid domain class must have similar functionality to a set of ints;
+// it should have similar methods and iterate through its values in sorted order
+using domain_t = GACRangeDomain;// BCRangeDomain;// std::set<int>;
 
 using namespace std::__cxx11;
 #include "boost/coroutine2/all.hpp"
