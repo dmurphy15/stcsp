@@ -107,6 +107,7 @@ Domain2 Domain2::slice(int from, int to) {
 }
 
 // not inlining, bc that caused problems when compiler tried to optimize
-int& Domain2::iterator::operator*() {
+int&  __attribute__ ((noinline)) Domain2::iterator::operator*() {
+    asm("");
     return mVal;
 }

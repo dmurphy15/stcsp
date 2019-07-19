@@ -34,7 +34,7 @@ struct cmp_str
 };
 // maps a string identifier to its variable instance
 std::map<char *, Variable *, cmp_str> variableMap;
-Solver s(BC_NODE, 2);
+Solver s(GAC_NODE, 2);
 
 //#extern "C"
 //{

@@ -98,6 +98,7 @@ std::vector<std::map<Variable_r, std::set<int>>> BCSearchNode::BC()
     return total_alterations;
 }
 
+#include <iostream>
 std::map<Variable_r, std::vector<std::set<int>>> BCSearchNode::defaultPropagate(Constraint &c)
 {
     std::map<Variable_r, std::vector<std::set<int>>> retMap;

@@ -37,7 +37,7 @@ CXX_FLAGS = -std=c++14 -g2 $(ARCH) -Wno-write-strings -Wfatal-errors -Wall -Wext
 
 OPT = yes
 ifeq ($(OPT),yes)
-CXX_FLAGS += -O2 -funroll-loops -fomit-frame-pointer
+CXX_FLAGS += -O2 -funroll-loops -fomit-frame-pointer -flto
 endif
 
 # name your own custom script here if you want
@@ -61,7 +61,7 @@ scanner : convenience $(BIN_DIR)/stcsp
 
 $(BIN_DIR)/stcsp: $(BUILD_DIR)/$(SRC)/lex.yy.c $(BUILD_DIR)/$(SRC)/y.tab.cpp $(OBJ)
 	mkdir -p $(BIN_DIR)
-	$(CXX) $(CXX_FLAGS) -flto $^ -o $@ -lboost_coroutine -lboost_context
+	$(CXX) $(CXX_FLAGS) $^ -o $@ -lboost_coroutine -lboost_context
 
 build : convenience $(BIN_DIR)/$(BIN)
 
