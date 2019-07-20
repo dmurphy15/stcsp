@@ -27,21 +27,28 @@ std::set<Variable_r> Expression::getVariables(bool root) const {
     return ret;
 }
 
-Expression& Expression::freezeFirstExpressions() {
+bool Expression::containsFirstExpression() {
     if (!mContainsFirstExpression) {
+        return false;
+    }
+    for (Expression& e : mExpressions) {
+        if (e.containsFirstExpression()) {
+            return true;
+        }
+    }
+    mContainsFirstExpression = false;
+    return false;
+}
+
+Expression& Expression::freezeFirstExpressions() {
+    if (!containsFirstExpression()) {
         return *this;
     }
     std::vector<Expression_r> frozen = {};
     for (Expression& e : mExpressions) {
         frozen.push_back(e.freezeFirstExpressions());
     }
-    for (int i=0; i < frozen.size(); i++) {
-        if (&(frozen[i].get()) != &(mExpressions[i].get())) {
-            return build(frozen);
-        }
-    }
-    mContainsFirstExpression = false;
-    return *this;
+    return build(frozen);
 }
 
 Expression& Expression::normalize(std::set<Constraint_r> &constraintList, std::set<Variable_r> &variableList) {

@@ -102,7 +102,8 @@ std::vector<std::map<Variable_r, std::set<int>>> GACSearchNode::GAC()
 std::map<Variable_r, std::vector<std::set<int>>> GACSearchNode::defaultPropagate(Constraint &c)
 {
     std::map<Variable_r, std::vector<std::set<int>>> retMap;
-    for (int time = 0; time < getPrefixK(); time++) {
+    int k = (id==SearchNode::ROOT_ID && c.containsFirstExpression()) ? 1 : getPrefixK();
+    for (int time = 0; time < k; time++) {
         const std::set<Variable_r>& variables = c.getVariables(id == SearchNode::ROOT_ID && time == 0);
         std::set<Variable_r>::iterator varIter = variables.begin();
         while (varIter != variables.end()) {

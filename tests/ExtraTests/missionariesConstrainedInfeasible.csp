@@ -1,0 +1,38 @@
+var leftmissionaries : [0,40];
+var rightmissionaries : [0,40];
+var leftcannibals : [0,40];
+var rightcannibals : [0,40];
+var boat : [0,1];
+var succ : [0,1];
+
+first leftmissionaries == 40;
+first leftcannibals == 40;
+first rightmissionaries == 0;
+first rightcannibals == 0;
+first boat == 0;
+
+leftcannibals <= if leftmissionaries eq 0 then 40 else leftmissionaries;
+rightcannibals <= if rightmissionaries eq 0 then 40 else rightmissionaries;
+
+abs(leftmissionaries - next leftmissionaries) + abs(leftcannibals - next leftcannibals) >= if succ then 0 else 1;
+
+abs(leftmissionaries - next leftmissionaries) + abs(leftcannibals - next leftcannibals) <= 4;
+
+leftmissionaries - next leftmissionaries == next rightmissionaries - rightmissionaries;
+leftcannibals - next leftcannibals == next rightcannibals - rightcannibals;
+
+boat eq 1 <= (leftmissionaries - next leftmissionaries) le 0;
+boat eq 1 <= (leftcannibals - next leftcannibals) le 0;
+boat eq 0 <= (leftmissionaries - next leftmissionaries) ge 0;
+boat eq 0 <= (leftcannibals - next leftcannibals) ge 0;
+
+next boat == if succ then boat else if boat eq 1 then 0 else 1;
+
+succ == rightmissionaries eq 40 and rightcannibals eq 40;
+
+succ <= (next leftmissionaries) eq leftmissionaries;
+succ <= (next leftcannibals) eq leftcannibals;
+
+1 until succ;
+
+succ @ 76 == 1;

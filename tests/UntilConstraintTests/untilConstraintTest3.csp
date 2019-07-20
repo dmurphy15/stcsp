@@ -1,0 +1,4 @@
+var A : [0, 3];
+
+// supposed to be impossible
+A+1 eq next A until A eq 4;

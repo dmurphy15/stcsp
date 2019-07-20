@@ -157,6 +157,7 @@ unary_expression
     | NEXT unary_expression { $$ = new NextExpression(*$2); }
     | IF expression THEN expression ELSE unary_expression { $$ = new IfThenElseExpression(*$2, *$4, *$6); }
     | ABS unary_expression { $$ = new AbsExpression(*$2); }
+    | NOT_OP unary_expression { $$ = new NotExpression(*$2); }
     ;
 
 primary_expression

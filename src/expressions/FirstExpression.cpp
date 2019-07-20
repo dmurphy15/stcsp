@@ -53,6 +53,10 @@ std::set<Variable_r> FirstExpression::getVariables(bool root) const
     return mExpr.getVariables(root);
 }
 
+bool FirstExpression::containsFirstExpression() {
+    return true;
+}
+
 Expression& FirstExpression::freezeFirstExpressions() {
     return *new ConstantExpression(evaluate(*SearchNode::root, 0));
 }

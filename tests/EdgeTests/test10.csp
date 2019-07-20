@@ -1,0 +1,4 @@
+var A : [0, 1];
+var B : [0, 1];
+
+first next next B == A @ 2;

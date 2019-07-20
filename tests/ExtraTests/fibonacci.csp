@@ -1,0 +1,6 @@
+var X : [0, 34];
+
+first X == 0;
+first next X == 1;
+X lt 21 -> next next X eq X + next X;
+X eq 21 -> next next X eq 0 and next next next X eq 1;

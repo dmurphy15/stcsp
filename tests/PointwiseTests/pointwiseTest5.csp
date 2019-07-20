@@ -1,0 +1,13 @@
+var A : [0, 2];
+var B : [0, 2];
+var C : [0, 2];
+var D : [0, 1];
+var E : [0, 1];
+var F : [0, 1];
+var G : [0, 1];
+
+C == A eq B;
+D == A ne B;
+E == not A;
+F == A and B;
+G == A or B;

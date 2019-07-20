@@ -1,0 +1,7 @@
+var A : [0, 2];
+var B : [0, 1];
+var C : [0, 2];
+
+first A == 1;
+first B == A;
+first first first C == first first A;

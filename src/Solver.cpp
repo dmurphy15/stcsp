@@ -64,6 +64,13 @@ void Solver::solve() {
     // allocates the new solver
     assignment_t initialAssignments;
     mTree.reset(&SearchNodeFactory::MakeSearchNode(mNodeType, initialConstraints, initialAssignments, initialDomains));
+    // do initial tautology detection, in case tautologies were produced immediately
+    for (Constraint& c : initialConstraints) {
+        std::set<Variable_r> vs = c.getVariables(true);
+        if (vs.size() == 0 && !c.isSatisfied(*mTree, 0)) { // the initial constraint set had a contradiction
+            return;
+        }
+    }
     solveRe(*mTree);
     SolverPruner::pruneForUntilConstraint(*mTree);
 }
@@ -72,6 +79,7 @@ bool Solver::solveRe(SearchNode &currentNode) {
     mSeenSearchNodes[currentNode] = true;
     int numChildNodes = 0;
     for (assignment_t& assignment : currentNode.generateNextAssignmentIterator()) {
+        // have to do this so that when we freeze firstExpressions, they are frozen to the correct constant values
         if (&currentNode == SearchNode::root) {
             currentNode.setAssignments(assignment, 0);
         }

@@ -1,0 +1,4 @@
+var A : [0, 2];
+var B : [0, 2];
+
+A eq 0 until B eq 2;

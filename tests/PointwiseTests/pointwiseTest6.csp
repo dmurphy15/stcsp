@@ -1,0 +1,18 @@
+var A : [0, 4];
+var B : [0, 2];
+var C : [0, 2];
+var D : [0, 1];
+var E : [0, 1];
+var F : [0, 1];
+
+B == (A / 2) * 2;
+C == A le 2;
+D == A lt 2;
+E == A ge 2;
+F == A gt 2;
+
+// due to tautology detection, these may result in an extra searchnode appearing in the solution graph,
+// but the graph should still be correct
+3 == 3;
+4 < 5;
+1 != 0;

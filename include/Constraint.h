@@ -52,12 +52,13 @@ public:
     friend bool operator== (const Constraint &lhs, const Constraint &rhs);
 
     int getExpressionSetId() { return mExpressionSetId; };
+    bool containsFirstExpression();
     Constraint& freezeFirstExpressions();
 private:
     std::vector<Expression_r> mExpressions;
     virtual Constraint& build(std::vector<Expression_r>& expressions);
     int mExpressionSetId;
-    bool mContainsFirstExpression = true; // even if true, it might not contain one; we just haven't definitely ruled it out yet
+    bool mContainsFirstExpression = true; // don't use this; call containsFirstExpression()
     // variables that are left after the root node has been solved and tautologies have been removed
     std::set<Variable_r> mVariablesAfterRoot;
     std::set<Variable_r> mVariablesAtRoot;

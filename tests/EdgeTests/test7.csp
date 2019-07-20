@@ -1,0 +1,7 @@
+var A : [0, 1];
+var B : [0, 1];
+
+1 until first A eq 1;
+first B == 1;
+first next B == 0;
+first next next B == 1;

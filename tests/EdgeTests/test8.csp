@@ -1,0 +1,5 @@
+var A : [0, 1];
+var B : [0, 1];
+
+0 until first A eq 1;
+0 until B eq 1;

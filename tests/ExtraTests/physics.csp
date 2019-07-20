@@ -1,0 +1,15 @@
+var time : [0, 10];
+var position : [0, 25];
+var velocity : [-25, 25];
+var acceleration : [-25, 25];
+
+position == (time - 5) * (time - 5);
+velocity == next position - position;
+acceleration == next velocity - velocity;
+
+time + 1 eq next time until time eq 10;
+1 == time + 1 eq next time or time eq next time;
+
+// ensure that time is 0 at some point, and since it can only increase, this will
+// be equivalent to 'first time == 0' (but this way we can test pruning for until satisfaction
+1 until time eq 0;

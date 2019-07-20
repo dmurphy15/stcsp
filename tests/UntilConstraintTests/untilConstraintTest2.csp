@@ -1,0 +1,3 @@
+var A : [0, 3];
+
+A+1 eq next A until A eq 3;

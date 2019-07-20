@@ -1,0 +1,5 @@
+var A : [0, 2];
+var B : [0, 2];
+
+next (A fby B) == 1;
+next first (A fby B) == 2;

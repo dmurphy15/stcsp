@@ -15,6 +15,7 @@ public:
     //!!!!!!!!!!!!!!WARNING: I'm also only allowing this to be implemented in this way since the root node is
     // always given a valid assignment as we progress to our current node
     std::set<Variable_r> getVariables(bool root) const override;
+    bool containsFirstExpression() override;
     Expression& freezeFirstExpressions() override;
 private:
     Expression &mExpr;

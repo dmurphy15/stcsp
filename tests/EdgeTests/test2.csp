@@ -1,0 +1,4 @@
+var A : [0, 2];
+
+// supposed to be contradiction
+A != A;
