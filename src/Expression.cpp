@@ -11,10 +11,10 @@ Expression::Expression(std::initializer_list<Expression_r> expressions, bool sym
     }
 }
 
-std::set<Variable_r> Expression::getVariables(bool root) const {
+std::set<Variable_r> Expression::getVariables() const {
     std::set<Variable_r> ret;
     for (Expression& e : mExpressions) {
-        std::set<Variable_r>&& vars = e.getVariables(root);
+        std::set<Variable_r>&& vars = e.getVariables();
         auto it1 = ret.begin(); auto it2 = vars.begin();
         while (it2 != vars.end()) {
             while (it1 != ret.end() && &(*it1) <= &(*it2)) {

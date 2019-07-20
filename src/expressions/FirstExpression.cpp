@@ -45,14 +45,6 @@ domain_t FirstExpression::getInitialDomain() const
     return mExpr.getInitialDomain();
 }
 
-std::set<Variable_r> FirstExpression::getVariables(bool root) const
-{
-    if (!root) { // after the root node, this expression is effectively constant
-        return {};
-    }
-    return mExpr.getVariables(root);
-}
-
 bool FirstExpression::containsFirstExpression() {
     return true;
 }

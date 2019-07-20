@@ -30,9 +30,8 @@ bool PrimitiveUntilConstraint::isSatisfied(SearchNode &context, int time) const
 // could have used defaultPropagate here, but I think this is faster
 std::map<Variable_r, std::vector<std::set<int>>> PrimitiveUntilConstraint::propagate(SearchNode& context)
 {
-    bool root = context.id == SearchNode::ROOT_ID;
     std::map<Variable_r, std::vector<std::set<int>>> retMap;
-    for (Variable_r v : getVariables(root)) {
+    for (Variable_r v : getVariables()) {
         std::vector<std::set<int>>& ret = retMap[v];
         ret.resize(context.getPrefixK());
 

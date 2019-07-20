@@ -34,9 +34,8 @@ bool PrimitiveNextConstraint::isSatisfied(SearchNode &context, int time) const
 
 // this will work even if v is both mVariable and mNextVariable
 std::map<Variable_r, std::vector<std::set<int>>> PrimitiveNextConstraint::propagate(SearchNode &context) {
-    bool root = context.id == SearchNode::ROOT_ID;
     std::map<Variable_r, std::vector<std::set<int>>> retMap;
-    for (Variable& v : getVariables(root)) {
+    for (Variable& v : getVariables()) {
         std::vector<std::set<int>>& differences = retMap[v];
         differences.resize(context.getPrefixK());
 

@@ -31,14 +31,14 @@ Solver::Solver(SearchNodeType searchNodeType, int prefixK, const std::set<Constr
     mPrefixK = prefixK;
     mOriginalConstraints = constraints;
     for (Constraint &c: constraints) {
-        std::set<Variable_r>&& vars = c.getVariables(true);
+        std::set<Variable_r>&& vars = c.getVariables();
         mOriginalVariables.insert(vars.begin(), vars.end()); // note that this means that only variables that were constrained will appear in the solution
     }
 }
 
 void Solver::addConstraint(Constraint &c) {
     mOriginalConstraints.insert(c);
-    std::set<Variable_r>&& vars = c.getVariables(true);
+    std::set<Variable_r>&& vars = c.getVariables();
     mOriginalVariables.insert(vars.begin(), vars.end());
 }
 
@@ -66,7 +66,7 @@ void Solver::solve() {
     mTree.reset(&SearchNodeFactory::MakeSearchNode(mNodeType, initialConstraints, initialAssignments, initialDomains));
     // do initial tautology detection, in case tautologies were produced immediately
     for (Constraint& c : initialConstraints) {
-        std::set<Variable_r> vs = c.getVariables(true);
+        std::set<Variable_r> vs = c.getVariables();
         if (vs.size() == 0 && !c.isSatisfied(*mTree, 0)) { // the initial constraint set had a contradiction
             return;
         }
@@ -150,8 +150,8 @@ bool Solver::carryConstraints(const std::set<Constraint_r>& constraints,
         //TODO whenever I erase a constraint below, I erase references to expressions and probably cause memory leaks
         bool inc = true;
         if (solvingFirstNode) {
-            std::set<Variable_r> vs = c.getVariables(false); // setting root=false since now we're done solving the first node
-            if (vs.size() == 0) { // it is a tautology if everything it deals with is constant. had to do some trickery with first expressions to do this
+            std::set<Variable_r> vs = c.getVariables();
+            if (vs.size() == 0) { // it is a tautology if everything it deals with is constant (this would likely be due to freezing firstExpressions)
                 it = carriedConstraints.erase(it);
                 inc = false;
                 changedConstraintSet = true;

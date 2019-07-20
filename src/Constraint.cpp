@@ -18,14 +18,13 @@ Constraint::Constraint(std::initializer_list<Expression_r> expressions,
     } else {
         mExpressionSetId = expressionSetId;
     }
-    mVariablesAtRoot = _getVariables(true);
-    mVariablesAfterRoot = _getVariables(false);
+    mVariables = _getVariables();
 }
 
-std::set<Variable_r> Constraint::_getVariables(bool root) const {
+std::set<Variable_r> Constraint::_getVariables() const {
     std::set<Variable_r> ret;
     for (Expression& e : mExpressions) {
-        std::set<Variable_r>&& vars = e.getVariables(root);
+        std::set<Variable_r>&& vars = e.getVariables();
         auto it1 = ret.begin(); auto it2 = vars.begin();
         while (it2 != vars.end()) {
             while (it1 != ret.end() && &(*it1) < &(*it2)) {

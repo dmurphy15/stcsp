@@ -30,9 +30,8 @@ bool PrimitiveFirstConstraint::isSatisfied(SearchNode &context, int time) const
 // domains of all variables at once (similar note in EqualConstraint). Then again, it may not be faster...
 std::map<Variable_r, std::vector<std::set<int>>> PrimitiveFirstConstraint::propagate(SearchNode &context)
 {
-    bool root = context.id == SearchNode::ROOT_ID;
     std::map<Variable_r, std::vector<std::set<int>>> retMap;
-    const std::set<Variable_r>& variables = getVariables(root);
+    const std::set<Variable_r>& variables = getVariables();
     auto varIter = variables.begin();
     while (varIter != variables.end()) {
         Variable& v = *varIter;

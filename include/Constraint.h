@@ -35,8 +35,8 @@ public:
 
     // used by instantaneous csp to set up mappings from vars to constraints and vice versa,
     // which it can later use for GAC, etc
-    std::set<Variable_r> getVariables(bool root) const {
-        return root ? mVariablesAtRoot : mVariablesAfterRoot;
+    std::set<Variable_r> getVariables() const {
+        return mVariables;
     };
 
     ////remember that whenever you return something from propagate, it MUST have length prefixK
@@ -60,8 +60,7 @@ private:
     int mExpressionSetId;
     bool mContainsFirstExpression = true; // don't use this; call containsFirstExpression()
     // variables that are left after the root node has been solved and tautologies have been removed
-    std::set<Variable_r> mVariablesAfterRoot;
-    std::set<Variable_r> mVariablesAtRoot;
+    std::set<Variable_r> mVariables;
 
-    std::set<Variable_r> _getVariables(bool root) const;
+    std::set<Variable_r> _getVariables() const;
 };
