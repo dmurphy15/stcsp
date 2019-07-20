@@ -25,6 +25,9 @@ bool PrimitiveFirstConstraint::isSatisfied(SearchNode &context, int time) const
     return mVariableExpr.evaluate(context, time) == mFirstExpr.evaluate(context, 0);
 }
 
+// using generic GAC/BC style propagation, which only prunes one variable's domain at a time
+// it may be faster to treat this as a global constraint and use a kind of set difference to prune the
+// domains of all variables at once (similar note in EqualConstraint). Then again, it may not be faster...
 std::map<Variable_r, std::vector<std::set<int>>> PrimitiveFirstConstraint::propagate(SearchNode &context)
 {
     bool root = context.id == SearchNode::ROOT_ID;
@@ -61,17 +64,17 @@ std::map<Variable_r, std::vector<std::set<int>>> PrimitiveFirstConstraint::propa
                     break;
                 }
             }
-//            for (auto iter = context.getDomain(v, 0).rbegin(); iter != context.getDomain(v, 0).rend(); ) {
-//                context.setAssignment(v, 0, *iter);
-//                if (shouldPrune(context, others, others.begin())) {
-//                    firstDifference.insert(*iter);
-//                    auto iter2 = ++iter.base();
-//                    iter2 = context.pruneDomain(v, iter2, 0);
-//                    iter = std::make_reverse_iterator(iter2);
-//                } else {
-//                    break;
-//                }
-//            }
+            for (auto iter = context.getDomain(v, 0).rbegin(); iter != context.getDomain(v, 0).rend(); ) {
+                context.setAssignment(v, 0, *iter);
+                if (shouldPrune(context, others, others.begin())) {
+                    firstDifference.insert(*iter);
+                    auto iter2 = ++iter.base();
+                    iter2 = context.pruneDomain(v, iter2, 0);
+                    iter = std::make_reverse_iterator(iter2);
+                } else {
+                    break;
+                }
+            }
 
 
 

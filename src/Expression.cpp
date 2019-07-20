@@ -27,6 +27,23 @@ std::set<Variable_r> Expression::getVariables(bool root) const {
     return ret;
 }
 
+Expression& Expression::freezeFirstExpressions() {
+    if (!mContainsFirstExpression) {
+        return *this;
+    }
+    std::vector<Expression_r> frozen = {};
+    for (Expression& e : mExpressions) {
+        frozen.push_back(e.freezeFirstExpressions());
+    }
+    for (int i=0; i < frozen.size(); i++) {
+        if (&(frozen[i].get()) != &(mExpressions[i].get())) {
+            return build(frozen);
+        }
+    }
+    mContainsFirstExpression = false;
+    return *this;
+}
+
 Expression& Expression::normalize(std::set<Constraint_r> &constraintList, std::set<Variable_r> &variableList) {
     std::vector<Expression_r> normalized;
     for (Expression &e : mExpressions) {

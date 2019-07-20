@@ -35,7 +35,9 @@ public:
 
     // used by instantaneous csp to set up mappings from vars to constraints and vice versa,
     // which it can later use for GAC, etc
-    std::set<Variable_r> getVariables(bool root) const;
+    std::set<Variable_r> getVariables(bool root) const {
+        return root ? mVariablesAtRoot : mVariablesAfterRoot;
+    };
 
     ////remember that whenever you return something from propagate, it MUST have length prefixK
 
@@ -50,11 +52,15 @@ public:
     friend bool operator== (const Constraint &lhs, const Constraint &rhs);
 
     int getExpressionSetId() { return mExpressionSetId; };
+    Constraint& freezeFirstExpressions();
 private:
     std::vector<Expression_r> mExpressions;
     virtual Constraint& build(std::vector<Expression_r>& expressions);
     int mExpressionSetId;
+    bool mContainsFirstExpression = true; // even if true, it might not contain one; we just haven't definitely ruled it out yet
     // variables that are left after the root node has been solved and tautologies have been removed
     std::set<Variable_r> mVariablesAfterRoot;
     std::set<Variable_r> mVariablesAtRoot;
+
+    std::set<Variable_r> _getVariables(bool root) const;
 };

@@ -95,22 +95,17 @@ public:
      * @param child - the child search node
      * @param fullAssignment - the assignment that takes us there
      */
-    void addChildNode(SearchNode &child, assignment_t fullAssignment);
-    void addParentNode(SearchNode &parent);
+    void addChildNode(SearchNode* child, assignment_t fullAssignment);
+    void addParentNode(SearchNode* parent);
 
-    /**
-     * removes the last childNode that was added
-     */
-    void removeLastChildNode();
-
-    void removeChildNode(SearchNode& child);
-    void removeParentNode(SearchNode& parent);
+    void removeChildNode(SearchNode* child);
+    void removeParentNode(SearchNode* parent);
     /**
      * get the vector of pairs of SearchNodes and full assignments that can come out of this SearchNode
      * @return the vector
      */
-    std::vector<std::pair<SearchNode_r, assignment_t>> getChildNodes();
-    std::set<SearchNode_r> getParentNodes();
+    std::map<SearchNode *, std::vector<assignment_t>> getChildNodes();
+    std::set<SearchNode *> getParentNodes();
 
     /**
      * For a generic constraint, c, provide a default algorithm for propagating c over the domains of variables
@@ -157,8 +152,9 @@ protected:
     std::set<Constraint_r> mConstraints;
     /** historical values that constrain the domains of certain variables at time 0 from the start */
     assignment_t mHistoricalValues;
-    std::vector<std::pair<SearchNode_r, assignment_t>> mChildNodes; // using a vector bc we do care when different assignments are used to reach the same child
-    std::set<SearchNode_r> mParentNodes; // using a set bc we don't care when the same parent is added multiple times
+    /** we can use pointers here, because the solver keeps a set of seen searchnodes, which will eliminate duplicates */
+    std::map<SearchNode *, std::vector<assignment_t>> mChildNodes; // using a vector bc we do care when different assignments are used to reach the same child
+    std::set<SearchNode *> mParentNodes; // using a set bc we don't care when the same parent is added multiple times
 private:
     static int idSource;
     int mConstraintSetId;

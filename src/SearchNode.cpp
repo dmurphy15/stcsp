@@ -62,35 +62,23 @@ std::set<Constraint_r> SearchNode::getConstraints() {
 //then look for previous equivalent statenodes. If it finds a previous one, it will add that as the
 //child and get the next state node etc, if it does not, then it adds the new one as the child and
 //recurs on it, before getting the next state node
-void SearchNode::addChildNode(SearchNode &child, assignment_t assignment) {
-    mChildNodes.push_back({child, assignment});
+void SearchNode::addChildNode(SearchNode* child, assignment_t assignment) {
+    mChildNodes[child].push_back(assignment);
 }
-void SearchNode::addParentNode(SearchNode &parent) {
+void SearchNode::addParentNode(SearchNode* parent) {
     mParentNodes.insert(parent);
 }
-void SearchNode::removeChildNode(SearchNode &child) {
-    for (auto it = mChildNodes.begin(); it != mChildNodes.end(); it++) {
-        SearchNode& s = it->first;
-        if (&s == &child) {
-            mChildNodes.erase(it);
-            return;
-        }
-    }
+void SearchNode::removeChildNode(SearchNode* child) {
+    mChildNodes.erase(child);
 }
-void SearchNode::removeLastChildNode() {
-    mChildNodes.pop_back();
+
+void SearchNode::removeParentNode(SearchNode* p) {
+    mParentNodes.erase(p);
 }
-void SearchNode::removeParentNode(SearchNode& p) {
-    for (auto it = mParentNodes.begin(); it != mParentNodes.end(); it++) {
-        if (&(it->get()) == &p) {
-            mParentNodes.erase(it);
-        }
-    }
-}
-std::vector<std::pair<SearchNode_r, assignment_t>> SearchNode::getChildNodes() {
+std::map<SearchNode *, std::vector<assignment_t>> SearchNode::getChildNodes() {
     return mChildNodes;
 }
-std::set<SearchNode_r> SearchNode::getParentNodes() {
+std::set<SearchNode *> SearchNode::getParentNodes() {
     return mParentNodes;
 }
 
@@ -102,21 +90,11 @@ bool operator==(SearchNode &lhs, SearchNode &rhs) {
     return (&lhs == &rhs) ||
            ((lhs.mConstraintSetId == rhs.mConstraintSetId) &&
             (lhs.mHistoricalValues == rhs.mHistoricalValues));
-//    return (&lhs == &rhs) || ((lhs.mHistoricalValues == rhs.mHistoricalValues) &&
-//            ((lhs.constraintSetId == rhs.constraintSetId) || (lhs.mConstraints == rhs.mConstraints)));
-
-//    return (lhs.mHistoricalValues == rhs.mHistoricalValues) &&
-//            (lhs.mConstraints == rhs.mConstraints);
 }
 
 bool operator<(SearchNode &lhs, SearchNode &rhs) {
     return (lhs.mConstraintSetId < rhs.mConstraintSetId) ||
            (lhs.mConstraintSetId == rhs.mConstraintSetId && lhs.mHistoricalValues < rhs.mHistoricalValues);
-
-//    return ((&lhs != &rhs) && (lhs.constraintSetId != rhs.constraintSetId)) &&
-//            ((lhs.mHistoricalValues < rhs.mHistoricalValues)
-//           || ((lhs.mHistoricalValues == rhs.mHistoricalValues)
-//               && (lhs.mConstraints < rhs.mConstraints)));
 }
 
 const int SearchNode::ROOT_ID = 0;

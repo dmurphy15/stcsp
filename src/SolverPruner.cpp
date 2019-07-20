@@ -10,10 +10,10 @@
 #include "../include/SetRegistry.h"
 
 void SolverPruner::pruneForUntilConstraint(SearchNode& rootNode) {
-    std::set<SearchNode *> terminalRoots, terminalParents, visited1, visited2;
-    findTerminalRoots(rootNode, terminalRoots, visited1);
+    std::set<SearchNode *> terminalRoots = {}, terminalParents = {}, visited1 = {}, visited2 = {};
+    findTerminalRoots(&rootNode, terminalRoots, visited1);
     for (SearchNode *node : terminalRoots) {
-        gatherTerminalParents(*node, terminalParents);
+        gatherTerminalParents(node, terminalParents);
     }
     // if the root doesn't even lead to any terminal nodes, we
     // also need to cut its children out of the graph, since pruneForUntilConstraintRe
@@ -23,7 +23,7 @@ void SolverPruner::pruneForUntilConstraint(SearchNode& rootNode) {
             rootNode.removeChildNode(pair.first);
         }
     }
-    pruneForUntilConstraintRe(rootNode, terminalParents, terminalRoots, visited2);
+    pruneForUntilConstraintRe(&rootNode, terminalParents, terminalRoots, visited2);
 }
 
 /**
@@ -31,18 +31,18 @@ void SolverPruner::pruneForUntilConstraint(SearchNode& rootNode) {
  * all children of a terminal root will also be terminal, so no need to consider pruning them. We only
  * need to prune nodes that are not parents of terminal roots.
  */
-void SolverPruner::findTerminalRoots(SearchNode& currNode,
+void SolverPruner::findTerminalRoots(SearchNode* currNode,
                                std::set<SearchNode *>& terminalRoots,
                                std::set<SearchNode *>& visited) {
-    visited.insert(&currNode);
-    bool isTerminal = SetRegistry::IsTerminalConstraintSet(currNode.getConstraintSetId());
+    visited.insert(currNode);
+    bool isTerminal = SetRegistry::IsTerminalConstraintSet(currNode->getConstraintSetId());
     if (isTerminal) {
-        terminalRoots.insert(&currNode);
+        terminalRoots.insert(currNode);
         return;
     }
-    for (auto pair : currNode.getChildNodes()) {
-        SearchNode& n = pair.first;
-        if (visited.find(&n) == visited.end()) {
+    for (auto pair : currNode->getChildNodes()) {
+        SearchNode* n = pair.first;
+        if (visited.find(n) == visited.end()) {
             findTerminalRoots(n, terminalRoots, visited);
         }
     }
@@ -51,10 +51,10 @@ void SolverPruner::findTerminalRoots(SearchNode& currNode,
 /**
  * terminal parents are terminal, but they may have children that are not terminal
  */
-void SolverPruner::gatherTerminalParents(SearchNode& currNode, std::set<SearchNode *>& terminalParents) {
-    terminalParents.insert(&currNode);
-    for (SearchNode& parentNode : currNode.getParentNodes()) {
-        if (terminalParents.find(&parentNode) == terminalParents.end()) {
+void SolverPruner::gatherTerminalParents(SearchNode* currNode, std::set<SearchNode *>& terminalParents) {
+    terminalParents.insert(currNode);
+    for (SearchNode* parentNode : currNode->getParentNodes()) {
+        if (terminalParents.find(parentNode) == terminalParents.end()) {
             gatherTerminalParents(parentNode, terminalParents);
         }
     }
@@ -63,20 +63,20 @@ void SolverPruner::gatherTerminalParents(SearchNode& currNode, std::set<SearchNo
 /**
  * prune any nodes that are not terminal
  */
-void SolverPruner::pruneForUntilConstraintRe(SearchNode &currNode,
+void SolverPruner::pruneForUntilConstraintRe(SearchNode* currNode,
                                        std::set<SearchNode *> &terminalParents,
                                        std::set<SearchNode *> &terminalRoots,
                                        std::set<SearchNode *> &visited) {
-    visited.insert(&currNode);
+    visited.insert(currNode);
     // we are a terminal root; all children are terminal
-    if (terminalRoots.find(&currNode) != terminalRoots.end()) {
+    if (terminalRoots.find(currNode) != terminalRoots.end()) {
         return;
     }
     // we are a terminal parent that is not a terminal root; we are terminal, but must still check our children
-    if (terminalParents.find(&currNode) != terminalParents.end()) {
-        for (auto pair : currNode.getChildNodes()) {
-            SearchNode& child = pair.first;
-            if (visited.find(&child) == visited.end()) {
+    if (terminalParents.find(currNode) != terminalParents.end()) {
+        for (auto pair : currNode->getChildNodes()) {
+            SearchNode* child = pair.first;
+            if (visited.find(child) == visited.end()) {
                 pruneForUntilConstraintRe(child, terminalParents, terminalRoots, visited);
             }
         }
@@ -84,10 +84,10 @@ void SolverPruner::pruneForUntilConstraintRe(SearchNode &currNode,
     }
     // this node is not terminal; cut it out of the graph
     //TODO: MEMORY LEAKS!!!!!
-    for (SearchNode& parent : currNode.getParentNodes()) {
+    for (SearchNode* parent : currNode->getParentNodes()) {
         // for completeness, I could clear the list of parentNodes contained in currNode, but
         // that would just waste time
-        parent.removeChildNode(currNode);
+        parent->removeChildNode(currNode);
 
     }
 }

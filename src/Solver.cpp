@@ -32,7 +32,7 @@ Solver::Solver(SearchNodeType searchNodeType, int prefixK, const std::set<Constr
     mOriginalConstraints = constraints;
     for (Constraint &c: constraints) {
         std::set<Variable_r>&& vars = c.getVariables(true);
-        mOriginalVariables.insert(vars.begin(), vars.end());
+        mOriginalVariables.insert(vars.begin(), vars.end()); // note that this means that only variables that were constrained will appear in the solution
     }
 }
 
@@ -105,16 +105,16 @@ bool Solver::solveRe(SearchNode &currentNode) {
         bool notSeenFailed = &child == &nextNode || dominator->second;
         // if the next node is not necessarily failure, look into it; else we can just move on
         if (notSeenFailed) {
-            currentNode.addChildNode(child, assignment);
-            child.addParentNode(currentNode);
+            currentNode.addChildNode(&child, assignment);
+            child.addParentNode(&currentNode);
             numChildNodes++;
             // if nextNode has never been seen before, we must go forward to make sure it doesn't fail
             if (&child == &nextNode) {
                 bool nextWasSuccessful = solveRe(nextNode);
                 if (!nextWasSuccessful) {
                     numChildNodes--;
-                    currentNode.removeLastChildNode();
-                    nextNode.removeParentNode(currentNode);
+                    currentNode.removeChildNode(&child);
+                    nextNode.removeParentNode(&currentNode);
                     mSeenSearchNodes[nextNode] = false; // mark it as failed
                 }
             }
@@ -131,22 +131,28 @@ bool Solver::carryConstraints(const std::set<Constraint_r>& constraints,
                               bool solvingFirstNode) {
     bool changedConstraintSet = false;
     std::set<Constraint_r> added = {};
-    carriedConstraints = constraints;
-//    for (Constraint &c : constraints) {
-    for (auto it = carriedConstraints.begin(); it != carriedConstraints.end(); it++) {
+    if (solvingFirstNode) {
+        carriedConstraints = freezeFirstExpressions(constraints);
+        changedConstraintSet = true;
+    } else {
+        carriedConstraints = constraints;
+    }
+    for (auto it = carriedConstraints.begin(); it != carriedConstraints.end();) {
         Constraint &c = *it;
         //TODO whenever I erase a constraint below, I erase references to expressions and probably cause memory leaks
-
+        bool inc = true;
         if (solvingFirstNode) {
             std::set<Variable_r> vs = c.getVariables(false); // setting root=false since now we're done solving the first node
             if (vs.size() == 0) { // it is a tautology if everything it deals with is constant. had to do some trickery with first expressions to do this
-                it = carriedConstraints.erase(it)--;
+                it = carriedConstraints.erase(it);
+                inc = false;
                 changedConstraintSet = true;
                 continue;
             }
         }
         if (typeid(c) == typeid(PrimitiveFirstConstraint)) {
-            it = carriedConstraints.erase(it)--;
+            it = carriedConstraints.erase(it);
+            inc = false;
             changedConstraintSet = true;
         } else if (typeid(c) == typeid(PrimitiveNextConstraint)) {
             PrimitiveNextConstraint &pc = static_cast<PrimitiveNextConstraint &>(c);
@@ -154,18 +160,32 @@ bool Solver::carryConstraints(const std::set<Constraint_r>& constraints,
         } else if (typeid(c) == typeid(PrimitiveUntilConstraint)) {
             PrimitiveUntilConstraint &pc = static_cast<PrimitiveUntilConstraint &>(c);
             if (assignment.at(pc.mUntilVariable) != 0) {
-                it = carriedConstraints.erase(it)--;
+                it = carriedConstraints.erase(it);
+                inc = false;
                 changedConstraintSet = true;
             }
         } else if (typeid(c) == typeid(PrimitiveAtConstraint)) {
             PrimitiveAtConstraint &pc = static_cast<PrimitiveAtConstraint &>(c);
             added.insert(pc.makeDecrementedCopy());
-            it = carriedConstraints.erase(it)--;
+            it = carriedConstraints.erase(it);
+            inc = false;
             changedConstraintSet = true;
         }
+
+        if (inc) { ++it; }
     }
     carriedConstraints.insert(added.begin(), added.end());
     return changedConstraintSet;
+}
+
+// we should only ever have to freeze these a few times, after solving root, so even though we have
+// to traverse each constraint tree hopefully it won't take too long
+std::set<Constraint_r> Solver::freezeFirstExpressions(const std::set<Constraint_r>& constraints) {
+    std::set<Constraint_r> ret = {};
+    for (Constraint& c : constraints) {
+        ret.insert(c.freezeFirstExpressions());
+    }
+    return ret;
 }
 
 void Solver::printTree() { SolverPrinter::printTree(*this); }

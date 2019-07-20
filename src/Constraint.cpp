@@ -18,16 +18,11 @@ Constraint::Constraint(std::initializer_list<Expression_r> expressions,
     } else {
         mExpressionSetId = expressionSetId;
     }
-    mVariablesAtRoot = getVariables(true);
-    mVariablesAfterRoot = getVariables(false);
+    mVariablesAtRoot = _getVariables(true);
+    mVariablesAfterRoot = _getVariables(false);
 }
 
-std::set<Variable_r> Constraint::getVariables(bool root) const {
-    if (root && !mVariablesAtRoot.empty()) {
-        return mVariablesAtRoot;
-    } else if (!mVariablesAfterRoot.empty()){
-        return mVariablesAfterRoot;
-    }
+std::set<Variable_r> Constraint::_getVariables(bool root) const {
     std::set<Variable_r> ret;
     for (Expression& e : mExpressions) {
         std::set<Variable_r>&& vars = e.getVariables(root);
@@ -43,6 +38,23 @@ std::set<Variable_r> Constraint::getVariables(bool root) const {
     return ret;
 }
 
+Constraint& Constraint::freezeFirstExpressions() {
+    if (!mContainsFirstExpression) { // indicates we've already checked and this constraint contains no FirstExpressions
+        return *this;
+    }
+    std::vector<Expression_r> frozen = {};
+    for (Expression& e : mExpressions) {
+        frozen.push_back(e.freezeFirstExpressions());
+    }
+    for (int i=0; i < frozen.size(); i++) {
+        if (&(frozen[i].get()) != &(mExpressions[i].get())) {
+            return build(frozen);
+        }
+    }
+    mContainsFirstExpression = false;
+    return *this;
+}
+
 void Constraint::normalize(std::set<Constraint_r> &constraintList, std::set<Variable_r> &variableList) {
     std::vector<Expression_r> normalized;
     for (Expression &e : mExpressions) {
@@ -52,14 +64,10 @@ void Constraint::normalize(std::set<Constraint_r> &constraintList, std::set<Vari
 }
 
 bool operator< (const Constraint &lhs, const Constraint &rhs) {
-//    return (&lhs < &rhs);
     return &lhs!=&rhs && (typeid(lhs).before(typeid(rhs)) || (typeid(lhs)==typeid(rhs) && lhs.mExpressionSetId < rhs.mExpressionSetId));
-//    return (&lhs != &rhs) && ((typeid(lhs).before(typeid(rhs))) || (typeid(lhs) == typeid(rhs) && lhs.mExpressions < rhs.mExpressions));
 }
 bool operator== (const Constraint &lhs, const Constraint &rhs) {
-//    return (&lhs == &rhs);
     return (&lhs == &rhs) || (typeid(lhs)==typeid(rhs) && lhs.mExpressionSetId==rhs.mExpressionSetId);
-//    return (&lhs == &rhs) || (typeid(lhs) == typeid(rhs) && lhs.mExpressions == rhs.mExpressions);
 }
 
 Constraint& Constraint::build(std::vector<Expression_r> &expressions) {

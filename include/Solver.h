@@ -79,6 +79,7 @@ private:
                           std::set<Constraint_r>& carriedConstraints,
                           assignment_t& carriedAssignments,
                           bool solvingFirstNode);
+    std::set<Constraint_r> freezeFirstExpressions(const std::set<Constraint_r>& constraints);
     /** the original variables and constraints that defined the problem, before any refactoring by the solver */
     std::set<Variable_r> mOriginalVariables;
     std::set<Constraint_r> mOriginalConstraints;

@@ -39,6 +39,7 @@ public:
     friend bool operator <(const Expression &a, const Expression &b) {
         return a.lt(b);
     }
+    virtual Expression& freezeFirstExpressions();
 private:
     /**
      * these are virtual so that variableExpression and constantExpression can override them
@@ -74,4 +75,5 @@ private:
                                 std::vector<int>& values,
                                 std::size_t index,
                                 domain_t& accumulator) const;
+    bool mContainsFirstExpression = true;// even if true, it might not contain one; we just haven't definitely ruled it out yet
 };

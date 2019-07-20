@@ -20,19 +20,21 @@ std::set<SearchNode *>& SolverPrinter::printTreeRe(Solver& s, SearchNode &curren
     }
     std::cout<<"state "<<currentState.id<<":\n";
     for (auto &pair : currentState.getChildNodes()) {
-        SearchNode &child = pair.first;
-        std::cout<<"\tchild "<<child.id<<" with assignments:\n";
+        SearchNode* child = pair.first;
         for (auto &assignment : pair.second) {
-            Variable &v = assignment.first;
-            if (s.mOriginalVariables.find(v) != s.mOriginalVariables.end() || includeAuxiliaryVariables) {
-                std::cout<<"\t\tvariable at "<<(v.mName)<<" with value "<<assignment.second<<"\n";
+            std::cout<<"\tchild "<<child->id<<" with assignments:\n";
+            for (auto &p : assignment) {
+                Variable &v = p.first;
+                if (s.mOriginalVariables.find(v) != s.mOriginalVariables.end() || includeAuxiliaryVariables) {
+                    std::cout<<"\t\tvariable at "<<(v.mName)<<" with value "<<p.second<<"\n";
+                }
             }
         }
     }
     visited.insert(&currentState);
     for (auto &pair : currentState.getChildNodes()) {
-        SearchNode &child = pair.first;
-        visited = printTreeRe(s, child, visited, includeAuxiliaryVariables);
+        SearchNode* child = pair.first;
+        visited = printTreeRe(s, *child, visited, includeAuxiliaryVariables);
     }
     return visited;
 }
@@ -50,7 +52,8 @@ void SolverPrinter::writeGraph(Solver& s) {
         file<<" "<<v.mName;
     }
     file<<"\n";
-    file<<"digraph \"StCSP\" {\n";
+    file<<"digraph \"StCSP\" {\n"
+          "graph [K=\"2\"];\n";
     std::set<SearchNode *> visited;
     writeGraphRe(s, file, *s.mTree, visited);
     file<<"}\n";
@@ -60,20 +63,22 @@ void SolverPrinter::writeGraph(Solver& s) {
 void SolverPrinter::writeGraphRe(Solver& s, std::ofstream& file, SearchNode &currentNode, std::set<SearchNode *> &visited) {
     file<<""<<currentNode.id<<" [shape=circle, label=\""<<currentNode.id<<"\"];\n";
     for (auto pair : currentNode.getChildNodes()) {
-        file<<""<<currentNode.id<<" -> "<<pair.first.get().id<<" [label=\" ";
         for (auto assignment : pair.second) {
-            Variable& v = assignment.first;
-            if (s.mOriginalVariables.find(v) != s.mOriginalVariables.end()) {
-                file<<v.mName<<":"<<assignment.second<<" ";
+            file<<""<<currentNode.id<<" -> "<<pair.first->id<<" [label=\" ";
+            for (auto p : assignment) {
+                Variable& v = p.first;
+                if (s.mOriginalVariables.find(v) != s.mOriginalVariables.end()) {
+                    file<<v.mName<<":"<<p.second<<" ";
+                }
             }
+            file<<"\"]\n";
         }
-        file<<"\"]\n";
     }
     visited.insert(&currentNode);
     for (auto pair : currentNode.getChildNodes()) {
-        SearchNode& node = pair.first;
-        if (visited.find(&node) == visited.end()) {
-            writeGraphRe(s, file, node, visited);
+        SearchNode* node = pair.first;
+        if (visited.find(node) == visited.end()) {
+            writeGraphRe(s, file, *node, visited);
         }
     }
 }
