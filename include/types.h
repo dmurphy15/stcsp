@@ -34,7 +34,7 @@ using SearchNode_r = std::reference_wrapper<SearchNode>;
 using assignment_t = std::map<Variable_r, int>;
 // a valid domain class must have similar functionality to a set of ints;
 // it should have similar methods and iterate through its values in sorted order
-using domain_t = BCRangeDomain;// GACRangeDomain;// std::set<int>;
+using domain_t = GACRangeDomain;// BCRangeDomain;// std::set<int>;
 
 using namespace std::__cxx11;
 #include "boost/coroutine2/all.hpp"

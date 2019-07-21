@@ -7,7 +7,7 @@ Syntax:
 
 ./bin/stcsp input_filename
 
-This should work for any of the test programs provided.
+This should work for any of the test programs provided. The default uses a GACRangeDomain as the underlying domain data structure, a BCSearchNode as the search node type, and a prefixK of 2.
 
 Solution automata are printed to the terminal as well as written to the file solusions.dot in the DOT graph description language. There are plenty of software freely available to plot the automata from a .dot file. For example, Graphviz is available for Macs, and I find the linux command "sfdp -x -Goverlap=scale -Tpng solutions.dot > solutions.png" to be very helpful.
 
