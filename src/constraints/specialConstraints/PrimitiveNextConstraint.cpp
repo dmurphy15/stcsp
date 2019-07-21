@@ -18,6 +18,7 @@ PrimitiveNextConstraint::PrimitiveNextConstraint(VariableExpression &varExpr, Va
 PrimitiveNextConstraint::~PrimitiveNextConstraint() {}
 
 void PrimitiveNextConstraint::normalize(std::set<Constraint_r> &constraintList,
+                                        std::map<Expression_r, Expression_r> &normalizedMap,
                                 std::set<Variable_r> &variableList)
 {
     throw std::logic_error("this should have only been produced through normalization, so the contents should have already been normalized");

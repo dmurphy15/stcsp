@@ -26,6 +26,7 @@ public:
     ~PrimitiveFirstConstraint();
 
     void normalize(std::set<Constraint_r> &constraintList,
+                   std::map<Expression_r, Expression_r> &normalizedMap,
                    std::set<Variable_r> &variableList) override;
 
     bool isSatisfied(SearchNode &context, int time) const override;

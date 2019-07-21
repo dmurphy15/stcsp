@@ -47,12 +47,17 @@ void Solver::solve() {
     mSeenSearchNodes.clear();
     mVariables.clear();
 
-    std::set<Constraint_r> initialConstraints;
+    std::set<Constraint_r> initialConstraints = {};
+    std::map<Expression_r, Expression_r> normalizedMap = {};
     mVariables = mOriginalVariables;
     for (Constraint &c : mOriginalConstraints) {
         // this will add normalized constraints that are equivalent to c to mConstraints, and it
         // will add any new variables that go with them to mVariables
-        c.normalize(initialConstraints, mVariables);
+        // it also keeps a map of equivalent normalized expressions, so that expressions can see if
+        // there already exists a normalized version of them and return that so it avoids possibly creating
+        // new redundant auxiliary variables when it doesn't have to (and each added variable can be pretty costly
+        // to performance)
+        c.normalize(initialConstraints, normalizedMap, mVariables);
     }
     for (Variable& v: mVariables) {
         mDomainsInitializer.insert({v, v.getInitialDomain()});
@@ -65,10 +70,16 @@ void Solver::solve() {
     assignment_t initialAssignments;
     mTree.reset(&SearchNodeFactory::MakeSearchNode(mNodeType, initialConstraints, initialAssignments, initialDomains));
     // do initial tautology detection, in case tautologies were produced immediately
-    for (Constraint& c : initialConstraints) {
+    for (auto it = initialConstraints.begin(); it != initialConstraints.end(); ) {
+        Constraint& c = *it;
         std::set<Variable_r> vs = c.getVariables();
-        if (vs.size() == 0 && !c.isSatisfied(*mTree, 0)) { // the initial constraint set had a contradiction
-            return;
+        if (vs.size() == 0) {
+            if (!c.isSatisfied(*mTree, 0)) { // the initial constraint set had a contradiction
+                return;
+            }
+            it = initialConstraints.erase(it);
+        } else {
+            ++it;
         }
     }
     solveRe(*mTree);

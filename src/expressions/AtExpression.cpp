@@ -4,7 +4,7 @@
 
 #include "../../include/Variable.h"
 
-#include "../../include/expressions/FirstExpression.h"
+#include "../../include/expressions/specialExpressions/FirstExpression.h"
 #include "../../include/expressions/specialExpressions/VariableExpression.h"
 #include "../../include/expressions/specialExpressions/ConstantExpression.h"
 #include "../../include/constraints/specialConstraints/PrimitiveAtConstraint.h"
@@ -25,16 +25,23 @@ int AtExpression::evaluate(SearchNode &context, int time) const
     throw std::logic_error(std::string(__FILE__) + "has been implemented as a stub; normalization should have removed it");
 }
 
-Expression& AtExpression::normalize(std::set<Constraint_r> &constraintList, std::set<Variable_r> &variableList)
+Expression& AtExpression::normalize(std::set<Constraint_r> &constraintList,
+                                    std::map<Expression_r, Expression_r> &normalizedMap,
+                                    std::set<Variable_r> &variableList)
 {
+    auto it = normalizedMap.find(*this);
+    if (it != normalizedMap.end()) {
+        return it->second;
+    }
+    Expression* normalized;
     // treat it as a first expression
     if (mExpr2.mConstant == 0) {
         Expression& f = *new FirstExpression(mExpr1);
-        return f.normalize(constraintList, variableList);
+        normalized = &f.normalize(constraintList, normalizedMap, variableList);
     } else {
-        Expression& equivalentExpr = mExpr1.normalize(constraintList, variableList);
+        Expression& equivalentExpr = mExpr1.normalize(constraintList, normalizedMap, variableList);
         ConstantExpression& equivalentConstExpr =
-                static_cast<ConstantExpression &>(mExpr2.normalize(constraintList, variableList));
+                static_cast<ConstantExpression &>(mExpr2.normalize(constraintList, normalizedMap, variableList));
         Variable& equivalentVar = *new Variable(equivalentExpr.getInitialDomain());
         variableList.insert(equivalentVar);
         VariableExpression& equivalentVarExpr = *new VariableExpression(equivalentVar);
@@ -47,9 +54,12 @@ Expression& AtExpression::normalize(std::set<Constraint_r> &constraintList, std:
         // FirstExpression, so that we can detect tautologies from the start (though we still want
         // to keep the added PrimitiveNextConstraint, so we dont have to propagate over the entire
         // domain of the added variable at each timepoint)
-//        return (*new FirstExpression(equivalentVarExpr)).normalize(constraintList, variableList);
-        return (equivalentVarExpr).normalize(constraintList, variableList);
+//        normalized = (new FirstExpression(equivalentVarExpr)).normalize(constraintList, variableList);
+        normalized = &(equivalentVarExpr).normalize(constraintList, normalizedMap, variableList);
     }
+    normalizedMap.insert({*this, *normalized});
+    normalizedMap.insert({*normalized, *normalized});
+    return *normalized;
 }
 
 domain_t AtExpression::getDomain(SearchNode &context, int time) const

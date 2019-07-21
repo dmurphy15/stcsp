@@ -14,6 +14,7 @@ public:
      * numbers)
      */
     Expression& normalize(std::set<Constraint_r> &constraintList,
+                           std::map<Expression_r, Expression_r> &normalizedMap,
                            std::set<Variable_r> &variableList) override;
     domain_t getDomain(SearchNode &context, int time) const override;
     domain_t getInitialDomain() const override;

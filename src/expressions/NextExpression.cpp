@@ -14,9 +14,16 @@ int NextExpression::evaluate(SearchNode &context, int time) const
     throw std::logic_error("Next expression should never have to be evaluated");
 }
 
-Expression& NextExpression::normalize(std::set<Constraint_r> &constraintList, std::set<Variable_r> &variableList)
+Expression& NextExpression::normalize(std::set<Constraint_r> &constraintList,
+                                      std::map<Expression_r, Expression_r> &normalizedMap,
+                                      std::set<Variable_r> &variableList)
 {
-    Expression &equivalentExpr = mExpr.normalize(constraintList, variableList);
+    auto it = normalizedMap.find(*this);
+    if (it != normalizedMap.end()) {
+        return it->second;
+    }
+
+    Expression &equivalentExpr = mExpr.normalize(constraintList, normalizedMap, variableList);
     domain_t&& d = equivalentExpr.getInitialDomain();
     Variable &equivalentVar = *new Variable(d);
     VariableExpression &equivalentVarExpr = *new VariableExpression(equivalentVar);
@@ -33,6 +40,9 @@ Expression& NextExpression::normalize(std::set<Constraint_r> &constraintList, st
     }
 
     variableList.insert(equivalentVar);
+
+    normalizedMap.insert({*this, equivalentVarExpr});
+    normalizedMap.insert({equivalentVarExpr, equivalentVarExpr});
     return equivalentVarExpr;
 }
 

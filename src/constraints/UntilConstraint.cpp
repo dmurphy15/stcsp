@@ -18,10 +18,11 @@ UntilConstraint::~UntilConstraint() {}
 // I don't think we actually need to normalize this, since its all contained within 1 timepoint
 // then again, the auxiliary variables could speed up consistency enforcement
 void UntilConstraint::normalize(std::set<Constraint_r> &constraintList,
+                                std::map<Expression_r, Expression_r> &normalizedMap,
                                 std::set<Variable_r> &variableList)
 {
-    Expression &equivalentExpr1 = mExpr.normalize(constraintList, variableList);
-    Expression &equivalentExpr2 = mUntilExpr.normalize(constraintList, variableList);
+    Expression &equivalentExpr1 = mExpr.normalize(constraintList, normalizedMap, variableList);
+    Expression &equivalentExpr2 = mUntilExpr.normalize(constraintList, normalizedMap, variableList);
     Variable &var1 = *new Variable(equivalentExpr1.getInitialDomain());
     Variable &var2 = *new Variable(equivalentExpr2.getInitialDomain());
     VariableExpression &varExpr1 = *new VariableExpression(var1);

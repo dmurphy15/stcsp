@@ -18,11 +18,16 @@ int SubtractExpression::evaluate(SearchNode &context, int time) const
     throw std::logic_error(std::string(__FILE__) + "has been implemented as a stub; normalization should have removed it");
 }
 
-Expression& SubtractExpression::normalize(std::set<Constraint_r> &constraintList, std::set<Variable_r> &variableList)
+Expression& SubtractExpression::normalize(std::set<Constraint_r> &constraintList,
+                                          std::map<Expression_r, Expression_r> &normalizedMap,
+                                          std::set<Variable_r> &variableList)
 {
-    Expression &equivalentExpr1 = mExpr1.normalize(constraintList, variableList);
-    Expression &equivalentExpr2 = mExpr2.normalize(constraintList, variableList);
-    return *new AddExpression(equivalentExpr1, *new MultiplyExpression(*new ConstantExpression(-1), equivalentExpr2));
+    Expression &equivalentExpr1 = mExpr1.normalize(constraintList, normalizedMap, variableList);
+    Expression &equivalentExpr2 = mExpr2.normalize(constraintList, normalizedMap, variableList);
+    Expression& normalized = *new AddExpression(equivalentExpr1, *new MultiplyExpression(*new ConstantExpression(-1), equivalentExpr2));
+    normalizedMap.insert({*this, normalized});
+    normalizedMap.insert({normalized, normalized});
+    return normalized;
 }
 
 domain_t SubtractExpression::getDomain(SearchNode &context, int time) const

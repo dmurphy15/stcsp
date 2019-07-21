@@ -6,6 +6,7 @@
 /*
  * Interface that all variables and operations on variables must implement
  */
+
 class Expression
 {
 public:
@@ -22,7 +23,9 @@ public:
      *      things like abs, mod, int division, etc.
      */
      // the expression returned should not be *this
-    virtual Expression& normalize(std::set<Constraint_r> &constraintList, std::set<Variable_r> &variableList);
+    virtual Expression& normalize(std::set<Constraint_r> &constraintList,
+                                  std::map<Expression_r, Expression_r> &normalizedMap,
+                                  std::set<Variable_r> &variableList);
     virtual domain_t getDomain(SearchNode &context, int time) const;
     virtual domain_t getInitialDomain() const;
 

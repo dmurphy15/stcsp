@@ -61,10 +61,12 @@ Constraint& Constraint::freezeFirstExpressions() {
     return build(frozen);
 }
 
-void Constraint::normalize(std::set<Constraint_r> &constraintList, std::set<Variable_r> &variableList) {
+void Constraint::normalize(std::set<Constraint_r> &constraintList,
+                           std::map<Expression_r, Expression_r> &normalizedMap,
+                           std::set<Variable_r> &variableList) {
     std::vector<Expression_r> normalized;
     for (Expression &e : mExpressions) {
-        normalized.push_back(e.normalize(constraintList, variableList));
+        normalized.push_back(e.normalize(constraintList, normalizedMap, variableList));
     }
     constraintList.insert(build(normalized));
 }

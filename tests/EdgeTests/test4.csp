@@ -1,4 +1,5 @@
 var A : [0, 2];
 
 A == A;
+// supposed to be a contradiction
 1 != 1;

@@ -1,8 +1,8 @@
-#include "../../include/expressions/FirstExpression.h"
+#include "../../../include/expressions/specialExpressions/FirstExpression.h"
 
-#include "../../include/SearchNode.h"
-#include "../../include/expressions/specialExpressions/ConstantExpression.h"
-#include "../../include/constraints/specialConstraints/EqualConstraint.h"
+#include "../../../include/SearchNode.h"
+#include "../../../include/expressions/specialExpressions/ConstantExpression.h"
+#include "../../../include/constraints/specialConstraints/EqualConstraint.h"
 
 FirstExpression::FirstExpression(Expression &a) : Expression({a}, false), mExpr(a) {}
 
@@ -16,19 +16,6 @@ int FirstExpression::evaluate(SearchNode &context, int time) const
     // we ensured this by adding a part in Solver that checks if the current node is root, and if so it sets the first assignment
     // to correspond to the most recent solution, so we can now call evaluate without things being screwed up (since we are fully exploring each branch from root)
     return mExpr.evaluate(*SearchNode::root, 0);
-}
-
-Expression& FirstExpression::normalize(std::set<Constraint_r> &constraintList, std::set<Variable_r> &variableList) {
-    // adding this constraint does absolutely nothing, except since it is a tautology, the solver will remove it
-    // after the first timepoint
-    // this is used to differentiate the time when the FirstExpression is constant (after the root node has been solved)
-    // from the time when the FirstExpression can take variable values (while solving the root node)
-    // VERY HACKY, but then again if we don't want to do special normalization for FirstExpressions, propagating them
-    // will be weird
-//    ConstantExpression& c = *new ConstantExpression(0);
-//    constraintList.insert(*new EqualConstraint(c, c));
-
-    return *new FirstExpression(mExpr.normalize(constraintList, variableList));
 }
 
 domain_t FirstExpression::getDomain(SearchNode &context, int time) const

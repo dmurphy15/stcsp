@@ -51,12 +51,21 @@ Expression& Expression::freezeFirstExpressions() {
     return build(frozen);
 }
 
-Expression& Expression::normalize(std::set<Constraint_r> &constraintList, std::set<Variable_r> &variableList) {
+Expression& Expression::normalize(std::set<Constraint_r> &constraintList,
+                                  std::map<Expression_r, Expression_r> &normalizedMap,
+                                  std::set<Variable_r> &variableList) {
+    auto it = normalizedMap.find(*this);
+    if (it != normalizedMap.end()) {
+        return it->second;
+    }
     std::vector<Expression_r> normalized;
     for (Expression &e : mExpressions) {
-        normalized.push_back(e.normalize(constraintList, variableList));
+        normalized.push_back(e.normalize(constraintList, normalizedMap, variableList));
     }
-    return build(normalized);
+    Expression& e = build(normalized);
+    normalizedMap.insert({*this, e});
+    normalizedMap.insert({e, e});
+    return e;
 }
 
 domain_t Expression::getDomain(SearchNode &context, int time) const {

@@ -28,6 +28,7 @@ public:
     // with special normalization rules
     // if you're not going to use this, then you don't have to implement build if you dont want to
     virtual void normalize(std::set<Constraint_r> &constraintList,
+                           std::map<Expression_r, Expression_r> &normalizedMap,
                            std::set<Variable_r> &variableList);
 
     // used for solving an instantaneous csp
