@@ -1,7 +1,9 @@
 #pragma once
 
 #include "../SearchNode.h"
-
+/**
+ * A SearchNode implementation that uses Generalized Arc Consistency for constraint propagation.
+ */
 class GACSearchNode : public SearchNode
 {
 public:
@@ -24,14 +26,3 @@ private:
                      std::vector<Variable_r>::iterator index,
                      std::vector<Variable_r>::iterator endIt);
 };
-
-//REPLACE ALL UNORDERED_SETS with regular, ordered, sets, or at least think about it.
-//One issue with sets of pointers is that it would compare identity rather than making sure the constriaints
-//have the same values (are the same type and have the same member expressions). But if we are careful to
-//never copy constraints after we begin solving, we may be alright
-//
-//future optimization - instead of iterating through all bottommost variables contained by the constraints
-//directly, break them up so the expressions can create equivalent variables whose domains are sort of
-//arrays whose initial elements represent combinations of values of the input variables and whose last
-//element represents the expression's evaluated value - memory inefficient
-//could use this for binarization to use AC-3 algorithm

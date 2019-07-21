@@ -3,7 +3,8 @@
 #include "../SearchNode.h"
 
 /**
- * this depends on domain_t being sorted; when we iterate over it, we go in ascending order
+ * A SearchNode implementation that uses Bounds Consistency for constraint propagation. This assumes that domains
+ * are sorted from low to high.
  */
 class BCSearchNode : public SearchNode
 {

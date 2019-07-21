@@ -10,6 +10,9 @@
 class GACRangeDomain
 {
 public:
+    /**
+     * an iterator for this class so that we can iterate over all values of the domain
+     */
     class iterator : public std::iterator<std::bidirectional_iterator_tag, int>
     {
     public:

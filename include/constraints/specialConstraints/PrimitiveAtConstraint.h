@@ -6,6 +6,14 @@ class Variable;
 class VariableExpression;
 class ConstantExpression;
 
+/**
+ * used to represent A == B @ t, where A is known to be a variableExpression, B is an Expression, and t is a
+ * constantExpression. Evaluated lazily; it does not propagate until we reach timepoint t, at which point this will
+ * transform into a PrimitiveFirstExpression.
+ *
+ * Between searchnodes, the solver will call makeDecrementedCopy to update this constraint at each timpoint, until
+ * we reach time t, at which point this constraint will transform into a PrimitiveFirstExpression.
+ */
 
 class PrimitiveAtConstraint : public Constraint
 {

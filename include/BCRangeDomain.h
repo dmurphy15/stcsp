@@ -45,7 +45,9 @@ public:
 private:
 };
 
-// inlining to hopefully be slightly faster idk
+/**
+ * an iterator for this class so that we can iterate over all values of the domain
+ */
 class BCRangeDomain::iterator : public std::iterator<std::bidirectional_iterator_tag, int>
 {
 public:

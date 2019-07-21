@@ -2,6 +2,10 @@
 
 #include "../Expression.h"
 
+/**
+ * A @ 3 represents First Next Next Next A. Gets normalized using PrimitiveAtConstraints
+ */
+
 class ConstantExpression;
 
 class AtExpression : public Expression
@@ -18,4 +22,7 @@ public:
 private:
     Expression &mExpr1;
     ConstantExpression &mExpr2;
+    Expression& build(std::vector<Expression_r>& expressions) override {
+        return *new AtExpression(expressions[0], expressions[1]);
+    }
 };

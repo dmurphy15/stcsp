@@ -1,23 +1,20 @@
 #pragma once
-//
-//
-//
-// special constraint for First constraints
-// we need this because currently our First Expressions assume that we are referring to the VERY FIRST
-// timepoint we ever consider, whereas the AT constraint requires us to use the first value of
-// some variables AFTER A CERTAIN AMOUNT OF TIME has passed
-//
-//
-//
-//
-
-
 
 #include "../../Constraint.h"
 
 class Variable;
 class VariableExpression;
 
+/**
+ * used to represent something similar to A == first B, where A is known to be a variableExpression and B is an
+ * Expression. Importantly, this is more flexible than A == first B, in that if we are at timepoint t, we
+ * are treating first B as "the value B takes at the timepoint t", so it doesn't have to be in the root node. This is
+ * needed to effectively propagate PrimitiveAtConstraints.
+ *
+ * When creating each new searchnode, the solver will check its constraint set for PrimitiveFirstConstraints and
+ * remove them, since they will no longer be needed for propagation past one timepoint (since anything constrained by a
+ * PrimitiveFirstConstraint should also have been constrained with A == next A if we want it to maintain a constant value)
+ */
 
 class PrimitiveFirstConstraint : public Constraint
 {

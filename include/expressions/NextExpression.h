@@ -2,6 +2,10 @@
 
 #include "../Expression.h"
 
+/** class to represent Next(A). evaluates to its underlying expression one timepoint in the future. Normalized
+ * using PrimitiveNextConstraints.
+ */
+
 class NextExpression : public Expression
 {
 public:

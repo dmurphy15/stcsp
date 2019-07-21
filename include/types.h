@@ -9,6 +9,13 @@
 #include "BCRangeDomain.h"
 #include "GACRangeDomain.h"
 
+/***********************************************************************************************************************
+ * some useful aliases and forward declarations
+ *
+ * IF YOU WANT TO USE A DIFFERENT DATA STRUCTURE FOR A VARIABLE'S DOMAIN (like BCRangeDomain, GACRangeDomain, set<int>),
+ * SEE BELOW
+ * ********************************************************************************************************************/
+
 class Variable;
 using Variable_r = std::reference_wrapper<Variable>;
 bool operator==(const Variable &a, const Variable &b);

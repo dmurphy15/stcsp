@@ -2,6 +2,11 @@
 
 #include "../Expression.h"
 
+/**
+ * Expression to represent "A followed by B". Effectively equivalent to C where: First(C) == First A, Next(C) == Next(B)
+ * Gets normalized in essentially that way.
+ */
+
 class FbyExpression : public Expression
 {
 public:
@@ -16,4 +21,7 @@ public:
 private:
     Expression &mExpr1;
     Expression &mExpr2;
+    Expression& build(std::vector<Expression_r>& expressions) override {
+        return *new FbyExpression(expressions[0], expressions[1]);
+    }
 };

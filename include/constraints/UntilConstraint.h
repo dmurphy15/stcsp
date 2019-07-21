@@ -2,6 +2,13 @@
 
 #include "../Constraint.h"
 
+/**
+ * represents A until B. Gets normalized with PrimitiveUntilConstraints. At each timepoint,
+ * this enforces that: (not B) -> A, until B is non-zero, at and after which point A is no longer constrained. It also
+ * requires that B be non-zero eventually, which is why the SolverPruner is needed to trim non-terminal nodes after a
+ * solution graph has been constructed.
+ */
+
 class UntilConstraint : public Constraint
 {
 public:

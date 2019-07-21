@@ -2,6 +2,11 @@
 
 #include "../../Constraint.h"
 
+/**
+ * just represents A == B. I'm just placing it with the special constraints because it's very fundamental and used
+ * widely in normalizing other constraints
+ */
+
 class EqualConstraint : public Constraint
 {
 public:

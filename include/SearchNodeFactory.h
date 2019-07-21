@@ -11,10 +11,23 @@
 #include "searchNodes/GACSearchNode.h"
 #include "searchNodes/BCSearchNode.h"
 
+/***************************** SearchNodeFactory **************************************************************************
+ * Creates new SearchNodes for the solver
+ * ********************************************************************************************************************/
+
 class SearchNodeFactory
 {
 public:
     SearchNodeFactory() = delete;
+    /**
+     * Create a new SearchNode
+     * @param SearchNodeType - what type of SearchNode to produce
+     * @param constraints - the constraints for the searchnode
+     * @param historicalValues - the historical values for the searchnode
+     * @param domains - domains of the variables within the searchnode
+     * @param constraintSetId - constraintSetId for the searchnode
+     * @return a new searchnode built using the parameters
+     */
     static SearchNode& MakeSearchNode(SearchNodeType SearchNodeType,
                                       const std::set<Constraint_r>& constraints,
                                       const assignment_t& historicalValues,

@@ -35,7 +35,7 @@ void SolverPruner::findTerminalRoots(SearchNode* currNode,
                                std::set<SearchNode *>& terminalRoots,
                                std::set<SearchNode *>& visited) {
     visited.insert(currNode);
-    bool isTerminal = SetRegistry::IsTerminalConstraintSet(currNode->getConstraintSetId());
+    bool isTerminal = SetRegistry::IsTerminalConstraintSet(currNode->getConstraintSetId(), currNode->getConstraints());
     if (isTerminal) {
         terminalRoots.insert(currNode);
         return;

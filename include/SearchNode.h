@@ -7,7 +7,13 @@
 #include "types.h"
 
 /***************************** SEARCHNODE ******************************************************************************
- * Models a single instantaneous CSP. Subclasses of this implement different algorithms for solving the CSP.
+ * Models a single instantaneous CSP, and allows us to extract all solutions for that instant. Subclasses of this
+ * implement different algorithms for solving the CSP.
+ * These algorithms may prune the domains of variables using consistency algorithms like Bounds Consistency or
+ * Generalized Arc Consistency.
+ * Note that pruning domains for variables inside FirstExpressions is difficult to do when prefixK is > 1; the SearchNode
+ * implementations (and any constraint with a custom propagation algorithm that may contain FirstExpressions)
+ * may want to only prune as if prefixK were 1 (see the defaultPropagate implementations in BCSearchNode or GACSearchNode
  * ********************************************************************************************************************/
 
 class SearchNode
@@ -57,8 +63,8 @@ public:
     /**
      * set the domain of v at the specified time index within this SearchNode's time period
      * @param v - the variable whose domain is being set
-     * @param time - the time at which to set it
      * @param domain - the domain to give to v
+     * @param time - the time at which to set it
      */
     void setDomain(Variable &v, domain_t domain, int time);
 
@@ -101,7 +107,7 @@ public:
     void removeChildNode(SearchNode* child);
     void removeParentNode(SearchNode* parent);
     /**
-     * get the vector of pairs of SearchNodes and full assignments that can come out of this SearchNode
+     * get the map of SearchNodes to vectors of full assignments that can come out of this SearchNode
      * @return the vector
      */
     std::map<SearchNode *, std::vector<assignment_t>> getChildNodes();
@@ -152,7 +158,8 @@ protected:
     std::set<Constraint_r> mConstraints;
     /** historical values that constrain the domains of certain variables at time 0 from the start */
     assignment_t mHistoricalValues;
-    /** we can use pointers here, because the solver keeps a set of seen searchnodes, which will eliminate duplicates */
+    /** maps a child searchnode to a vector of assignments that lead from this searchnode to that child
+     * we can use pointers here, because the solver keeps a set of seen searchnodes, which will eliminate duplicates */
     std::map<SearchNode *, std::vector<assignment_t>> mChildNodes; // using a vector bc we do care when different assignments are used to reach the same child
     std::set<SearchNode *> mParentNodes; // using a set bc we don't care when the same parent is added multiple times
 private:

@@ -40,9 +40,10 @@ std::set<SearchNode *>& SolverPrinter::printTreeRe(Solver& s, SearchNode &curren
 }
 
 void SolverPrinter::writeGraph(Solver& s) {
-    std::ofstream file("solutions2.dot");
-    // !!!!!!!!!!! should fix this. mSeenSearchNodes accurately represents the number of searchnodes in the solution
-    // before pruning for UntilConstraints, but after pruning, the final solution may contain fewer nodes than this
+    std::ofstream file("solutions.dot");
+    // !!!!!!!!!!! this is the total number of searchNodes seen, not the number of nodes in the solution graph
+    // only the variables that map to true in this map are in the final solution
+    // furthermore, pruning for until constraints could cut still more of these nodes out of the final solution
     file<<"# Number of SearchNodes = "<<s.mSeenSearchNodes.size()<<"\n";
     file<<"# Number of Total Variables = "<<s.mVariables.size()<<"\n";
     file<<"# Number of Named Variables = "<<s.mOriginalVariables.size()<<"\n";

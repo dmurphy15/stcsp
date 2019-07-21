@@ -11,14 +11,8 @@ std::map<std::vector<Expression_r >, int> SetRegistry::expressionSetIds = {};
 
 std::map<int, bool> SetRegistry::terminalConstraintSets = {};
 
-bool SetRegistry::IsTerminalConstraintSet(int constraintSetId) {
-    return terminalConstraintSets.at(constraintSetId);
-}
-
-int SetRegistry::GetConstraintSetId(std::set<Constraint_r> constraintSet) {
-    int id = getId<std::set<Constraint_r>>(constraintSetIds, constraintSetIdSource, constraintSet);
-
-    if (terminalConstraintSets.find(id) == terminalConstraintSets.end()) {
+bool SetRegistry::IsTerminalConstraintSet(int constraintSetId, const std::set<Constraint_r>& constraintSet) {
+    if (terminalConstraintSets.find(constraintSetId) == terminalConstraintSets.end()) {
         bool isTerminal = true;
         for (Constraint &c : constraintSet) {
             if (typeid(c) == typeid(PrimitiveUntilConstraint)) {
@@ -26,18 +20,21 @@ int SetRegistry::GetConstraintSetId(std::set<Constraint_r> constraintSet) {
                 break;
             }
         }
-        terminalConstraintSets[id] = isTerminal;
+        terminalConstraintSets[constraintSetId] = isTerminal;
     }
-
-    return id;
+    return terminalConstraintSets.at(constraintSetId);
 }
 
-int SetRegistry::GetExpressionSetId(std::vector<Expression_r> expressionSet){
+int SetRegistry::GetConstraintSetId(const std::set<Constraint_r>& constraintSet) {
+    return getId<std::set<Constraint_r>>(constraintSetIds, constraintSetIdSource, constraintSet);
+}
+
+int SetRegistry::GetExpressionSetId(const std::vector<Expression_r>& expressionSet){
     return getId<std::vector<Expression_r>>(expressionSetIds, expressionSetIdSource, expressionSet);
 }
 
 template <class T>
-int SetRegistry::getId(std::map<T, int>& map, int& idSource, T& item) {
+int SetRegistry::getId(std::map<T, int>& map, int& idSource, const T& item) {
     auto it = map.find(item);
     if (it != map.end()) {
         return it->second;

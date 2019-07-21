@@ -2,6 +2,10 @@
 
 #include "../../Expression.h"
 
+/**
+ * Class for a an Expression whose value is constant.
+ */
+
 class ConstantExpression : public Expression
 {
 public:

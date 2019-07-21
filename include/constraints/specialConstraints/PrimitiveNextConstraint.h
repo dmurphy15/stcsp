@@ -1,20 +1,15 @@
-//
-//
-//
-// this is a special constraint used by Solver class; there's really no need to use it elsewhere.
-// ACTUALLY YOU SHOULD NEVER USE IT ELSEWHERE, (SINCE IT MAKES ASSUMPTIONS ABOUT MVARIABLEEXPRESSION NEVER APPEARING INSIDE MNEXTEXPRESSION)
-// produced when you normalize a next expression
-//
-// actually nevermind now
-//
-
-//// just reminding you again, the current implementation of propagate would need some kind of while loop if we were to
-//// allow for the case where mVarExpr is also mNextVarExpr
-
 #pragma once
 
 #include "../../Constraint.h"
 #include "../../expressions/specialExpressions/VariableExpression.h"
+
+/**
+ * used to represent A == next B, where both A and B are known to be VariableExpressions. Produced when normalizing
+ * nextExpressions.
+ *
+ * Between searchnodes, the solver will check for NextConstraints, and use them to produce historicalValues to pass
+ * on and constrain variables in the next searchnode
+ */
 
 class PrimitiveNextConstraint : public Constraint
 {
