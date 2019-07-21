@@ -22,7 +22,5 @@ public:
 private:
     Expression &mExpr1;
     ConstantExpression &mExpr2;
-    Expression& build(std::vector<Expression_r>& expressions) override {
-        return *new AtExpression(expressions[0], expressions[1]);
-    }
+    Expression& build(std::vector<Expression_r>& expressions);
 };

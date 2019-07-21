@@ -90,7 +90,8 @@ private:
      * the returned expression should not be *this
      *
      * this is used for the default normalize and freezeFirstExpressions implementations. If you
-     * don't use the default normalize AND you know that your expression will never contain underlying FirstExpressions,
+     * don't use the default normalize AND you know that your expression will either never contain underlying
+     * FirstExpressions or will normalized away before the first searchnode is solved,
      * then no nee to override it.
      *
      * Maybe I should force all derived classes to override it...
