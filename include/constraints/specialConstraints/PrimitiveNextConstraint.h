@@ -7,6 +7,9 @@
  * used to represent A == next B, where both A and B are known to be VariableExpressions. Produced when normalizing
  * nextExpressions.
  *
+ * Currently, my propagation algorithm is a Bounds Consistency version for this, but you can find a GAC version
+ * commented out in the .cpp file
+ *
  * Between searchnodes, the solver will check for NextConstraints, and use them to produce historicalValues to pass
  * on and constrain variables in the next searchnode
  */

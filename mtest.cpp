@@ -1,19 +1,11 @@
+// an example scratch file I am leaving in to demonstrate how to make your own executable
+
 #include <iostream>
 #include <chrono>
 
 #include "include/all.h"
 
 using namespace std;
-
-//void printStates(SearchNode &i) {
-//    for (auto &state : i.generateNextStatesIterator()) {
-//        cout<<"new state:\n";
-//        for (auto &pair : state) {
-//            cout<<"variable at "<<&(pair.first.get())<<" was assigned value "<<pair.second<<"\n";
-//        }
-//    }
-//    cout<<"\n";
-//}
 
 void printSolution(std::set<Constraint_r> constraints) {
     auto start = chrono::system_clock::now();

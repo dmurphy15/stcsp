@@ -8,7 +8,6 @@
 #include "../include/Variable.h"
 
 void SolverPrinter::printTree(Solver& s, bool includeAuxiliaryVariables) {
-    std::cout<<s.mOriginalVariables.size();
     std::set<SearchNode *> visited;
     printTreeRe(s, *s.mTree, visited, includeAuxiliaryVariables);
     std::cout<<"\n";

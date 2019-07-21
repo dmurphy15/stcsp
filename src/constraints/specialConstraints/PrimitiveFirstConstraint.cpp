@@ -43,6 +43,7 @@ std::map<Variable_r, std::vector<std::set<int>>> PrimitiveFirstConstraint::propa
         if (v == mVariable) {
             // mVariable should be constant, so we can just propagate for 1 timepoint and duplicate the domain
             std::set<int> firstDifference;
+            // GAC version
 //            for (auto iter = context.getDomain(v, 0).begin(); iter != context.getDomain(v, 0).end(); ) {
 //                context.setAssignment(v, 0, *iter);
 //                if (shouldPrune(context, others, others.begin())) {
@@ -54,7 +55,7 @@ std::map<Variable_r, std::vector<std::set<int>>> PrimitiveFirstConstraint::propa
 //            }
 
 
-
+            // BC version
             for (auto iter = context.getDomain(v, 0).begin(); iter != context.getDomain(v, 0).end(); ) {
                 context.setAssignment(v, 0, *iter);
                 if (shouldPrune(context, others, others.begin())) {
@@ -92,6 +93,7 @@ std::map<Variable_r, std::vector<std::set<int>>> PrimitiveFirstConstraint::propa
             }
         } else {
             std::set<int> firstDifference;
+            // GAC version
 //            for (auto iter = context.getDomain(v, 0).begin(); iter != context.getDomain(v, 0).end(); ) {
 //                context.setAssignment(v, 0, *iter);
 //                if (shouldPrune(context, others, others.begin())) {
@@ -104,7 +106,7 @@ std::map<Variable_r, std::vector<std::set<int>>> PrimitiveFirstConstraint::propa
 
 
 
-
+            // BC version
             for (auto iter = context.getDomain(v, 0).begin(); iter != context.getDomain(v, 0).end(); ) {
                 context.setAssignment(v, 0, *iter);
                 if (shouldPrune(context, others, others.begin())) {

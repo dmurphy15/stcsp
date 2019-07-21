@@ -1,7 +1,6 @@
 #include "../include/SolverPruner.h"
 
 #include <set>
-#include <iostream>
 
 #include "../include/SearchNode.h"
 #include "../include/Constraint.h"

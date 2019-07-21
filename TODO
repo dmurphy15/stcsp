@@ -1,34 +1,3 @@
 TODO
-make the propagate functions into a class that can be passed
-make constraint chooser class
-make variable chooser class
-make value chooser class
-
-
-LAYOUT:
-solver gets the constraints
-from the constraints, it gets variables
-variables just have their domains - no evaluation or anything
-solver creates instantaneous csps, each with their own set of constraints and all variables
-each instantaneous csp makes its own map of variable to assignment
-
-
-context handles all assignments
-
-
-
-in makefile, generate all .o files plus the lex script that solves problems
-
-ask Jasper what the deal was with Array variables wtf are those
-also objective statements wtf are those
-
-
-could binarize all expressions in the beginning, which would reduce their domains
-when propagating an equality constraint, could compute domain size on each size, and based on that prune the larger domain first to save time
-could represent domains as a list of endpoints of ranges - worst case takes 2x memory, best case is unlimited
-add an alldifferent constraint just for fun?
-
-
-do the whole first constraint swapping out thing. THen try out adding assessment of constraints to the searchnode hash function. then try storing the
-searchnode's constraint lists as doubly linked lists instead of sets to try to get constant time removal, also maybe you could save iteration time if you stored
-a global set of constraint sets that could be given to searchnodes, and just infer which is the correct one.
+I have done nothing to free up the objects I allocate. So far this has not been an issue, but for very large
+programs it may eventually become a concern.

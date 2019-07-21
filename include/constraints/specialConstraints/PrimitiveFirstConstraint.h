@@ -11,6 +11,9 @@ class VariableExpression;
  * are treating first B as "the value B takes at the timepoint t", so it doesn't have to be in the root node. This is
  * needed to effectively propagate PrimitiveAtConstraints.
  *
+ * Currently, my propagation algorithm is a Bounds Consistency version for this, but you can find a GAC version
+ * commented out in the .cpp file
+ *
  * When creating each new searchnode, the solver will check its constraint set for PrimitiveFirstConstraints and
  * remove them, since they will no longer be needed for propagation past one timepoint (since anything constrained by a
  * PrimitiveFirstConstraint should also have been constrained with A == next A if we want it to maintain a constant value)

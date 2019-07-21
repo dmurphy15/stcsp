@@ -2,9 +2,6 @@
 #include <iterator>
 #include <set>
 
-#include <iostream>
-#include <forward_list>
-
 /**
  * Representation of a domain as a single continuous range of integers.
  * Represented as a half-open range, i.e. [1,5)
