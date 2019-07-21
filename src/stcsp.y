@@ -219,7 +219,7 @@ int main(int argc, char *argv[]) {
 	std::chrono::duration<double> elapsed = ending - start;
 	s.printTree();
 	s.writeGraph();
-	cout<<"Time elapsed; "<< elapsed.count() <<"\n";
+	cout<<"Time elapsed: "<< elapsed.count() <<"\n";
 
     return 0;
 }
