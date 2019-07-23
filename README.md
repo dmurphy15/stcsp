@@ -41,9 +41,13 @@ The domain_t data structure is defined in types.h. You can choose between GACRan
 
 Create new .h and .cpp files in the folders for Expressions. Override and implement the build, evaluate, and evaluateFake methods. If your expression has special normalization rules, override normalize. If there's a more efficient way to calculate the domain of your expression, you can override getDomain and getInitialDomain to implement it.
 
+If you want this to work with the program parser, you will have to add tokenization and parsing rules for it in src/stcsp.l and src/stcsp.y.
+
 ### custom Constraint
 
 Create new .h and .cpp files in the folders for Constraints. Override and implement build and isSatisfied. Override and implement propagate - most constraints just call SearchNode::defaultPropagate here, but if a special propagation algorithm is needed or there's a more efficient way to propagate it, you can implement that instead. NOTE: this may be especially relevant for something like a global constraint. Finally, if your constraint needs special normalization rules, also override and implement that.
+
+If you want this to work with the program parser, you will have to add tokenization and parsing rules for it in src/stcsp.l and src/stcsp.y.
 
 ### custom SearchNode
 
