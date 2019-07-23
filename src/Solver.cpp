@@ -68,7 +68,7 @@ void Solver::solve() {
     }
     // allocates the new solver
     assignment_t initialAssignments;
-    mTree.reset(&SearchNodeFactory::MakeSearchNode(mNodeType, initialConstraints, initialAssignments, initialDomains));
+    mTree.reset(&SearchNodeFactory::MakeSearchNode(mSearchNodeIdSource++, mNodeType, initialConstraints, initialAssignments, initialDomains));
     // do initial tautology detection, in case tautologies were produced immediately
     for (auto it = initialConstraints.begin(); it != initialConstraints.end(); ) {
         Constraint& c = *it;
@@ -91,15 +91,12 @@ bool Solver::solveRe(SearchNode &currentNode) {
     int numChildNodes = 0;
     for (assignment_t& assignment : currentNode.generateNextAssignmentIterator()) {
         // have to do this so that when we freeze firstExpressions, they are frozen to the correct constant values
-        if (&currentNode == SearchNode::root) {
-            currentNode.setAssignments(assignment, 0);
-        }
+        currentNode.setAssignments(assignment, 0);
+
         std::set<Constraint_r> carriedConstraints; assignment_t carriedAssignments;
-        bool changedConstraintSet = carryConstraints(currentNode.getConstraints(),
-                                                      assignment,
+        bool changedConstraintSet = carryConstraints(currentNode,
                                                       carriedConstraints,
-                                                      carriedAssignments,
-                                                      &currentNode==SearchNode::root);
+                                                      carriedAssignments);
         int nextConstraintSetId;
         if (changedConstraintSet) {
             nextConstraintSetId = SetRegistry::GetConstraintSetId(carriedConstraints);
@@ -111,7 +108,8 @@ bool Solver::solveRe(SearchNode &currentNode) {
             nextInitialDomains[i] = currentNode.getDomains(i+1);
         }
         nextInitialDomains[mPrefixK-1] = mDomainsInitializer;
-        SearchNode &nextNode = SearchNodeFactory::MakeSearchNode(mNodeType,
+        SearchNode &nextNode = SearchNodeFactory::MakeSearchNode(mSearchNodeIdSource++,
+                                                                 mNodeType,
                                                                  carriedConstraints,
                                                                  carriedAssignments,
                                                                  nextInitialDomains,
@@ -143,24 +141,22 @@ bool Solver::solveRe(SearchNode &currentNode) {
     return numChildNodes > 0;
 }
 
-bool Solver::carryConstraints(const std::set<Constraint_r>& constraints,
-                         const assignment_t& assignment,
+bool Solver::carryConstraints(SearchNode& currentNode,
                          std::set<Constraint_r>& carriedConstraints,
-                         assignment_t& carriedAssignments,
-                              bool solvingFirstNode) {
+                         assignment_t& carriedAssignments) {
     bool changedConstraintSet = false;
     std::set<Constraint_r> added = {};
-    if (solvingFirstNode) {
-        carriedConstraints = freezeFirstExpressions(constraints);
+    if (currentNode.id==SearchNode::ROOT_ID) {
+        carriedConstraints = freezeFirstExpressions(currentNode);
         changedConstraintSet = true;
     } else {
-        carriedConstraints = constraints;
+        carriedConstraints = currentNode.getConstraints();
     }
     for (auto it = carriedConstraints.begin(); it != carriedConstraints.end();) {
         Constraint &c = *it;
         //TODO whenever I erase a constraint below, I erase references to expressions and probably cause memory leaks
         bool inc = true;
-        if (solvingFirstNode) {
+        if (currentNode.id==SearchNode::ROOT_ID) {
             std::set<Variable_r> vs = c.getVariables();
             if (vs.size() == 0) { // it is a tautology if everything it deals with is constant (this would likely be due to freezing firstExpressions)
                 it = carriedConstraints.erase(it);
@@ -175,10 +171,10 @@ bool Solver::carryConstraints(const std::set<Constraint_r>& constraints,
             changedConstraintSet = true;
         } else if (typeid(c) == typeid(PrimitiveNextConstraint)) {
             PrimitiveNextConstraint &pc = static_cast<PrimitiveNextConstraint &>(c);
-            carriedAssignments[pc.mNextVariable] = assignment.at(pc.mVariable);
+            carriedAssignments[pc.mNextVariable] = currentNode.getAssignment(pc.mVariable, 0);
         } else if (typeid(c) == typeid(PrimitiveUntilConstraint)) {
             PrimitiveUntilConstraint &pc = static_cast<PrimitiveUntilConstraint &>(c);
-            if (assignment.at(pc.mUntilVariable) != 0) {
+            if (currentNode.getAssignment(pc.mUntilVariable, 0) != 0) {
                 it = carriedConstraints.erase(it);
                 inc = false;
                 changedConstraintSet = true;
@@ -199,10 +195,10 @@ bool Solver::carryConstraints(const std::set<Constraint_r>& constraints,
 
 // we should only ever have to freeze these a few times, after solving root, so even though we have
 // to traverse each constraint tree hopefully it won't take too long
-std::set<Constraint_r> Solver::freezeFirstExpressions(const std::set<Constraint_r>& constraints) {
+std::set<Constraint_r> Solver::freezeFirstExpressions(SearchNode& rootNode) {
     std::set<Constraint_r> ret = {};
-    for (Constraint& c : constraints) {
-        ret.insert(c.freezeFirstExpressions());
+    for (Constraint& c : rootNode.getConstraints()) {
+        ret.insert(c.freezeFirstExpressions(rootNode));
     }
     return ret;
 }

@@ -4,19 +4,17 @@
 #include "../include/Variable.h"
 #include "../include/Constraint.h"
 
-SearchNode::SearchNode(const std::set<Constraint_r>& constraints,
+SearchNode::SearchNode(int id,
+                        const std::set<Constraint_r>& constraints,
                        const assignment_t& historicalValues,
                        const std::vector<std::map<Variable_r, domain_t>>& domains,
                        int constraintSetId)
-        : id(idSource++) {
+        : id(id) {
     mConstraints = constraints;
     mHistoricalValues = historicalValues;
     mDomains = domains;
     for (auto &assignment : historicalValues) {
         mDomains[0][assignment.first] = {assignment.second};
-    }
-    if (id==SearchNode::ROOT_ID) {
-        SearchNode::root = this;
     }
     if (constraintSetId < 0) {
         mConstraintSetId = SetRegistry::GetConstraintSetId(mConstraints);
@@ -94,8 +92,6 @@ bool operator<(SearchNode &lhs, SearchNode &rhs) {
 }
 
 const int SearchNode::ROOT_ID = 0;
-int SearchNode::idSource = SearchNode::ROOT_ID;
-SearchNode *SearchNode::root = nullptr;
 
 coro_assignment_t::pull_type SearchNode::generateNextAssignmentIterator() {
     return coro_assignment_t::pull_type(boost::bind(&SearchNode::generateNextAssignment, this, _1));

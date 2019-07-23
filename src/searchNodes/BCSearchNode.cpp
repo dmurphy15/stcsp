@@ -6,11 +6,12 @@
 #include "../../include/Constraint.h"
 #include "../../include/Variable.h"
 
-BCSearchNode::BCSearchNode(const std::set<Constraint_r>& constraints,
+BCSearchNode::BCSearchNode(int id,
+                            const std::set<Constraint_r>& constraints,
                              const assignment_t& historicalValues,
                              const std::vector<std::map<Variable_r, domain_t>>& domains,
                              int constraintSetId)
-        : SearchNode(constraints, historicalValues, domains, constraintSetId)
+        : SearchNode(id, constraints, historicalValues, domains, constraintSetId)
 {
     for (Constraint &c : constraints)
     {

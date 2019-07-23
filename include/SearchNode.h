@@ -22,6 +22,7 @@ public:
     /**
      * Produces a new searchNode, representing a CSP contained within a certain time period
      * (the number of timepoints involved is determined by prefix-k)
+     * @param id - the id for this SearchNode
      * @param constraints - the set of constraints involved
      * @param historicalValues - a partial assignment, representing the assigned values of any variables in
      * the previous timepoint that were involved in "primitive next constraints" and which will therefore affect
@@ -30,7 +31,8 @@ public:
      * @param constraintSetId - an ID to use as a shortcut to distinguish this set of constraints from different sets.
      * If it's -1, we look up an ID for this set from amongst other sets we've seen (using the SetRegistry static class)
      */
-    SearchNode(const std::set<Constraint_r>& constraints,
+    SearchNode(int id,
+                const std::set<Constraint_r>& constraints,
                const assignment_t& historicalValues,
                const std::vector<std::map<Variable_r, domain_t>>& domains,
                int constraintSetId=-1);
@@ -132,10 +134,6 @@ public:
     const int id;
     /** get the id for the set of constraints this SearchNode is using */
     int getConstraintSetId() { return mConstraintSetId; };
-    /** the first SearchNode created. This should be the same SearchNode as Solver::mTree; we could probably
-     * replace Solver::mTree with this
-     */
-    static SearchNode *root;
     /** special id for the root SearchNode */
     const static int ROOT_ID;
 protected:
@@ -163,7 +161,6 @@ protected:
     std::map<SearchNode *, std::vector<assignment_t>> mChildNodes; // using a vector bc we do care when different assignments are used to reach the same child
     std::set<SearchNode *> mParentNodes; // using a set bc we don't care when the same parent is added multiple times
 private:
-    static int idSource;
     int mConstraintSetId;
 };
 

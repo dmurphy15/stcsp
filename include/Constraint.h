@@ -68,7 +68,7 @@ public:
     bool containsFirstExpression();
     /** return an equivalent constraint, except where all firstExpressions have been frozen to ConstantExpressions
      * whose values match the values they took in the root node */
-    Constraint& freezeFirstExpressions();
+    Constraint& freezeFirstExpressions(SearchNode& rootNode);
 private:
     /** the expressions that this constraint directly constrains */
     std::vector<Expression_r> mExpressions;

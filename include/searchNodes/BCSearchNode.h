@@ -9,7 +9,8 @@
 class BCSearchNode : public SearchNode
 {
 public:
-    BCSearchNode(const std::set<Constraint_r>& constraints,
+    BCSearchNode(int id,
+                  const std::set<Constraint_r>& constraints,
                   const assignment_t& historicalValues,
                   const std::vector<std::map<Variable_r, domain_t>>& domains,
                   int constraintSetId=-1);

@@ -7,7 +7,8 @@
 class GACSearchNode : public SearchNode
 {
 public:
-    GACSearchNode(const std::set<Constraint_r>& constraints,
+    GACSearchNode(int id,
+                  const std::set<Constraint_r>& constraints,
                   const assignment_t& historicalValues,
                   const std::vector<std::map<Variable_r, domain_t>>& domains,
                   int constraintSetId=-1);

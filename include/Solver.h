@@ -47,6 +47,10 @@ public:
      *      )
      */
     void writeGraph();
+    /**
+     * Get a pointer to the solution graph directly
+     */
+    std::shared_ptr<SearchNode> getSolutionGraph() { return mTree; }
 private:
     /** what kind of SearchNode will we use */
     SearchNodeType mNodeType;
@@ -76,11 +80,9 @@ private:
      * @param solvingFirstNode - true if we are solving the root node, else false (to help tautology detection)
      * @return true if the output set of constraints differs from the input set of constraints; false else
      */
-    bool carryConstraints(const std::set<Constraint_r>& constraints,
-                          const assignment_t& assignment,
-                          std::set<Constraint_r>& carriedConstraints,
-                          assignment_t& carriedAssignments,
-                          bool solvingFirstNode);
+    bool carryConstraints(SearchNode& currentNode,
+                            std::set<Constraint_r>& carriedConstraints,
+                          assignment_t& carriedAssignments);
     /**
      * Take a set of constraints and return a set of constraints that are equivalent, except that all
      * FirstExpressions have been replaced with ConstantExpressions whose values equal the values that the
@@ -88,7 +90,7 @@ private:
      * @param constraints - the set of unfrozen constraints
      * @return a set of constraints where the firstExpressions have been replaced
      */
-    std::set<Constraint_r> freezeFirstExpressions(const std::set<Constraint_r>& constraints);
+    std::set<Constraint_r> freezeFirstExpressions(SearchNode& rootNode);
     /** the original variables and constraints that defined the problem, before any refactoring by the solver */
     std::set<Variable_r> mOriginalVariables;
     std::set<Constraint_r> mOriginalConstraints;
@@ -102,6 +104,8 @@ private:
     std::map<Variable_r, domain_t> mDomainsInitializer;
     /** how many timepoints should each SearchNode consider during constraint propagation */
     int mPrefixK;
+
+    int mSearchNodeIdSource = SearchNode::ROOT_ID;
 
     /** convenience class for printing solutions */
     friend class SolverPrinter;

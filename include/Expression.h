@@ -71,7 +71,7 @@ public:
     }
     /** return an equivalent expression, except where all underlying firstExpressions have been frozen to ConstantExpressions
      * whose values match the values they took in the root node. overridden by FirstExpression */
-    virtual Expression& freezeFirstExpressions();
+    virtual Expression& freezeFirstExpressions(SearchNode& rootNode);
     /** return whether this expression contains a FirstExpression, either directly or
     * indirectly through other expressions */
     virtual bool containsFirstExpression();

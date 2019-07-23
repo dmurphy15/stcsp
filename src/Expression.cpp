@@ -40,13 +40,13 @@ bool Expression::containsFirstExpression() {
     return false;
 }
 
-Expression& Expression::freezeFirstExpressions() {
+Expression& Expression::freezeFirstExpressions(SearchNode& rootNode) {
     if (!containsFirstExpression()) {
         return *this;
     }
     std::vector<Expression_r> frozen = {};
     for (Expression& e : mExpressions) {
-        frozen.push_back(e.freezeFirstExpressions());
+        frozen.push_back(e.freezeFirstExpressions(rootNode));
     }
     return build(frozen);
 }
