@@ -1,0 +1,9 @@
+test name,new implementation,new implementation,old implementation,old implementation
+,time (s),# variables,time (s),# variables
+fibonacci.csp,0.005,6,14.63,10
+physics.csp,0.3,11,0.3,13
+juggling_b4_f6.csp,0.2,9,0.55,13
+missionaries.csp,0.75,13,1.24,22
+missionariesBigger.csp,3.45,13,8.74,22
+misionariesConstrained.csp,12.3,14,20.5,23
+missionariesConstrainedInfeasible.csp,12.05,14,20.01,23
