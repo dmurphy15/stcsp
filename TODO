@@ -1,14 +1,13 @@
 TODO
 
-MEMORY
-I have done nothing to free up the objects I allocate. So far this has not been an issue, but for very large
-programs it may eventually become a concern.
-
 OPTIMIZATION
 Some algorithms have been implemented naively and could be optimized. For example, normalizing expressions
 could maybe be made more efficient by detecting special cases of expression combinations, and getting the domain
 of an expression could be made more efficient by overriding the default method for a particular expression that
 takes advantage of what that expression does.
+
+This implementation also performs faster on certain types of problems and slower on others - notably digiinvaders 
+problems should be improved.
 
 USABILITY
 Currently, if you want to change the underlying data structure that represents a variable's domain,
