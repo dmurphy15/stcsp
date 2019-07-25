@@ -106,5 +106,5 @@ contiguous range of integers, or a set of pairs representing ranges.
 
 ![Example Solution](https://raw.githubusercontent.com/dmurphy15/stcsp/images/solutions.png)
 
-**Example Solution** (for [smalltest.csp](tests/ExtraTests/smalltest.csp))
+**Example Solution** (for [smalltest.csp](tests/ExtraTests/smalltest.csp)) Each circle represents a SearchNode, and each arrow represents a solution to the source SearchNode's CSP, which results in the destination SearchNode's CSP at the next time step.
 
