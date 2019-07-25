@@ -82,7 +82,7 @@ void SolverPruner::pruneForUntilConstraintRe(SearchNode* currNode,
         return;
     }
     // this node is not terminal; cut it out of the graph
-    //TODO: MEMORY LEAKS!!!!!
+    // I'm not going to free the searchnode, since a reference to it is still contained in the solver's mSeenSearchNodes
     for (SearchNode* parent : currNode->getParentNodes()) {
         // for completeness, I could clear the list of parentNodes contained in currNode, but
         // that would just waste time

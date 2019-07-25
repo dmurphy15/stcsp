@@ -135,6 +135,8 @@ bool Solver::solveRe(SearchNode &currentNode) {
                     mSeenSearchNodes[nextNode] = false; // mark it as failed
                 }
             }
+        } else { // node has already been found as failure and so has nothing to contribute
+            delete &nextNode;
         }
     }
     // if we have no children, the current state has failed
@@ -154,7 +156,6 @@ bool Solver::carryConstraints(SearchNode& currentNode,
     }
     for (auto it = carriedConstraints.begin(); it != carriedConstraints.end();) {
         Constraint &c = *it;
-        //TODO whenever I erase a constraint below, I erase references to expressions and probably cause memory leaks
         bool inc = true;
         if (currentNode.id==SearchNode::ROOT_ID) {
             std::set<Variable_r> vs = c.getVariables();

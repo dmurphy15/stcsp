@@ -1,4 +1,5 @@
 var X : [0, 2];
 var Y : [0, 3];
 
-X == if Y then 0 else 1;
+first X == Y;
+next X == if next Y then 0 else 1;
