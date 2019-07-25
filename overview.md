@@ -25,23 +25,23 @@ Users should specify the type of SearchNode they want it to use, as well as a pr
 ### Initialization
 1. Takes in your set of constraints
 2. Performs a normalization procedure to obtain a new set of constraints
-  * Reduces redundant constraints/expressions
-  * May generate additional variables and new constraints/expressions
-    * Laid out at http://www.cse.cuhk.edu.hk/~jlee/publ/14/cp14stCSP.pdf and http://www.cse.cuhk.edu.hk/~jlee/publ/18/cp18UntilStCSP.pdf
+    * Reduces redundant constraints/expressions
+    * May generate additional variables and new constraints/expressions
+        * Laid out at http://www.cse.cuhk.edu.hk/~jlee/publ/14/cp14stCSP.pdf and http://www.cse.cuhk.edu.hk/~jlee/publ/18/cp18UntilStCSP.pdf
 
 ### Graph Construction
 1. Create an initial, root SearchNode using the normalized constraints, and let that be the current node
 2. Add the current node to the solution graph
 3. Get the next solution for the current node (if there is none, go to step 8)
 4. Carry constraints:
-  1. If the current node is the root:
-    1. Substitute the constraint set for a new constraint set, in which all FirstExpressions have been converted to ConstantExpressions with equivalent values
-    2. Check for tautologies (constraints that operate purely on constants) and remove them
-  2. Add/update/delete temporal constraints as needed to produce the correct CSP for the next timepoint
+    1. If the current node is the root:
+        1. Substitute the constraint set for a new constraint set, in which all FirstExpressions have been converted to ConstantExpressions with equivalent values
+        2. Check for tautologies (constraints that operate purely on constants) and remove them
+    2. Add/update/delete temporal constraints as needed to produce the correct CSP for the next timepoint
 5. Create a new SearchNode using the new constraint set
 6. Dominance detection
-  1. If a node equivalent to the new SearchNode already exists in the solution graph, make the current node (the node that led to the new SearchNode) a parent of the equivalent node in the graph, and return
-  2. Otherwise, let the new node be the current node, and repeat recursively from step 2
+    1. If a node equivalent to the new SearchNode already exists in the solution graph, make the current node (the node that led to the new SearchNode) a parent of the equivalent node in the graph, and return
+    2. Otherwise, let the new node be the current node, and repeat recursively from step 2
 7. Repeat from step 3
 8. If the current node has no child SearchNodes at this point, then it is a failure node, so remove it from the graph
 
@@ -96,3 +96,15 @@ Represents a variable. Contains a domain of possible values it can take.
 ## Domain
 Data structure representing a sorted set of integers. A few implementations are provided: a set of integers, a single pair representing a 
 contiguous range of integers, or a set of pairs representing ranges.
+
+## Diagrams
+![Class Interactions](https://raw.githubusercontent.com/dmurphy15/stcsp/images/diagram.png)
+
+**Class Interactions**
+
+
+
+![Example Solution](https://raw.githubusercontent.com/dmurphy15/stcsp/images/solutions.png)
+
+**Example Solution** (for [smalltest.csp](tests/ExtraTests/smalltest.csp))
+
