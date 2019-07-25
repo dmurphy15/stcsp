@@ -27,7 +27,7 @@ private:
         return (typeid(*this) == typeid(rhs)) &&
                (mConstant == static_cast<const ConstantExpression&>(rhs).mConstant);
     }
-    Expression& build(std::vector<Expression_r>& expressions) override {
+    Expression& build(const std::vector<Expression_r>& expressions) override {
         return *new ConstantExpression(mConstant);
     }
 };

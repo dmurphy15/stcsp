@@ -13,7 +13,7 @@ public:
 private:
     Expression &mExpr1;
     Expression &mExpr2;
-    Expression& build(std::vector<Expression_r>& expressions) override {
+    Expression& build(const std::vector<Expression_r>& expressions) override {
         return *new GEExpression(expressions[0], expressions[1]);
     }
 };

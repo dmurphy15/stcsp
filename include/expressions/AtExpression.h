@@ -22,5 +22,5 @@ public:
 private:
     Expression &mExpr1;
     ConstantExpression &mExpr2;
-    Expression& build(std::vector<Expression_r>& expressions);
+    Expression& build(const std::vector<Expression_r>& expressions);
 };

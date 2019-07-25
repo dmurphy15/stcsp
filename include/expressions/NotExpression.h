@@ -12,7 +12,7 @@ public:
     domain_t getInitialDomain() const override;
 private:
     Expression &mExpr1;
-    Expression& build(std::vector<Expression_r>& expressions) override {
+    Expression& build(const std::vector<Expression_r>& expressions) override {
         return *new NotExpression(expressions[0]);
     }
 };

@@ -96,7 +96,7 @@ private:
      *
      * Maybe I should force all derived classes to override it...
      */
-    virtual Expression& build(std::vector<Expression_r>& expressions);
+    virtual Expression& build(const std::vector<Expression_r>& expressions);
 
 
      /** evaluate the expression as if the expressions in mExpressions had been assigned the corresponding values

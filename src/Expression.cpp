@@ -82,7 +82,7 @@ domain_t Expression::getInitialDomain() const {
     return ret;
 }
 
-Expression& Expression::build(std::vector <Expression_r> &expressions) {
+Expression& Expression::build(const std::vector <Expression_r> &expressions) {
     throw std::logic_error(std::string(__FUNCTION__) + " was not implemented\n");
 }
 

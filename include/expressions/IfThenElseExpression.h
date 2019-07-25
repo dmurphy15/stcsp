@@ -14,7 +14,7 @@ private:
     Expression &mExpr1;
     Expression &mExpr2;
     Expression &mExpr3;
-    Expression& build(std::vector<Expression_r>& expressions) override {
+    Expression& build(const std::vector<Expression_r>& expressions) override {
         return *new IfThenElseExpression(expressions[0], expressions[1], expressions[2]);
     }
 };

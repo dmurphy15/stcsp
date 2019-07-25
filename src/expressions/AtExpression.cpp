@@ -62,7 +62,7 @@ Expression& AtExpression::normalize(std::set<Constraint_r> &constraintList,
     return *normalized;
 }
 
-Expression& AtExpression::build(std::vector<Expression_r>& expressions) {
+Expression& AtExpression::build(const std::vector<Expression_r>& expressions) {
     return *new AtExpression(expressions[0], static_cast<ConstantExpression&>(expressions[1].get()));
 }
 

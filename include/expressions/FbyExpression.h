@@ -3,7 +3,7 @@
 #include "../Expression.h"
 
 /**
- * Expression to represent "A followed by B". Effectively equivalent to C where: First(C) == First A, Next(C) == Next(B)
+ * Expression to represent "A followed by B". Effectively equivalent to C where: First(C) == First A, Next(C) == B
  * Gets normalized in essentially that way.
  */
 
@@ -21,7 +21,7 @@ public:
 private:
     Expression &mExpr1;
     Expression &mExpr2;
-    Expression& build(std::vector<Expression_r>& expressions) override {
+    Expression& build(const std::vector<Expression_r>& expressions) override {
         return *new FbyExpression(expressions[0], expressions[1]);
     }
 };

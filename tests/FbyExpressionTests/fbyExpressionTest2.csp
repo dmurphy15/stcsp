@@ -2,7 +2,5 @@ var A : [0, 2];
 var B : [0, 1];
 var C : [0, 2];
 
-// by switching the parenthesis, we may cause the solver to produce a different (though equivalent)
-// solution graph, even though this is an equivalent problem
-// just demonstrates how constraint normalization can affect the solution produced
+// this is actually different from the other test; it's equivalent to: A fby C == 1
 (A fby B) fby C == 1;

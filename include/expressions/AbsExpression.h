@@ -14,7 +14,7 @@ public:
     }
 private:
     Expression &mExpr1;
-    Expression& build(std::vector<Expression_r>& expressions) override {
+    Expression& build(const std::vector<Expression_r>& expressions) override {
         return *new AbsExpression(expressions[0]);
     }
     int evaluateFake(const std::vector<int>& values) const override {

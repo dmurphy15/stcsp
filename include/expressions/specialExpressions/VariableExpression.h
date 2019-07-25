@@ -21,7 +21,7 @@ public:
 private:
     bool lt(const Expression &rhs) const override;
     bool eq(const Expression &rhs) const override;
-    Expression& build(std::vector<Expression_r>& expressions) override {
+    Expression& build(const std::vector<Expression_r>& expressions) override {
         return *new VariableExpression(mVariable);
     }
 };

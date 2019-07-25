@@ -42,7 +42,7 @@ Expression& FbyExpression::normalize(std::set<Constraint_r> &constraintList,
     normalizedMap.insert({varExpr, varExpr});
 
     Constraint& firsts = *new EqualConstraint(*new FirstExpression(varExpr), *new FirstExpression(equivalentExpr1));
-    Constraint& nexts = *new EqualConstraint(*new NextExpression(varExpr), *new NextExpression(equivalentExpr2));
+    Constraint& nexts = *new EqualConstraint(*new NextExpression(varExpr), equivalentExpr2);
     firsts.normalize(constraintList, normalizedMap, variableList);
     nexts.normalize(constraintList, normalizedMap, variableList);
 
